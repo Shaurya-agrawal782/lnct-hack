@@ -25,6 +25,7 @@
 - **Step 6.1 completed**: public registration hardened to prevent open admin/responder signup.
 - **Step 7A completed**: backend incident management API added with role-based access and geospatial-ready schema.
 - **Step 7B completed**: frontend incident management UI added with create, list, details, assignment, and status update flows.
+- **Step 8A completed**: resource management module added with backend APIs, seed resources, and frontend CRUD UI.
 
 ## Next Steps
 - Implement and set up the Express.js backend.

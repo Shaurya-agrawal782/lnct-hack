@@ -14,6 +14,8 @@ import Incidents from './pages/dashboard/Incidents';
 import IncidentCreate from './pages/dashboard/IncidentCreate';
 import IncidentDetails from './pages/dashboard/IncidentDetails';
 import Resources from './pages/dashboard/Resources';
+import ResourceForm from './pages/dashboard/ResourceForm';
+import ResourceDetails from './pages/dashboard/ResourceDetails';
 import MapView from './pages/dashboard/MapView';
 import Alerts from './pages/dashboard/Alerts';
 import Reports from './pages/dashboard/Reports';
@@ -101,6 +103,44 @@ function App() {
               } 
             />
 
+            {/* Admin & Responder only - Resources view */}
+            <Route 
+              path="resources" 
+              element={
+                <RoleRoute allowedRoles={['admin', 'responder']}>
+                  <Resources />
+                </RoleRoute>
+              } 
+            />
+
+            {/* Admin only - Resource new and edit */}
+            <Route 
+              path="resources/new" 
+              element={
+                <RoleRoute allowedRoles={['admin']}>
+                  <ResourceForm />
+                </RoleRoute>
+              } 
+            />
+
+            <Route 
+              path="resources/:id" 
+              element={
+                <RoleRoute allowedRoles={['admin', 'responder']}>
+                  <ResourceDetails />
+                </RoleRoute>
+              } 
+            />
+
+            <Route 
+              path="resources/:id/edit" 
+              element={
+                <RoleRoute allowedRoles={['admin']}>
+                  <ResourceForm />
+                </RoleRoute>
+              } 
+            />
+
             {/* Admin & Responder only */}
             <Route 
               path="map" 
@@ -112,15 +152,6 @@ function App() {
             />
 
             {/* Admin only */}
-            <Route 
-              path="resources" 
-              element={
-                <RoleRoute allowedRoles={['admin']}>
-                  <Resources />
-                </RoleRoute>
-              } 
-            />
-
             <Route 
               path="reports" 
               element={

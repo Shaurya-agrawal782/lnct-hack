@@ -8,6 +8,7 @@ const healthRoutes = require('./routes/healthRoutes');
 const authRoutes = require('./routes/authRoutes');
 const incidentRoutes = require('./routes/incidentRoutes');
 const userRoutes = require('./routes/userRoutes');
+const resourceRoutes = require('./routes/resourceRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 const app = express();
@@ -32,6 +33,7 @@ app.use('/api', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/incidents', incidentRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/resources', resourceRoutes);
 
 // 404 Route Not Found interceptor
 app.use(notFound);

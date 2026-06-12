@@ -41,7 +41,7 @@ export default function Sidebar() {
       name: 'Resources',
       path: '/dashboard/resources',
       icon: Wrench,
-      roles: ['admin']
+      roles: ['admin', 'responder']
     },
     {
       name: 'Interactive Map',
