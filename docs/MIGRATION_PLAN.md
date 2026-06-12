@@ -30,8 +30,10 @@
 - **Step 10A completed**: Socket.io real-time alerts added with persistent alert storage and dashboard alert UI.
 - **Step 11A completed**: analytics APIs and real dashboard metrics/charts added with role-based data scoping.
 - **Step 12A completed**: resource-to-incident assignment and release workflow added with automatic resource release on resolved/closed incidents.
+- **Step 13A completed**: landing page, README, demo flow, and API overview documentation polished for presentation.
 
 ## Next Steps
-- Implement and set up the remaining modules.
+- Prepare the application for staging and production deployment.
+
 
 
