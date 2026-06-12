@@ -19,6 +19,7 @@
 ## Migration Progress
 - **Step 2 completed**: original Python prototype moved to legacy-python/.
 - **Step 3 completed**: MERN foundation created with backend/ and frontend/ folders.
+- **Step 4 completed**: backend database connection and core server architecture added.
 
 ## Next Steps
 - Implement and set up the Express.js backend.
