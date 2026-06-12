@@ -300,40 +300,6 @@ export default function Landing() {
             </motion.div>
           </div>
         </section>
-
-        {/* Section 5: Tech Stack & Architecture Note */}
-        <section className="w-full py-16">
-          <div className="max-w-container-max mx-auto px-6 md:px-margin-desktop text-center space-y-6">
-            <span className="text-[10px] tracking-wider uppercase font-bold text-slate-400 block">
-              Core Technologies
-            </span>
-            <p className="text-slate-300 text-xs max-w-xl mx-auto leading-relaxed">
-              DisasterConnect is built using React, Node.js, Express, MongoDB, Socket.io, Leaflet, Recharts, and JWT.
-            </p>
-            <div className="flex flex-wrap justify-center gap-2 max-w-lg mx-auto">
-              <span className="px-3 py-1 rounded bg-slate-950/80 border border-slate-800/60 text-[10px] font-mono text-slate-300">React</span>
-              <span className="px-3 py-1 rounded bg-slate-950/80 border border-slate-800/60 text-[10px] font-mono text-slate-300">Node.js</span>
-              <span className="px-3 py-1 rounded bg-slate-950/80 border border-slate-800/60 text-[10px] font-mono text-slate-300">Express</span>
-              <span className="px-3 py-1 rounded bg-slate-950/80 border border-slate-800/60 text-[10px] font-mono text-slate-300">MongoDB</span>
-              <span className="px-3 py-1 rounded bg-slate-950/80 border border-slate-800/60 text-[10px] font-mono text-slate-300">Socket.io</span>
-              <span className="px-3 py-1 rounded bg-slate-950/80 border border-slate-800/60 text-[10px] font-mono text-slate-300">Leaflet</span>
-              <span className="px-3 py-1 rounded bg-slate-950/80 border border-slate-800/60 text-[10px] font-mono text-slate-300">Recharts</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Section 6: Demo Note */}
-        <section className="w-full py-12">
-          <div className="max-w-md mx-auto px-6 text-center space-y-2">
-            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-              Local Evaluation
-            </h4>
-            <p className="text-slate-300 text-xs leading-relaxed">
-              Evaluation accounts are listed in <code className="text-blue-400 font-mono text-xs px-1.5 py-0.5 bg-slate-950/80 rounded border border-slate-800/60">docs/DEMO_ACCOUNTS.md</code>.
-            </p>
-          </div>
-        </section>
-
       </main>
 
       {/* Footer */}
