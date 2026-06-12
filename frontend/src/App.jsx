@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { SocketProvider } from './context/SocketContext';
 import ProtectedRoute from './routes/ProtectedRoute';
 import RoleRoute from './routes/RoleRoute';
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -48,7 +49,8 @@ function NotFound() {
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <SocketProvider>
+        <Router>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Landing />} />
@@ -165,8 +167,9 @@ function App() {
           {/* Fallback 404 Route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </Router>
-    </AuthProvider>
+    </Router>
+  </SocketProvider>
+</AuthProvider>
   );
 }
 

@@ -1,8 +1,11 @@
+const http = require('http');
 const env = require('./config/env');
 const connectDB = require('./config/db');
 const app = require('./app');
+const { initializeSocket } = require('./sockets/socketServer');
 
 let server;
+let httpServer;
 
 // Start the database connection first, then start the express server
 const startServer = async () => {
@@ -10,8 +13,15 @@ const startServer = async () => {
     // 1. Connect to MongoDB
     await connectDB();
 
-    // 2. Start Express app listener
-    server = app.listen(env.PORT, () => {
+    // 2. Create HTTP server from Express app
+    httpServer = http.createServer(app);
+
+    // 3. Initialize Socket.io server and attach it to Express app instance
+    const io = initializeSocket(httpServer);
+    app.set('io', io);
+
+    // 4. Start HTTP server listener
+    server = httpServer.listen(env.PORT, () => {
       console.log(`====================================================`);
       console.log(`DisasterConnect server is running in [${env.NODE_ENV}] mode`);
       console.log(`Server Listening Port: ${env.PORT}`);

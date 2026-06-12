@@ -27,6 +27,7 @@
 - **Step 7B completed**: frontend incident management UI added with create, list, details, assignment, and status update flows.
 - **Step 8A completed**: resource management module added with backend APIs, seed resources, and frontend CRUD UI.
 - **Step 9A completed**: interactive map added with incident and resource markers, filters, legends, and GeoJSON coordinate conversion.
+- **Step 10A completed**: Socket.io real-time alerts added with persistent alert storage and dashboard alert UI.
 
 ## Next Steps
 - Implement and set up the Express.js backend.

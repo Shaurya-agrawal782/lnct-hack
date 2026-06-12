@@ -1,9 +1,12 @@
 import React from 'react';
-import { LogOut, User, Activity } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { LogOut, User, Activity, Bell } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
+import useSocket from '../../hooks/useSocket';
 
 export default function Topbar() {
   const { user, logout } = useAuth();
+  const { connected, liveAlerts } = useSocket();
 
   if (!user) return null;
 
@@ -19,15 +22,33 @@ export default function Topbar() {
   return (
     <header className="h-16 border-b border-slate-800 bg-slate-950/20 backdrop-blur-md px-6 flex items-center justify-between z-10">
       {/* Active Sync Status */}
-      <div className="flex items-center space-x-2">
-        <Activity className="h-4 w-4 text-emerald-400 animate-pulse" />
-        <span className="text-xs font-semibold tracking-wide text-slate-400 uppercase hidden sm:inline">
-          Live coordination active
+      <div className="flex items-center space-x-2.5">
+        <div className="relative flex items-center justify-center w-2.5 h-2.5">
+          <span className={`absolute inline-flex h-full w-full rounded-full opacity-75 animate-pulse ${connected ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+          <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${connected ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+        </div>
+        <span className="text-xs font-semibold tracking-wide text-slate-400 uppercase">
+          {connected ? 'Real-time Linked' : 'Off-line Sync'}
         </span>
       </div>
 
       {/* User Actions */}
       <div className="flex items-center space-x-4">
+        {/* Alerts Notification Bell Link */}
+        <Link
+          to="/dashboard/alerts"
+          className="relative p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-all"
+          title="Notification Center"
+        >
+          <Bell className="h-4.5 w-4.5" />
+          {liveAlerts.length > 0 && (
+            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-600 text-[8.5px] font-black text-white shadow shadow-indigo-650/30">
+              {liveAlerts.length}
+            </span>
+          )}
+        </Link>
+
+        <div className="h-6 w-px bg-slate-800"></div>
         {/* User Card */}
         <div className="flex items-center space-x-3">
           <div className="p-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700/50">

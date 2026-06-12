@@ -3,6 +3,7 @@ const User = require('../models/User');
 const AppError = require('../utils/AppError');
 const ApiResponse = require('../utils/apiResponse');
 const asyncHandler = require('../utils/asyncHandler');
+const createAlertAndEmit = require('../utils/createAlert');
 
 // Helper to validate status transitions
 const isValidTransition = (current, target) => {
@@ -55,6 +56,23 @@ const createIncident = asyncHandler(async (req, res, next) => {
 
   // Populate reportedBy info
   incident = await incident.populate('reportedBy', 'name email');
+
+  // Create alert for admin
+  try {
+    const io = req.app.get('io');
+    await createAlertAndEmit({
+      io,
+      title: 'New Incident Reported',
+      message: `Incident "${incident.title}" (${incident.type}) reported at ${incident.location.address}.`,
+      type: 'incident_created',
+      priority: incident.severity,
+      targetRoles: ['admin'],
+      relatedIncident: incident._id,
+      createdBy: req.user._id
+    });
+  } catch (alertErr) {
+    console.error('Failed to create/emit alert for incident creation:', alertErr.message);
+  }
 
   res.status(201).json(
     new ApiResponse(201, { incident }, 'Incident created successfully')
@@ -241,6 +259,40 @@ const updateIncidentStatus = asyncHandler(async (req, res, next) => {
   incident = await incident.populate('reportedBy', 'name email');
   incident = await incident.populate('assignedResponder', 'name email');
 
+  // Create status update alerts
+  try {
+    const io = req.app.get('io');
+    const targetUsers = [];
+    const targetRoles = [];
+
+    // Add citizen reporter
+    if (incident.reportedBy) {
+      targetUsers.push(incident.reportedBy._id);
+    }
+
+    if (req.user.role === 'responder') {
+      targetRoles.push('admin');
+    } else if (req.user.role === 'admin') {
+      if (incident.assignedResponder) {
+        targetUsers.push(incident.assignedResponder._id);
+      }
+    }
+
+    await createAlertAndEmit({
+      io,
+      title: 'Incident Status Updated',
+      message: `Incident "${incident.title}" status updated to "${status}" by ${req.user.name}. Note: ${note || 'None'}`,
+      type: 'status_updated',
+      priority: incident.severity,
+      targetRoles,
+      targetUsers,
+      relatedIncident: incident._id,
+      createdBy: req.user._id
+    });
+  } catch (alertErr) {
+    console.error('Failed to create/emit alert for status update:', alertErr.message);
+  }
+
   res.status(200).json(
     new ApiResponse(200, { incident }, 'Incident status updated successfully')
   );
@@ -292,6 +344,23 @@ const assignResponder = asyncHandler(async (req, res, next) => {
 
   incident = await incident.populate('reportedBy', 'name email');
   incident = await incident.populate('assignedResponder', 'name email');
+
+  // Create alert for responder
+  try {
+    const io = req.app.get('io');
+    await createAlertAndEmit({
+      io,
+      title: 'New Incident Assignment',
+      message: `You have been assigned to the incident: "${incident.title}".`,
+      type: 'incident_assigned',
+      priority: incident.severity,
+      targetUsers: [responderId],
+      relatedIncident: incident._id,
+      createdBy: req.user._id
+    });
+  } catch (alertErr) {
+    console.error('Failed to create/emit alert for incident assignment:', alertErr.message);
+  }
 
   res.status(200).json(
     new ApiResponse(200, { incident }, 'Responder assigned to incident successfully')

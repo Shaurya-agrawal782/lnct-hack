@@ -6,9 +6,11 @@ import {
   Activity 
 } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
+import useSocket from '../../hooks/useSocket';
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { connected } = useSocket();
 
   if (!user) return null;
 
@@ -26,6 +28,12 @@ export default function Dashboard() {
               {user.role}
             </span>.
           </p>
+        </div>
+
+        {/* Socket connection indicator */}
+        <div className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs shadow-inner">
+          <span className={`h-2.5 w-2.5 rounded-full ${connected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`}></span>
+          <span className="text-slate-400 font-semibold">{connected ? 'Live Sync Connected' : 'Offline Mode'}</span>
         </div>
       </div>
 
