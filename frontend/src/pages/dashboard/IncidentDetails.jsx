@@ -278,7 +278,10 @@ export default function IncidentDetails() {
 
   // Check roles permissions
   const isUserAdmin = user && user.role === 'admin';
-  const isUserAssignedResponder = user && user.role === 'responder' && incident.assignedResponder && incident.assignedResponder._id === user._id;
+  const isUserAssignedResponder = user && user.role === 'responder' && incident.assignedResponder && (
+    (typeof incident.assignedResponder === 'object' && incident.assignedResponder._id === user._id) ||
+    (typeof incident.assignedResponder === 'string' && incident.assignedResponder === user._id)
+  );
   const canUpdateStatus = isUserAdmin || isUserAssignedResponder;
 
   return (

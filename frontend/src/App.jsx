@@ -81,7 +81,7 @@ function App() {
             <Route 
               path="incidents/new" 
               element={
-                <RoleRoute allowedRoles={['admin', 'responder', 'citizen']}>
+                <RoleRoute allowedRoles={['admin', 'citizen']}>
                   <IncidentCreate />
                 </RoleRoute>
               } 
