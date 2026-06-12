@@ -11,6 +11,8 @@ import Register from './pages/auth/Register';
 
 import Dashboard from './pages/dashboard/Dashboard';
 import Incidents from './pages/dashboard/Incidents';
+import IncidentCreate from './pages/dashboard/IncidentCreate';
+import IncidentDetails from './pages/dashboard/IncidentDetails';
 import Resources from './pages/dashboard/Resources';
 import MapView from './pages/dashboard/MapView';
 import Alerts from './pages/dashboard/Alerts';
@@ -68,6 +70,24 @@ function App() {
               element={
                 <RoleRoute allowedRoles={['admin', 'responder', 'citizen']}>
                   <Incidents />
+                </RoleRoute>
+              } 
+            />
+
+            <Route 
+              path="incidents/new" 
+              element={
+                <RoleRoute allowedRoles={['admin', 'responder', 'citizen']}>
+                  <IncidentCreate />
+                </RoleRoute>
+              } 
+            />
+
+            <Route 
+              path="incidents/:id" 
+              element={
+                <RoleRoute allowedRoles={['admin', 'responder', 'citizen']}>
+                  <IncidentDetails />
                 </RoleRoute>
               } 
             />

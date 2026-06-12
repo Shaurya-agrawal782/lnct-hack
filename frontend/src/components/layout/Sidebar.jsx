@@ -33,7 +33,7 @@ export default function Sidebar() {
     },
     {
       name: 'Report Incident',
-      path: '/dashboard/incidents',
+      path: '/dashboard/incidents/new',
       icon: AlertTriangle,
       roles: ['citizen'] // For citizens, we label it "Report Incident"
     },
