@@ -11,9 +11,15 @@ const env = require('../config/env');
 const registerUser = asyncHandler(async (req, res, next) => {
   const { name, email, password, role, phone } = req.body;
 
-  // Only allow valid roles
-  if (role && !['admin', 'responder', 'citizen'].includes(role)) {
-    return next(new AppError(400, 'Invalid user role. Allowed roles are: admin, responder, citizen.'));
+  // Determine the final user role
+  let finalRole = 'citizen';
+  if (env.ALLOW_PUBLIC_ROLE_REGISTRATION && env.NODE_ENV === 'development') {
+    if (role) {
+      if (!['admin', 'responder', 'citizen'].includes(role)) {
+        return next(new AppError(400, 'Invalid user role. Allowed roles are: admin, responder, citizen.'));
+      }
+      finalRole = role;
+    }
   }
 
   // Prevent duplicate email
@@ -27,7 +33,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
     name,
     email,
     password,
-    role: role || 'citizen',
+    role: finalRole,
     phone
   });
 

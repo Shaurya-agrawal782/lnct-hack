@@ -18,8 +18,8 @@ export default function Register() {
     setError('');
 
     try {
-      // 1. Call registration API
-      await register(name, email, password, role, phone);
+      // 1. Call registration API (excluding role)
+      await register(name, email, password, undefined, phone);
       // 2. Perform automatic login to fetch session cookie
       await login(email, password);
       // 3. Transition to dashboard
@@ -98,22 +98,6 @@ export default function Register() {
             </div>
 
             <div>
-              <label htmlFor="role" className="block text-sm font-medium text-slate-300">
-                Access Role
-              </label>
-              <select
-                id="role"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-sm"
-              >
-                <option value="citizen">Citizen (Reporter)</option>
-                <option value="responder">Responder (Emergency Team)</option>
-                <option value="admin">Administrator</option>
-              </select>
-            </div>
-
-            <div>
               <label htmlFor="password" className="block text-sm font-medium text-slate-300">
                 Password
               </label>
@@ -127,6 +111,12 @@ export default function Register() {
                 placeholder="••••••••"
               />
             </div>
+          </div>
+
+          <div className="p-3 bg-slate-900/40 border border-slate-800/80 rounded-lg text-center">
+            <span className="text-[11px] font-medium text-slate-400">
+              Public accounts are created as Citizen users. Admin and responder accounts are managed separately.
+            </span>
           </div>
 
           <div className="pt-2">
