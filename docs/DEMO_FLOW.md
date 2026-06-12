@@ -13,10 +13,19 @@ Ensure MongoDB is running locally on your workstation.
    cd backend
    npm install
    cp .env.example .env     # Set correct MONGODB_URI if necessary
-   npm run seed:users       # Seeds default test profiles
-   npm run seed:resources   # Seeds default supply stocks
+   npm run seed:users       # Seeds Admin, Responder, and Citizen demo accounts
+   npm run seed:resources   # Seeds default emergency supply stocks
+   npm run seed:demo        # Seeds realistic demo incidents, alerts, and assignments
    npm run dev              # Starts nodemon listener on http://localhost:5000
    ```
+
+   **About `npm run seed:demo`:**
+   - Creates **11 realistic clustered incidents** around Bhopal/LNCT area — visible as density hotspots in Map Hybrid/Density mode.
+   - Creates **4 incidents assigned** to the demo Responder (populates Responder dashboard immediately).
+   - Creates **8 citizen-reported** incidents (populates Citizen "My Reports" list).
+   - Assigns **3 emergency resources** to active incidents (visible in the resource panel).
+   - Creates **7 realistic alerts** across all roles.
+   - **Safe to re-run**: automatically cleans all `[DEMO]` prefixed records before recreating them. Real user-created data is never deleted.
 
 2. **Start the React Frontend Client:**
    ```bash

@@ -164,6 +164,7 @@ VITE_API_URL=http://localhost:5000/api
    ```bash
    npm run seed:users       # Creates demo Admin, Responder, and Citizen accounts
    npm run seed:resources   # Provisions default logistical supply units
+   npm run seed:demo        # Seeds realistic clustered demo incidents, alerts, and assignments
    ```
 
 4. **Frontend Setup:**
@@ -197,6 +198,7 @@ VITE_API_URL=http://localhost:5000/api
 - `npm run dev` - Run server in development mode using Nodemon.
 - `npm run seed:users` - Populate test accounts.
 - `npm run seed:resources` - Populate test emergency resources.
+- `npm run seed:demo` - Populate realistic demo incidents, assignments, and alerts for hackathon presentation.
 
 ### In `/frontend`:
 - `npm run dev` - Start the Vite dev server (`http://localhost:5173`).

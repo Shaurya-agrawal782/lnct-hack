@@ -43,6 +43,7 @@
 - **UI Human Polish Pass 1 completed: Admin, Responder, and Citizen dashboards were refined to reduce AI-generated feel and improve role-specific product clarity.**
 - **UI Step 3 completed: Map Command Center upgraded with privacy-safe Crowd Risk Density layer using real incident report data.**
 - **Incident Report UX upgraded: browser geolocation and map-based incident location picker added with manual coordinate fallback.**
+- **Demo data seed added: clustered incidents, responder assignments, citizen reports, resources, and alerts for hackathon walkthrough.**
 
 ## Next Steps
 - Deploy to Render (backend) and Vercel (frontend) with MongoDB Atlas.

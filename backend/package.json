@@ -8,6 +8,7 @@
     "start": "node src/server.js",
     "seed:users": "node src/scripts/seedUsers.js",
     "seed:resources": "node src/scripts/seedResources.js",
+    "seed:demo": "node src/scripts/seedDemoData.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
