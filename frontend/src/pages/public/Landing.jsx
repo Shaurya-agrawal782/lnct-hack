@@ -145,15 +145,10 @@ export default function Landing() {
 
         {/* Demo Credentials Note Section */}
         <section className="w-full max-w-container-max px-margin-mobile md:px-margin-desktop py-12">
-          <div className="p-6 bg-surface-container-low border border-dashed border-outline rounded-2xl text-center space-y-3">
+          <div className="p-6 bg-surface-container border border-dashed border-outline rounded-xl text-center space-y-3">
             <h4 className="text-base font-semibold text-on-surface">Looking for Evaluation Credentials?</h4>
             <p className="text-on-surface-variant text-sm max-w-2xl mx-auto">
-              Seeded user profiles (Admin, Responder, Citizen) are configured for immediate testing. 
-              Use credentials: 
-              <br />
-              <code className="text-primary font-mono text-xs px-2 py-0.5 bg-surface-container-lowest border rounded">admin@disasterconnect.dev</code> / <code className="text-primary font-mono text-xs px-2 py-0.5 bg-surface-container-lowest border rounded">Admin@12345</code>
-              <br />
-              <code className="text-primary font-mono text-xs px-2 py-0.5 bg-surface-container-lowest border rounded">responder@disasterconnect.dev</code> / <code className="text-primary font-mono text-xs px-2 py-0.5 bg-surface-container-lowest border rounded">Responder@12345</code>
+              Demo credentials are available in <code className="text-primary font-mono text-xs px-2 py-0.5 bg-surface-container-lowest border rounded">docs/DEMO_ACCOUNTS.md</code> for local evaluation.
             </p>
           </div>
         </section>

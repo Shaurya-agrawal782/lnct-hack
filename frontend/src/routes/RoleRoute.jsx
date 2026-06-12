@@ -33,7 +33,7 @@ export default function RoleRoute({ children, allowedRoles }) {
           <div className="pt-4">
             <Link
               to="/dashboard"
-              className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg shadow-lg shadow-indigo-650/20 transition"
+              className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg shadow-lg shadow-indigo-600/20 transition"
             >
               Back to Dashboard
             </Link>

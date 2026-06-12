@@ -2,21 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import useSocket from '../../hooks/useSocket';
+import Badge from '../ui/Badge';
 
 export default function Topbar({ onMenuClick }) {
   const { user, logout } = useAuth();
   const { connected, liveAlerts } = useSocket();
 
   if (!user) return null;
-
-  // Role tag styling mapping
-  const roleBadges = {
-    admin: 'bg-error-container/20 text-error border-error/20',
-    responder: 'bg-primary-container/20 text-primary border-primary-container/20',
-    citizen: 'bg-emerald-100 text-emerald-800 border-emerald-250'
-  };
-
-  const badgeClass = roleBadges[user.role] || 'bg-surface-container-high text-on-surface-variant border-outline-variant';
 
   return (
     <header className="bg-surface border-b border-outline-variant fixed top-0 w-full md:w-[calc(100%-280px)] z-50 flex justify-between items-center px-6 md:px-margin-desktop h-16">
@@ -65,15 +57,14 @@ export default function Topbar({ onMenuClick }) {
               {user.email}
             </span>
           </div>
-          <span className={`px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase rounded border ${badgeClass}`}>
+          <Badge variant={user.role === 'admin' ? 'error' : user.role === 'responder' ? 'primary' : 'success'} className="tracking-wider uppercase text-[10px]">
             {user.role}
-          </span>
+          </Badge>
         </div>
 
-        {/* Report Incident Quick Link */}
         <Link
           to="/dashboard/incidents/new"
-          className="hidden sm:flex items-center space-x-1 bg-error hover:bg-error-container text-on-error hover:text-on-error-container py-1.5 px-4 rounded font-label-md text-label-md transition-colors border border-transparent hover:border-error ml-3"
+          className="hidden sm:flex items-center space-x-1 bg-error hover:opacity-90 text-on-error py-1.5 px-4 rounded-lg font-label-md text-label-md transition-all ml-3 border border-transparent shrink-0"
         >
           <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>report</span>
           <span>Report Incident</span>

@@ -33,12 +33,16 @@ export function SocketProvider({ children }) {
 
     socketInstance.on('connect', () => {
       setConnected(true);
-      console.log('Socket.io: Connected to server room');
+      if (import.meta.env.DEV) {
+        console.log('Socket.io: Connected to server room');
+      }
     });
 
     socketInstance.on('disconnect', () => {
       setConnected(false);
-      console.log('Socket.io: Disconnected from server room');
+      if (import.meta.env.DEV) {
+        console.log('Socket.io: Disconnected from server room');
+      }
     });
 
     // 4. Listen for real-time alert logs

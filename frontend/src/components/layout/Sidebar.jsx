@@ -70,7 +70,7 @@ export default function Sidebar({ isOpen, onClose }) {
       )}
 
       <aside
-        className={`flex flex-col bg-inverse-surface text-inverse-on-surface h-full w-[280px] fixed left-0 top-0 pt-16 pb-8 border-r border-on-surface-variant z-50 transition-transform duration-300 ${
+        className={`flex flex-col bg-inverse-surface text-inverse-on-surface h-full w-[280px] fixed left-0 top-0 pt-6 pb-8 border-r border-on-surface-variant z-50 transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0`}
       >
@@ -81,15 +81,15 @@ export default function Sidebar({ isOpen, onClose }) {
               <span className="material-symbols-outlined text-on-primary">shield</span>
             </div>
             <div>
-              <h2 className="font-headline-sm text-headline-sm font-bold text-inverse-on-surface">Command Center</h2>
-              <p className="font-label-sm text-label-sm text-surface-variant opacity-80">
-                {user.role === 'admin' ? 'System Operator' : user.role === 'responder' ? 'Field Controller' : 'Citizen Access'}
+              <h2 className="font-headline-sm text-headline-sm font-bold text-white">Command Center</h2>
+              <p className="font-label-sm text-label-sm text-slate-400 uppercase tracking-wider">
+                {user.role === 'admin' ? 'Operator' : user.role === 'responder' ? 'Field' : 'Citizen'}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="md:hidden text-surface-variant hover:text-white flex items-center justify-center p-1"
+            className="md:hidden text-slate-400 hover:text-white flex items-center justify-center p-1"
           >
             <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
@@ -101,7 +101,7 @@ export default function Sidebar({ isOpen, onClose }) {
             <Link
               to="/dashboard/incidents/new"
               onClick={onClose}
-              className="w-full bg-error hover:bg-error-container text-on-error py-2.5 px-4 rounded font-label-md text-label-md transition-colors flex items-center justify-center space-x-2"
+              className="w-full bg-error hover:opacity-90 text-on-error py-2.5 px-4 rounded-lg font-label-md text-label-md transition flex items-center justify-center space-x-2 shadow-sm"
             >
               <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>report</span>
               <span>Report Incident</span>
@@ -110,7 +110,7 @@ export default function Sidebar({ isOpen, onClose }) {
             <Link
               to="/dashboard/incidents"
               onClick={onClose}
-              className="w-full bg-primary hover:bg-primary-container text-on-primary py-2.5 px-4 rounded font-label-md text-label-md transition-colors flex items-center justify-center space-x-2"
+              className="w-full bg-primary hover:opacity-90 text-on-primary py-2.5 px-4 rounded-lg font-label-md text-label-md transition flex items-center justify-center space-x-2 shadow-sm"
             >
               <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>flight_takeoff</span>
               <span>Dispatch Resources</span>
@@ -128,10 +128,10 @@ export default function Sidebar({ isOpen, onClose }) {
                 key={index}
                 to={item.path}
                 onClick={onClose}
-                className={`flex items-center space-x-3 px-4 py-3 rounded scale-95 duration-75 ease-in-out ${
+                className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-150 ${
                   isActive
-                    ? 'text-primary-fixed-dim font-bold border-r-4 border-primary-fixed-dim bg-tertiary-container'
-                    : 'text-surface-variant hover:text-inverse-on-surface hover:bg-on-tertiary-fixed-variant transition-all'
+                    ? 'text-white font-bold border-l-4 border-primary bg-white/10'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <span className="material-symbols-outlined">{item.icon}</span>
@@ -142,13 +142,13 @@ export default function Sidebar({ isOpen, onClose }) {
         </div>
 
         {/* Footer Tabs */}
-        <div className="px-4 pt-4 border-t border-on-surface-variant mt-auto space-y-1">
+        <div className="px-4 pt-4 border-t border-slate-800 mt-auto space-y-1">
           <button
             onClick={() => {
               onClose?.();
               logout();
             }}
-            className="w-full flex items-center space-x-3 px-4 py-2.5 rounded text-surface-variant hover:text-inverse-on-surface hover:bg-on-tertiary-fixed-variant transition-all scale-95 duration-75 ease-in-out text-left"
+            className="w-full flex items-center space-x-3 px-4 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-150 text-left"
           >
             <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>logout</span>
             <span className="font-label-md text-label-md">Log Out</span>

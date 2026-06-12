@@ -36,7 +36,7 @@ function NotFound() {
         <div className="pt-2">
           <Link
             to="/"
-            className="inline-flex justify-center px-4 py-2 text-sm font-semibold text-white bg-indigo-650 hover:bg-indigo-550 rounded-lg shadow-lg shadow-indigo-650/20 transition"
+            className="inline-flex justify-center px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg shadow-lg shadow-indigo-600/20 transition"
           >
             Go Back Home
           </Link>

@@ -33,6 +33,7 @@
 - **Step 13A completed**: landing page, README, demo flow, and API overview documentation polished for presentation.
 - **Step 14A completed**: deployment readiness added with production-safe environment examples, CORS/cookie review, and deployment guide.
 - **UI redesign reference added from Stitch full-app design package.**
+- **UI Step 1.5 completed: generated UI stabilized, invalid Tailwind classes fixed, shell cleanup completed, and public demo credential exposure removed.**
 
 ## Next Steps
 - Deploy to Render (backend) and Vercel (frontend) with MongoDB Atlas.
