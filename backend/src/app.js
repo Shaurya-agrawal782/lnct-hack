@@ -24,11 +24,33 @@ if (env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// CORS middleware
-app.use(cors({
-  origin: env.CLIENT_URL,
+// CORS middleware supporting multiple origins and development fallbacks
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+
+    const origins = env.corsOrigins || [];
+    if (origins.includes(origin) || origins.includes('*')) {
+      return callback(null, true);
+    }
+
+    // Safe fallback when CLIENT_URL is missing in development mode
+    if (env.NODE_ENV === 'development' && origins.length === 0) {
+      return callback(null, true);
+    }
+
+    // Allow localhost loopbacks in development mode
+    if (env.NODE_ENV === 'development' && (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:'))) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
+
 
 // Route mounts
 app.use('/api', healthRoutes);

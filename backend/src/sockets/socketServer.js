@@ -27,10 +27,30 @@ const parseCookies = (cookieHeader) => {
 const initializeSocket = (server) => {
   io = new socketIO.Server(server, {
     cors: {
-      origin: env.CLIENT_URL,
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+
+        const origins = env.corsOrigins || [];
+        if (origins.includes(origin) || origins.includes('*')) {
+          return callback(null, true);
+        }
+
+        // Safe fallback when CLIENT_URL is missing in development mode
+        if (env.NODE_ENV === 'development' && origins.length === 0) {
+          return callback(null, true);
+        }
+
+        // Allow localhost loopbacks in development mode
+        if (env.NODE_ENV === 'development' && (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:'))) {
+          return callback(null, true);
+        }
+
+        return callback(new Error('Not allowed by CORS'));
+      },
       credentials: true
     }
   });
+
 
   // Authentication Middleware for socket handshakes
   io.use(async (socket, next) => {

@@ -14,4 +14,9 @@ const env = {
   ALLOW_PUBLIC_ROLE_REGISTRATION: process.env.ALLOW_PUBLIC_ROLE_REGISTRATION === 'true'
 };
 
+// Parse comma-separated CLIENT_URL origins for CORS config
+const rawClientUrl = process.env.CLIENT_URL || (env.NODE_ENV === 'development' ? 'http://localhost:5173' : '');
+env.corsOrigins = rawClientUrl ? rawClientUrl.split(',').map(o => o.trim()) : [];
+
 module.exports = env;
+

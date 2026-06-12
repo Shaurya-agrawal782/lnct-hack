@@ -31,9 +31,11 @@
 - **Step 11A completed**: analytics APIs and real dashboard metrics/charts added with role-based data scoping.
 - **Step 12A completed**: resource-to-incident assignment and release workflow added with automatic resource release on resolved/closed incidents.
 - **Step 13A completed**: landing page, README, demo flow, and API overview documentation polished for presentation.
+- **Step 14A completed**: deployment readiness added with production-safe environment examples, CORS/cookie review, and deployment guide.
 
 ## Next Steps
-- Prepare the application for staging and production deployment.
+- Deploy to Render (backend) and Vercel (frontend) with MongoDB Atlas.
+
 
 
 

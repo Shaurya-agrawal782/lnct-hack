@@ -81,11 +81,12 @@ const loginUser = asyncHandler(async (req, res, next) => {
   await user.save();
 
   // Set HTTP-only Cookie
+  const isProd = env.NODE_ENV === 'production';
   const cookieOptions = {
-    expires: new Date(Date.now() + 60 * 60 * 1000), // 1 hour (matches JWT expiration default)
+    maxAge: 60 * 60 * 1000, // 1 hour in milliseconds
     httpOnly: true,
-    secure: env.NODE_ENV === 'production',
-    sameSite: 'strict'
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax'
   };
 
   res.cookie('token', token, cookieOptions);
@@ -114,9 +115,12 @@ const getMe = asyncHandler(async (req, res, next) => {
 // @access  Private
 const logoutUser = asyncHandler(async (req, res, next) => {
   // Clear the cookie from client browser
+  const isProd = env.NODE_ENV === 'production';
   res.cookie('token', 'none', {
     expires: new Date(Date.now() + 1000),
-    httpOnly: true
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax'
   });
 
   res.status(200).json(

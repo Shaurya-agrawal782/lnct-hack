@@ -206,6 +206,8 @@ To evaluate the system quickly, we provision default profiles via seed scripts. 
 
 - **Interactive Walkthrough Guide:** Check [DEMO_FLOW.md](file:///d:/projects/lnct%20hack/docs/DEMO_FLOW.md) for step-by-step reporting, assignment, real-time map syncing, and resolution tasks.
 - **API Reference Guide:** Check [API_OVERVIEW.md](file:///d:/projects/lnct%20hack/docs/API_OVERVIEW.md) for detailed descriptions of all Express endpoints.
+- **Deployment Configuration Guide:** Check [DEPLOYMENT_GUIDE.md](file:///d:/projects/lnct%20hack/docs/DEPLOYMENT_GUIDE.md) for instructions on setting up MongoDB Atlas, Render, and Vercel.
+
 
 ---
 
