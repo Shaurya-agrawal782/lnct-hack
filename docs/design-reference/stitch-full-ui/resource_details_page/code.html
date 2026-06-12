@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DisasterConnect - Resource Details</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed": "#0b1c30",
+                      "surface-dim": "#d9d9e5",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-container": "#c5d6f0",
+                      "inverse-on-surface": "#f0f0fb",
+                      "inverse-primary": "#b7c4ff",
+                      "on-surface": "#1a1b23",
+                      "error-container": "#ffdad6",
+                      "surface-bright": "#faf8ff",
+                      "surface": "#faf8ff",
+                      "on-tertiary-fixed-variant": "#38485d",
+                      "on-background": "#1a1b23",
+                      "tertiary-fixed-dim": "#b7c8e1",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-fixed": "#131b2e",
+                      "tertiary-fixed": "#d3e4fe",
+                      "surface-container-highest": "#e2e1ed",
+                      "inverse-surface": "#2e3039",
+                      "primary-fixed": "#dce1ff",
+                      "primary-container": "#1d4ed8",
+                      "secondary-container": "#dae2fd",
+                      "on-secondary-container": "#5c647a",
+                      "on-error": "#ffffff",
+                      "surface-container-low": "#f3f2fe",
+                      "outline-variant": "#c4c5d7",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-container": "#cad3ff",
+                      "on-secondary-fixed-variant": "#3f465c",
+                      "tertiary": "#36455b",
+                      "surface-variant": "#e2e1ed",
+                      "secondary": "#565e74",
+                      "on-error-container": "#93000a",
+                      "tertiary-container": "#4d5d73",
+                      "background": "#faf8ff",
+                      "on-surface-variant": "#434655",
+                      "surface-container-high": "#e8e7f3",
+                      "surface-tint": "#2151da",
+                      "primary-fixed-dim": "#b7c4ff",
+                      "primary": "#0037b0",
+                      "secondary-fixed": "#dae2fd",
+                      "error": "#ba1a1a",
+                      "secondary-fixed-dim": "#bec6e0",
+                      "on-primary-fixed": "#001551",
+                      "on-primary-fixed-variant": "#0039b5",
+                      "on-primary": "#ffffff",
+                      "outline": "#747686",
+                      "surface-container": "#ededf9"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-desktop": "32px",
+                      "container-max": "1440px",
+                      "margin-mobile": "16px",
+                      "unit": "8px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "label-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "body-md": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600"}],
+                      "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "letterSpacing": "0em", "fontWeight": "600"}],
+                      "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400"}],
+                      "body-sm": ["13px", {"lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background antialiased font-body-md overflow-x-hidden min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-desktop h-16 bg-surface border-b border-outline-variant flat no shadows">
+<div class="flex items-center gap-4">
+<button aria-label="Menu" class="md:hidden p-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<div class="font-headline-md text-headline-md font-bold text-primary">DisasterConnect</div>
+</div>
+<div class="hidden md:flex items-center gap-6">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm" data-icon="search">search</span>
+<input class="w-full pl-9 pr-4 py-2 bg-surface-container rounded-DEFAULT border-none focus:ring-1 focus:ring-primary text-body-md text-on-surface placeholder-on-surface-variant" placeholder="Search resources..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button aria-label="Notifications" class="p-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button aria-label="Emergency" class="p-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full">
+<span class="material-symbols-outlined text-error" data-icon="emergency">emergency</span>
+</button>
+<div class="hidden md:flex items-center gap-2 px-3 py-1 bg-primary-container/10 text-primary-container rounded-DEFAULT font-label-md text-label-md border border-primary-container/20">
+<span class="w-2 h-2 bg-primary-container rounded-full"></span> Active Status
+            </div>
+<button class="hidden md:block bg-error text-on-error px-4 py-2 rounded-DEFAULT font-label-md text-label-md hover:bg-error/90 transition-colors">
+                Report Incident
+            </button>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant">
+<img alt="User Operational Profile" class="w-full h-full object-cover" data-alt="A professional headshot of an operational coordinator in a crisp, modern uniform. The lighting is clean and balanced, suitable for a secure corporate or tactical profile picture. The background is a neutral, light gray to ensure high contrast and focus on the subject. The overall aesthetic is professional, reliable, and functional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhnigEwhLwkCttMv7aYPEpkynu-8kbZqxgJOtGeWrS1y2QjbK3lPabV3rR3agVO-eALtOirX5xMyin3OQ0GzJgNO4TPykVo3v4TNBNDDFIHphWZW3WxRYphtMiqGTt2AEyO63wfYeevAwz6dDk63qYAjSwXPNDRs_vtwlp-HemxF3HRfB0pzo9dunVbT5XkLwL6HqI5_zeNtHgsHsFJL9zCp3ldN1QCegHSNG_CFsD3kSKUJYpAgi7KkUoZLzl5iMHbCZ7AaazKg"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="hidden md:flex fixed left-0 top-0 h-full w-[280px] bg-surface-container-low border-r border-outline-variant flex-col pt-16 pb-8 z-40">
+<div class="px-6 py-8 border-b border-outline-variant/50">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 bg-primary/10 text-primary rounded-DEFAULT flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="admin_panel_settings">admin_panel_settings</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Command Center</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Sector A-1 Operational</p>
+</div>
+</div>
+</div>
+<div class="flex-1 py-6 flex flex-col gap-2 px-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-lg text-label-lg">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="emergency">emergency</span>
+<span class="font-label-lg text-label-lg">Incidents</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-label-lg text-label-lg">Map</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-primary font-bold border-r-4 border-primary bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2" data-weight="fill" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span class="font-label-lg text-label-lg">Resources</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+<span class="font-label-lg text-label-lg">Alerts</span>
+</a>
+</div>
+<div class="px-6 mb-6">
+<button class="w-full bg-primary text-on-primary py-3 rounded-DEFAULT font-label-md text-label-md hover:bg-primary/90 transition-colors shadow-sm">
+                Dispatch Resources
+            </button>
+</div>
+<div class="px-4 border-t border-outline-variant/50 pt-4 flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-2 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Log Out</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="pt-20 pb-16 md:pb-8 md:pl-[280px] px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
+<!-- Breadcrumbs & Actions -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+<div class="flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">
+<a class="hover:text-primary transition-colors" href="#">Resources</a>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Heavy Equipment</a>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-on-surface">Engine Strike Team A</span>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 border border-outline text-on-surface rounded-DEFAULT font-label-md text-label-md hover:bg-surface-container transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span>
+                    Edit Profile
+                </button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-DEFAULT font-label-md text-label-md hover:bg-primary/90 transition-colors flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="call">call</span>
+                    Hail Comm
+                </button>
+</div>
+</div>
+<!-- Hero Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-DEFAULT p-6 mb-8 shadow-sm">
+<div class="flex flex-col lg:flex-row gap-8 items-start">
+<div class="w-full lg:w-1/3 flex flex-col gap-4">
+<div class="aspect-video bg-surface-container-high rounded-DEFAULT overflow-hidden relative border border-outline-variant">
+<img alt="Heavy Fire Engine" class="w-full h-full object-cover" data-alt="A high-resolution, clear photograph of a heavy duty tactical fire engine parked in a staging area. The lighting is bright, natural daylight, casting sharp shadows and highlighting the metallic textures and vibrant red paint of the vehicle. The background is a nondescript, concrete industrial lot to keep the focus entirely on the equipment. The aesthetic is realistic, utilitarian, and ready for deployment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBteKuySbuZR9QjNyM8XTjkYxSQ8_iXSXazZ7diLdYTm93YQ3EDkUFozoQX8LSThxch-KhZ5DAfcDQNVk3Y_UO6WNa1TovpIgonYlJdS1UEqIcV9viLkwwEVyE3A1cIFRkOC8VEmTnLdgnDjL0_3ILlCEZtcj3gfiRrLbSOFRPUhljugOva4U7xSQGD_4pSPyw7gW-vhYJuEIK_OHbXs2RSl1LWMU2y3NuxlEHaNANdIcsnvYkJGf_pluFq0isfbbtNULhOLIgzrw"/>
+<div class="absolute top-2 right-2 px-2 py-1 bg-surface-container-lowest/90 backdrop-blur-sm rounded text-[10px] font-bold text-on-surface border border-outline-variant/50">
+                             ID: ENG-ST-A-042
+                         </div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-primary animate-pulse"></div>
+<span class="font-label-lg text-label-lg text-primary">Active Deployment</span>
+</div>
+</div>
+<div class="w-full lg:w-2/3 flex flex-col gap-6">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<h1 class="font-headline-lg text-headline-lg font-bold text-on-surface">Engine Strike Team A</h1>
+<span class="px-2 py-1 bg-secondary-container/30 text-secondary border border-secondary-container rounded font-label-sm text-label-sm uppercase tracking-wider">Type 1 Engine</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+                            Heavy response unit equipped for structural fire defense and advanced suppression operations. Currently assigned to Sector Alpha-1 perimeter containment.
+                        </p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="flex flex-col gap-1 border-l-2 border-outline-variant pl-3">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Commander</span>
+<span class="font-label-md text-label-md text-on-surface">Capt. R. Vance</span>
+</div>
+<div class="flex flex-col gap-1 border-l-2 border-outline-variant pl-3">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Fuel Level</span>
+<span class="font-label-md text-label-md text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="local_gas_station">local_gas_station</span> 78%
+                            </span>
+</div>
+<div class="flex flex-col gap-1 border-l-2 border-outline-variant pl-3">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Comms Freq</span>
+<span class="font-label-md text-label-md text-on-surface">UHF-4 / Tac-2</span>
+</div>
+<div class="flex flex-col gap-1 border-l-2 border-outline-variant pl-3">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Last Maintenance</span>
+<span class="font-label-md text-label-md text-on-surface">4 Days Ago</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
