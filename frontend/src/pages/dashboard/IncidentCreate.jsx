@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createIncident } from '../../api/incidentApi';
+import IncidentLocationPicker from '../../components/map/IncidentLocationPicker';
 
 export default function IncidentCreate() {
   const navigate = useNavigate();
@@ -14,8 +15,87 @@ export default function IncidentCreate() {
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
 
+  // Location/Geotagging states
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationError, setLocationError] = useState(null);
+  const [locationSuccess, setLocationSuccess] = useState(null);
+  const [accuracy, setAccuracy] = useState(null);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Reverse Geocoding helper using OpenStreetMap Nominatim
+  const reverseGeocode = async (lat, lng) => {
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`, {
+        headers: {
+          'Accept-Language': 'en-US,en;q=0.9',
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.display_name) {
+          setAddress(data.display_name);
+        }
+      }
+    } catch (err) {
+      console.error('Reverse geocoding error:', err);
+    }
+  };
+
+  const handlePositionChange = (lat, lng) => {
+    setLatitude(lat.toFixed(6));
+    setLongitude(lng.toFixed(6));
+    setLocationSuccess('Location updated from map picker.');
+    setLocationError(null);
+    reverseGeocode(lat, lng);
+  };
+
+  const handleUseCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by your browser.');
+      return;
+    }
+
+    setLocationLoading(true);
+    setLocationError(null);
+    setLocationSuccess(null);
+    setAccuracy(null);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude: lat, longitude: lng, accuracy: acc } = position.coords;
+        setLatitude(lat.toFixed(6));
+        setLongitude(lng.toFixed(6));
+        setAccuracy(acc);
+        setLocationLoading(false);
+        setLocationSuccess('Location captured. You can adjust the marker if needed.');
+        reverseGeocode(lat, lng);
+      },
+      (err) => {
+        console.error('Geolocation error:', err);
+        setLocationLoading(false);
+        switch (err.code) {
+          case err.PERMISSION_DENIED:
+            setLocationError('Permission denied. Please allow location access or enter coordinates manually.');
+            break;
+          case err.POSITION_UNAVAILABLE:
+            setLocationError('Location information is unavailable. Please enter coordinates manually.');
+            break;
+          case err.TIMEOUT:
+            setLocationError('Location request timed out. Please try again or enter manually.');
+            break;
+          default:
+            setLocationError('An unknown error occurred while retrieving location.');
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -161,45 +241,115 @@ export default function IncidentCreate() {
             </div>
           </div>
 
-          {/* Address field */}
-          <div className="space-y-2">
-            <label className="block font-label-lg text-label-lg text-on-surface font-semibold">Location Address *</label>
-            <input
-              type="text"
-              required
-              placeholder="e.g. Street 40, Block B, Main Market Area"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2.5 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-            />
-          </div>
-
-          {/* Coordinates (Latitude & Longitude) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="block font-label-lg text-label-lg text-on-surface font-semibold">Latitude *</label>
-              <input
-                type="text"
-                required
-                placeholder="e.g. 23.2599"
-                value={latitude}
-                onChange={(e) => setLatitude(e.target.value)}
-                className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2.5 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-              />
-              <span className="text-[11px] font-label-sm text-on-surface-variant/60 block">Values between -90 and 90</span>
+          {/* Incident Location Section */}
+          <div className="space-y-4 pt-4 border-t border-outline-variant/60 text-left">
+            <div>
+              <h3 className="font-headline-sm text-headline-sm font-bold text-on-surface">Incident Location</h3>
+              <p className="font-body-sm text-body-sm text-on-surface-variant">
+                Use your current location or select the incident point on the map. Coordinates can still be edited manually.
+              </p>
             </div>
 
+            {/* Geolocation Button and Messages */}
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={handleUseCurrentLocation}
+                disabled={locationLoading}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/15 text-primary rounded-lg font-label-md text-label-md font-bold transition disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-[18px]">my_location</span>
+                <span>{locationLoading ? 'Detecting location...' : 'Use Current Location'}</span>
+              </button>
+
+              {accuracy !== null && (
+                <span className="text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-100">
+                  Accuracy: ±{Math.round(accuracy)}m
+                </span>
+              )}
+            </div>
+
+            {locationSuccess && (
+              <div className="text-xs text-emerald-600 font-medium bg-emerald-50 border border-emerald-100 p-2.5 rounded-lg flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                <span>{locationSuccess}</span>
+              </div>
+            )}
+
+            {locationError && (
+              <div className="text-xs text-error font-medium bg-error-container/40 border border-error/20 p-2.5 rounded-lg flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px]">error</span>
+                <span>{locationError}</span>
+              </div>
+            )}
+
+            {/* Map Picker */}
+            <IncidentLocationPicker
+              latitude={latitude}
+              longitude={longitude}
+              onPositionChange={handlePositionChange}
+            />
+
+            {/* Address field */}
             <div className="space-y-2">
-              <label className="block font-label-lg text-label-lg text-on-surface font-semibold">Longitude *</label>
+              <label className="block font-label-lg text-label-lg text-on-surface font-semibold">Location Address *</label>
               <input
                 type="text"
                 required
-                placeholder="e.g. 77.4126"
-                value={longitude}
-                onChange={(e) => setLongitude(e.target.value)}
+                placeholder="e.g. Street 40, Block B, Main Market Area"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
                 className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2.5 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
               />
-              <span className="text-[11px] font-label-sm text-on-surface-variant/60 block">Values between -180 and 180</span>
+            </div>
+
+            {/* Coordinates */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="block font-label-lg text-label-lg text-on-surface font-semibold">Latitude *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 23.2599"
+                  value={latitude}
+                  onChange={(e) => setLatitude(e.target.value)}
+                  onBlur={(e) => {
+                    const latNum = parseFloat(e.target.value);
+                    const lngNum = parseFloat(longitude);
+                    if (!isNaN(latNum) && latNum >= -90 && latNum <= 90 && !isNaN(lngNum) && lngNum >= -180 && lngNum <= 180) {
+                      reverseGeocode(latNum, lngNum);
+                    }
+                  }}
+                  className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2.5 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                />
+                <span className="text-[11px] font-label-sm text-on-surface-variant/60 block">Values between -90 and 90. Auto-filled from your location or map selection.</span>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block font-label-lg text-label-lg text-on-surface font-semibold">Longitude *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 77.4126"
+                  value={longitude}
+                  onChange={(e) => setLongitude(e.target.value)}
+                  onBlur={(e) => {
+                    const latNum = parseFloat(latitude);
+                    const lngNum = parseFloat(e.target.value);
+                    if (!isNaN(latNum) && latNum >= -90 && latNum <= 90 && !isNaN(lngNum) && lngNum >= -180 && lngNum <= 180) {
+                      reverseGeocode(latNum, lngNum);
+                    }
+                  }}
+                  className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2.5 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                />
+                <span className="text-[11px] font-label-sm text-on-surface-variant/60 block">Values between -180 and 180. Auto-filled from your location or map selection.</span>
+              </div>
+            </div>
+
+            {/* Privacy/Product Note */}
+            <div className="pt-2 text-[11px] text-on-surface-variant/60 italic flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px] text-primary">info</span>
+              <span>Your exact location is used only for this incident report and command response.</span>
             </div>
           </div>
 
