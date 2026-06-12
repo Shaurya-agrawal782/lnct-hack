@@ -48,6 +48,7 @@
 - **Visual Wow Pass 1 completed: controlled Motion/GSAP polish, command visuals, premium micro-interactions, and Spline-ready visual slot added without changing core workflows.**
 - **Landing page redesigned with fixed cinematic command-center video background and readable dark product sections.**
 - **Deployment auth fix completed: frontend API clients now consistently send credentials for HttpOnly cookie-based protected requests. Added session retry-with-backoff in AuthContext to survive Render free-tier cold starts, and improved 401 error messaging in Dashboard.**
+- **Deployment auth persistence fixed: HttpOnly cookie auth retained with sessionStorage Bearer fallback for Vercel + Render cross-origin deployment. Login response now returns JWT for Bearer use; axios interceptor attaches it on every request; Socket.io handshake passes auth.token; logout clears sessionStorage token.**
 
 ## Next Steps
 - Seed demo data on production MongoDB Atlas (`npm run seed:users && npm run seed:demo`).

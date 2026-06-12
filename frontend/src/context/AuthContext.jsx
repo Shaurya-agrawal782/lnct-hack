@@ -3,14 +3,24 @@ import { getCurrentUser, loginUser, registerUser, logoutUser } from '../api/auth
 
 export const AuthContext = createContext();
 
+// sessionStorage key — keep consistent across the app
+const TOKEN_KEY = 'disasterconnect_token';
+
 // Helper: pause execution for `ms` milliseconds
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// --- Token helpers ---
+const saveToken = (token) => {
+  if (token) sessionStorage.setItem(TOKEN_KEY, token);
+};
+const clearToken = () => sessionStorage.removeItem(TOKEN_KEY);
+const getToken = () => sessionStorage.getItem(TOKEN_KEY);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Function to refresh current user profile
+  // Refresh user profile (used after actions that don't change token)
   const refreshUser = async () => {
     try {
       setLoading(true);
@@ -29,10 +39,13 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * On initial mount, attempt to restore session with retries.
-   * This handles Render free-tier cold starts where the backend
-   * may take 20-30s to wake up. Without retries, the first
-   * /auth/me call fails and the user is silently logged out
-   * even though their HttpOnly cookie is still valid.
+   *
+   * This handles two separate deployment problems:
+   * 1. Render free-tier cold starts: backend takes 20-30s to wake up;
+   *    network errors should be retried rather than silently logging out.
+   * 2. Cross-origin cookie blocking: if a sessionStorage token exists,
+   *    the axios interceptor will send it as Bearer so /auth/me succeeds
+   *    even when the browser blocks the HttpOnly cookie.
    */
   const initSessionWithRetry = async (maxAttempts = 3, delayMs = 2000) => {
     setLoading(true);
@@ -44,7 +57,7 @@ export const AuthProvider = ({ children }) => {
           setLoading(false);
           return;
         }
-        // API responded but no user — not a cold-start issue, stop retrying
+        // API responded but no user — not a cold-start, stop retrying
         setUser(null);
         setLoading(false);
         return;
@@ -52,35 +65,31 @@ export const AuthProvider = ({ children }) => {
         const isNetworkError = !error.response;
         const is401 = error.response?.status === 401;
 
-        // 401 = cookie missing/invalid — don't retry, user is genuinely not logged in
         if (is401) {
+          // 401 = cookie missing/invalid AND bearer also rejected (or not present)
+          // Clear any stale token and mark as logged out
+          clearToken();
           setUser(null);
           setLoading(false);
           return;
         }
 
-        // Network error on last attempt — give up
-        if (isNetworkError && attempt === maxAttempts) {
-          setUser(null);
-          setLoading(false);
-          return;
-        }
-
-        // Network error — backend may be cold-starting, wait and retry
         if (isNetworkError && attempt < maxAttempts) {
+          // Backend may be cold-starting — wait and retry
           await sleep(delayMs);
-        } else {
-          // Any other error — stop immediately
-          setUser(null);
-          setLoading(false);
-          return;
+          continue;
         }
+
+        // Any other error or last network retry — give up
+        setUser(null);
+        setLoading(false);
+        return;
       }
     }
     setLoading(false);
   };
 
-  // Run initialization check on load — retries on network errors to handle Render cold starts
+  // Run initialization check on load
   useEffect(() => {
     initSessionWithRetry();
   }, []);
@@ -91,6 +100,10 @@ export const AuthProvider = ({ children }) => {
       const res = await loginUser({ email, password });
       if (res && res.data && res.data.user) {
         setUser(res.data.user);
+        // Store token for Bearer fallback in cross-origin deployments
+        if (res.data.token) {
+          saveToken(res.data.token);
+        }
         return res.data.user;
       }
       throw new Error(res.message || 'Login failed');
@@ -107,8 +120,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await registerUser({ name, email, password, role, phone });
       if (res && res.data && res.data.user) {
-        // Since register doesn't automatically log the user in via cookie in this design,
-        // we can either return or attempt an automatic login. Let's return the user.
         return res.data.user;
       }
       throw new Error(res.message || 'Registration failed');
@@ -124,8 +135,10 @@ export const AuthProvider = ({ children }) => {
     try {
       await logoutUser();
     } catch (error) {
-      console.error('Logout error:', error);
+      // Swallow — still clear local state regardless
     } finally {
+      // Always clear the fallback token and user state
+      clearToken();
       setUser(null);
       setLoading(false);
     }

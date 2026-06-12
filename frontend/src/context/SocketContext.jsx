@@ -25,10 +25,15 @@ export function SocketProvider({ children }) {
     const apiURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
     const socketOrigin = apiURL.replace(/\/api\/?$/, '');
 
-    // 3. Establish Socket.io connection with credentials enabled
+    // 3. Read Bearer fallback token from sessionStorage
+    const token = sessionStorage.getItem('disasterconnect_token');
+
+    // 4. Establish Socket.io connection — pass token in auth for cross-origin
+    //    deployments where cookies may not reach the WebSocket handshake.
     const socketInstance = io(socketOrigin, {
       withCredentials: true,
-      autoConnect: true
+      autoConnect: true,
+      ...(token ? { auth: { token } } : {})
     });
 
     socketInstance.on('connect', () => {

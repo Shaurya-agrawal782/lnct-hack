@@ -91,12 +91,14 @@ const loginUser = asyncHandler(async (req, res, next) => {
 
   res.cookie('token', token, cookieOptions);
 
-  // Return user without password or token
+  // Return user without password. Also return token so frontend can use
+  // it as a Bearer fallback in cross-origin deployments (e.g. Vercel + Render)
+  // where third-party HttpOnly cookies may be blocked by the browser.
   const userResponse = user.toObject();
   delete userResponse.password;
 
   res.status(200).json(
-    new ApiResponse(200, { user: userResponse }, 'Login successful')
+    new ApiResponse(200, { user: userResponse, token }, 'Login successful')
   );
 });
 
