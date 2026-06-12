@@ -60,7 +60,6 @@ In critical event crowds, crowd density transitions to crowd hazard in seconds. 
 - **Frontend:** React, Vite, Tailwind CSS, Leaflet Maps, Recharts, Lucide React icons, Axios
 - **Backend:** Node.js, Express, MongoDB (Mongoose), Socket.io, Morgan logger, Cookie Parser
 - **Authentication:** JSON Web Tokens (JWT) signed with HS256, stored in HTTP-only cookies
-- **Legacy Stack:** preserved prototype code built using PyQt5 and Python 3.11 for reference
 
 ---
 
@@ -107,13 +106,12 @@ DisasterConnect/
 │   ├── package.json
 │   └── tailwind.config.js
 │
-├── docs/                  # Project documentation folder
-│   ├── API_OVERVIEW.md    # Detailed API endpoint reference
-│   ├── DEMO_ACCOUNTS.md   # Seeded credentials mapping for evaluation
-│   ├── DEMO_FLOW.md       # Interactive demo script instructions
-│   └── MIGRATION_PLAN.md  # Port progress details from Legacy PyQt5
-│
-└── legacy-python/         # Original PyQt5 desktop prototype (preserved for reference)
+└── docs/                  # Project documentation folder
+    ├── API_OVERVIEW.md    # Detailed API endpoint reference
+    ├── DEMO_ACCOUNTS.md   # Seeded credentials mapping for evaluation
+    ├── DEMO_FLOW.md       # Interactive demo script instructions
+    ├── DEPLOYMENT_GUIDE.md # Production deployment configuration
+    └── MIGRATION_PLAN.md  # MERN migration progress log
 ```
 
 ---
@@ -228,16 +226,6 @@ To evaluate the system quickly, we provision default profiles via seed scripts. 
 
 ---
 
-## 📸 Screenshots
-
-Here are placeholders representing main dashboards of the DisasterConnect application:
-
-```
-[Insert Admin Operations Center Map Panel Screen]
-[Insert Interactive Citizen Report Portal Screen]
-[Insert Recharts Statistical Report Analytics Panel Screen]
-```
-
 ---
 
 ## 📈 Scalability Notes & Future Scope
@@ -251,9 +239,9 @@ DisasterConnect is designed for easy horizontal scaling:
 
 ---
 
-## 📝 Legacy Python Prototype Note
+## 📝 Submission Note
 
-The `legacy-python/` directory holds the original PyQt5 prototype client and legacy Python scripts. This is preserved strictly for historical context/reference for hackathon evaluation and does not impact MERN execution.
+The final submission is the MERN web platform; the earlier Python prototype was removed to keep the repository focused.
 
 ---
 
