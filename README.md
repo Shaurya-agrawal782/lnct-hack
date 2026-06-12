@@ -38,7 +38,7 @@ In critical event crowds, crowd density transitions to crowd hazard in seconds. 
 - **Authentication & RBAC:** Secure session management (JWT cookies) with unique views for **Admin**, **Responder**, and **Citizen**.
 - **Incident Management:** Full lifecycle logging, severity assessment (Low, Medium, High, Critical), and status updates.
 - **Resource Management:** Real-time logistics tracking for food, water, medical kits, and rescue personnel.
-- **Interactive Leaflet Map:** Dynamic geospatial visualization utilizing OpenStreetMap.
+- **Interactive Leaflet Map:** Dynamic geospatial visualization utilizing OpenStreetMap with a privacy-safe Crowd Risk Density Layer (Markers, Density, and Hybrid toggles) that aggregates coordinates into neighborhood risk zones.
 - **Real-Time WebSockets:** Instantly stream safety alerts and incident status updates using Socket.io.
 - **Analytics Dashboard:** Chart responder efficiency, incident severity trends, and resource dispatch percentages.
 - **Resource Assignment Workflow:** Bind supplies directly to incidents, with auto-release triggers on resolution.
