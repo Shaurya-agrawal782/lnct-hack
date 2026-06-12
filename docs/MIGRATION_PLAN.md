@@ -16,6 +16,10 @@
 - **UI Logic / Direct Code Reuse**:
   - Existing Python PyQt5 UI code will not be directly reused in the new MERN web application.
 
+## Migration Progress
+- **Step 2 completed**: original Python prototype moved to legacy-python/.
+
 ## Next Steps
 - Implement and set up the Express.js backend.
 - Implement and set up the React frontend.
+
