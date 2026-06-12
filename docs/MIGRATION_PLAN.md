@@ -28,8 +28,9 @@
 - **Step 8A completed**: resource management module added with backend APIs, seed resources, and frontend CRUD UI.
 - **Step 9A completed**: interactive map added with incident and resource markers, filters, legends, and GeoJSON coordinate conversion.
 - **Step 10A completed**: Socket.io real-time alerts added with persistent alert storage and dashboard alert UI.
+- **Step 11A completed**: analytics APIs and real dashboard metrics/charts added with role-based data scoping.
 
 ## Next Steps
-- Implement and set up the Express.js backend.
-- Implement and set up the React frontend.
+- Implement and set up the remaining modules.
+
 
