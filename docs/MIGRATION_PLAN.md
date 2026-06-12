@@ -1,0 +1,21 @@
+# Migration Plan
+
+## Overview
+- **Source Project**: Python/PyQt5 desktop prototype.
+- **Status**: The existing Python/PyQt5 desktop application code will be preserved safely as a legacy reference.
+- **Target Architecture**: A new MERN (MongoDB, Express.js, React, Node.js) web application.
+- **Structure**: The new web application will reside in `backend/` and `frontend/` directories.
+
+## Scope of Code Reuse
+- **Conceptual Logic to Reuse**:
+  - Authentication flow and logic (auth)
+  - Incidents tracking and management (incidents)
+  - Resource allocation and tracking (resources)
+  - Interactive map integration (maps)
+  - Reporting and data visualization features (reports)
+- **UI Logic / Direct Code Reuse**:
+  - Existing Python PyQt5 UI code will not be directly reused in the new MERN web application.
+
+## Next Steps
+- Implement and set up the Express.js backend.
+- Implement and set up the React frontend.
