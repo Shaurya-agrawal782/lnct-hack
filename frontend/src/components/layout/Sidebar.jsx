@@ -8,56 +8,39 @@ export default function Sidebar({ isOpen, onClose }) {
 
   if (!user) return null;
 
-  // Base navigation menu options mapped with Material Symbols
-  const allNavItems = [
-    {
-      name: 'Dashboard',
-      path: '/dashboard',
-      icon: 'dashboard',
-      roles: ['admin', 'responder', 'citizen']
-    },
-    {
-      name: 'Incidents',
-      path: '/dashboard/incidents',
-      icon: 'emergency',
-      roles: ['admin', 'responder']
-    },
-    {
-      name: 'Report Incident',
-      path: '/dashboard/incidents/new',
-      icon: 'report',
-      roles: ['citizen']
-    },
-    {
-      name: 'Resources',
-      path: '/dashboard/resources',
-      icon: 'inventory_2',
-      roles: ['admin', 'responder']
-    },
-    {
-      name: 'Interactive Map',
-      path: '/dashboard/map',
-      icon: 'map',
-      roles: ['admin', 'responder']
-    },
-    {
-      name: 'Alerts',
-      path: '/dashboard/alerts',
-      icon: 'notifications_active',
-      roles: ['admin', 'responder', 'citizen']
-    },
-    {
-      name: 'Reports',
-      path: '/dashboard/reports',
-      icon: 'bar_chart',
-      roles: ['admin']
-    }
-  ];
-
   // Filter items matching user role
-  const navItems = allNavItems.filter(item => item.roles.includes(user.role));
+  const getNavItems = () => {
+    switch (user.role) {
+      case 'admin':
+        return [
+          { name: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
+          { name: 'Incidents', path: '/dashboard/incidents', icon: 'emergency' },
+          { name: 'Resources', path: '/dashboard/resources', icon: 'inventory_2' },
+          { name: 'Interactive Map', path: '/dashboard/map', icon: 'map' },
+          { name: 'Alerts', path: '/dashboard/alerts', icon: 'notifications_active' },
+          { name: 'Reports', path: '/dashboard/reports', icon: 'bar_chart' }
+        ];
+      case 'responder':
+        return [
+          { name: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
+          { name: 'My Incidents', path: '/dashboard/incidents', icon: 'emergency' },
+          { name: 'Resources', path: '/dashboard/resources', icon: 'inventory_2' },
+          { name: 'Interactive Map', path: '/dashboard/map', icon: 'map' },
+          { name: 'Alerts', path: '/dashboard/alerts', icon: 'notifications_active' }
+        ];
+      case 'citizen':
+        return [
+          { name: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
+          { name: 'Report Incident', path: '/dashboard/incidents/new', icon: 'report' },
+          { name: 'My Reports', path: '/dashboard/incidents', icon: 'emergency' },
+          { name: 'Alerts', path: '/dashboard/alerts', icon: 'notifications_active' }
+        ];
+      default:
+        return [];
+    }
+  };
 
-  const isDarkSidebarRole = ['admin', 'responder'].includes(user.role);
+  const navItems = getNavItems();
 
   return (
     <>
@@ -83,7 +66,7 @@ export default function Sidebar({ isOpen, onClose }) {
             <div>
               <h2 className="font-headline-sm text-headline-sm font-bold text-white">Command Center</h2>
               <p className="font-label-sm text-label-sm text-slate-400 uppercase tracking-wider">
-                {user.role === 'admin' ? 'Operator' : user.role === 'responder' ? 'Field' : 'Citizen'}
+                {user.role === 'admin' ? 'Command Admin' : user.role === 'responder' ? 'Field Responder' : 'Citizen Reporter'}
               </p>
             </div>
           </div>
@@ -95,9 +78,9 @@ export default function Sidebar({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* CTA (Only show Dispatch for Admin / Responder, otherwise Show Report Incident for Citizens) */}
+        {/* CTA Section */}
         <div className="px-6 mb-6">
-          {user.role === 'citizen' ? (
+          {user.role === 'citizen' && (
             <Link
               to="/dashboard/incidents/new"
               onClick={onClose}
@@ -106,7 +89,8 @@ export default function Sidebar({ isOpen, onClose }) {
               <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>report</span>
               <span>Report Incident</span>
             </Link>
-          ) : (
+          )}
+          {user.role === 'admin' && (
             <Link
               to="/dashboard/incidents"
               onClick={onClose}

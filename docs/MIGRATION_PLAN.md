@@ -36,6 +36,7 @@
 - **UI Step 1.5 completed: generated UI stabilized, invalid Tailwind classes fixed, shell cleanup completed, and public demo credential exposure removed.**
 - **UI Step 2 completed: public landing, login, and register pages redesigned with premium DisasterConnect product experience.**
 - **UI Step 2.1 completed: public and auth pages refined to reduce AI-generated feel and improve product realism.**
+- **Role UX Step completed: Admin, Responder, and Citizen now receive distinct dashboards, navigation, page copy, and visible controls while preserving backend role protection.**
 
 ## Next Steps
 - Deploy to Render (backend) and Vercel (frontend) with MongoDB Atlas.

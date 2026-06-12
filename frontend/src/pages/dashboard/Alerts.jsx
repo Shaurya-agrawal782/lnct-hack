@@ -110,7 +110,11 @@ export default function Alerts() {
           </div>
           <div>
             <h1 className="font-headline-lg text-headline-lg font-bold text-on-background tracking-tight">Notification Center</h1>
-            <p className="font-body-md text-body-md text-on-surface-variant">View safety dispatches and coordinate task logs in real-time</p>
+            <p className="font-body-md text-body-md text-on-surface-variant">
+              {user?.role === 'admin' && 'View and monitor system-wide operational broadcast notices.'}
+              {user?.role === 'responder' && 'View personal task assignments, critical changes, and team dispatch status alerts.'}
+              {user?.role === 'citizen' && 'View tracking updates, alerts, and verification logs for your reports.'}
+            </p>
           </div>
         </div>
 

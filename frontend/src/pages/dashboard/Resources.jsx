@@ -144,8 +144,14 @@ export default function Resources() {
             <span className="material-symbols-outlined text-[24px]">inventory_2</span>
           </div>
           <div>
-            <h1 className="font-headline-lg text-headline-lg font-bold text-on-background tracking-tight">Resource Inventory</h1>
-            <p className="font-body-md text-body-md text-on-surface-variant">Manage ambulances, rescue assets, shelters, and dispatch units</p>
+            <h1 className="font-headline-lg text-headline-lg font-bold text-on-background tracking-tight">
+              {isAdmin ? 'Resource Inventory' : 'Resource Availability'}
+            </h1>
+            <p className="font-body-md text-body-md text-on-surface-variant">
+              {isAdmin 
+                ? 'Manage ambulances, rescue assets, shelters, and dispatch units' 
+                : 'View available ambulances, rescue assets, shelters, and field logistics'}
+            </p>
           </div>
         </div>
 

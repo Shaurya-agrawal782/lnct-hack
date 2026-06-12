@@ -121,23 +121,54 @@ export default function Incidents() {
     }
   };
 
+  const getHeaderTitle = () => {
+    if (user.role === 'admin') return 'Incident Command Queue';
+    if (user.role === 'responder') return 'My Assigned Incidents';
+    return 'My Reports';
+  };
+
+  const getHeaderSubtitle = () => {
+    if (user.role === 'admin') return 'Manage, verify, and track all operational events across sectors.';
+    if (user.role === 'responder') return 'Operational queue for assigned field response tasks.';
+    return 'Track status and dispatcher updates for your logged incidents.';
+  };
+
+  const getEmptyStateText = () => {
+    if (search || type || severity || status) {
+      return "No reports match your current filters. Try relaxing filters or search terms.";
+    }
+    if (user.role === 'citizen') {
+      return "No reports yet. Submit an incident with location details so the command team can review it.";
+    }
+    if (user.role === 'responder') {
+      return "No incidents currently assigned to your response queue.";
+    }
+    return "No emergency incidents have been reported yet.";
+  };
+
   return (
     <div className="space-y-6 text-left">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-headline-lg text-headline-lg text-on-surface font-semibold">Active Incidents</h1>
-          <p className="font-body-md text-body-md text-on-surface-variant mt-1">Manage and track all operational events across sectors.</p>
+          <h1 className="font-headline-lg text-headline-lg text-on-surface font-semibold">
+            {getHeaderTitle()}
+          </h1>
+          <p className="font-body-md text-body-md text-on-surface-variant mt-1">
+            {getHeaderSubtitle()}
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Link
-            to="/dashboard/incidents/new"
-            className="bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded flex items-center gap-2 hover:opacity-90 transition-opacity"
-          >
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            <span>Report Incident</span>
-          </Link>
-        </div>
+        {(user.role === 'citizen' || user.role === 'admin') && (
+          <div className="flex items-center gap-3">
+            <Link
+              to="/dashboard/incidents/new"
+              className="bg-error text-on-error font-label-md text-label-md px-4 py-2 rounded flex items-center gap-2 hover:opacity-90 transition-opacity"
+            >
+              <span className="material-symbols-outlined text-[18px]">report</span>
+              <span>{user.role === 'citizen' ? 'Report New Incident' : 'Report Incident'}</span>
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Filters & Search Toolbar */}
@@ -240,11 +271,18 @@ export default function Incidents() {
             <span className="material-symbols-outlined text-[28px]">warning</span>
           </div>
           <h2 className="text-lg font-semibold text-on-surface mb-1">No Incidents Found</h2>
-          <p className="text-sm text-on-surface-variant max-w-sm">
-            {search || type || severity || status
-              ? "No reports match your current filters. Try relaxing filters or search terms."
-              : "No emergency incidents have been reported yet."}
+          <p className="text-sm text-on-surface-variant max-w-sm mb-4">
+            {getEmptyStateText()}
           </p>
+          {user.role === 'citizen' && !search && !type && !severity && !status && (
+            <Link
+              to="/dashboard/incidents/new"
+              className="bg-error text-on-error font-label-md text-label-md px-4 py-2 rounded flex items-center gap-2 hover:opacity-90 transition-opacity"
+            >
+              <span className="material-symbols-outlined text-[18px]">report</span>
+              <span>Report New Incident</span>
+            </Link>
+          )}
         </div>
       ) : (
         <div className="space-y-4">
@@ -259,7 +297,7 @@ export default function Incidents() {
                     <th className="px-4 py-3 font-label-md text-label-md text-on-surface-variant whitespace-nowrap w-36">CATEGORY</th>
                     <th className="px-4 py-3 font-label-md text-label-md text-on-surface-variant whitespace-nowrap">LOCATION</th>
                     <th className="px-4 py-3 font-label-md text-label-md text-on-surface-variant whitespace-nowrap w-32">STATUS</th>
-                    <th className="px-4 py-3 font-label-md text-label-md text-on-surface-variant whitespace-nowrap w-40">TIME REPORTED</th>
+                    <th className="px-4 py-3 font-label-md text-label-md text-on-surface-variant whitespace-nowrap w-40 font-sans">TIME REPORTED</th>
                     <th className="px-4 py-3 font-label-md text-label-md text-on-surface-variant whitespace-nowrap text-right w-24">ACTIONS</th>
                   </tr>
                 </thead>

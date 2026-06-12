@@ -3,11 +3,9 @@ import useAuth from '../../hooks/useAuth';
 import useSocket from '../../hooks/useSocket';
 import { getDashboardOverview } from '../../api/analyticsApi';
 
-import MetricCard from '../../components/dashboard/MetricCard';
-import RecentIncidents from '../../components/dashboard/RecentIncidents';
-import RecentAlerts from '../../components/dashboard/RecentAlerts';
-import StatusBarChart from '../../components/charts/StatusBarChart';
-import TypePieChart from '../../components/charts/TypePieChart';
+import AdminDashboard from './AdminDashboard';
+import ResponderDashboard from './ResponderDashboard';
+import CitizenDashboard from './CitizenDashboard';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -67,8 +65,6 @@ export default function Dashboard() {
     );
   }
 
-  const { summary, incidentStats, resourceStats, alertStats } = data || {};
-
   // Welcome message based on role
   const getWelcomeMessage = () => {
     switch (user.role) {
@@ -83,10 +79,18 @@ export default function Dashboard() {
     }
   };
 
-  // Safe defaults for resources metrics
-  const totalRes = summary?.resources?.total || 1;
-  const availRes = summary?.resources?.available || 0;
-  const availPercent = Math.min(Math.round((availRes / totalRes) * 100), 100);
+  const getRoleDisplayName = () => {
+    switch (user.role) {
+      case 'admin':
+        return 'Command Admin';
+      case 'responder':
+        return 'Field Responder';
+      case 'citizen':
+        return 'Citizen Reporter';
+      default:
+        return user.role;
+    }
+  };
 
   return (
     <div className="space-y-6 text-left">
@@ -99,7 +103,7 @@ export default function Dashboard() {
           <p className="text-on-surface-variant text-sm mt-1">
             {getWelcomeMessage()}{' '}
             <span className="font-bold text-primary uppercase tracking-wide">
-              [{user.role}]
+              [{getRoleDisplayName()}]
             </span>
           </p>
         </div>
@@ -111,149 +115,16 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Grid of status cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        <MetricCard
-          label="Total Incidents"
-          value={summary?.incidents?.total}
-          helperText={user.role === 'admin' ? 'Global incidents log' : 'Personal log'}
-          icon="layers"
-          accentStyle="text-primary"
-          iconBgStyle="bg-primary-container/15 text-primary"
-        />
-
-        <MetricCard
-          label="Active Incidents"
-          value={summary?.incidents?.active}
-          helperText="Requiring response"
-          icon="warning"
-          accentStyle="text-amber-600"
-          iconBgStyle="bg-amber-100 text-amber-800"
-        />
-
-        <MetricCard
-          label="Critical Incidents"
-          value={summary?.incidents?.critical}
-          helperText="High priority alerts"
-          icon="campaign"
-          accentStyle="text-error"
-          iconBgStyle="bg-error-container/20 text-error animate-pulse"
-        />
-
-        <MetricCard
-          label="Available Resources"
-          value={user.role !== 'citizen' ? summary?.resources?.available : 'N/A'}
-          helperText={user.role !== 'citizen' ? 'Ready for dispatch' : 'Restricted access'}
-          icon="home_repair_service"
-          accentStyle={user.role !== 'citizen' ? 'text-emerald-600' : 'text-on-surface-variant/40'}
-          iconBgStyle={user.role !== 'citizen' ? 'bg-emerald-100 text-emerald-800' : 'bg-surface-container-high text-on-surface-variant/40'}
-        />
-
-        <MetricCard
-          label="Unread Alerts"
-          value={summary?.alerts?.unread}
-          helperText="Require attention"
-          icon="notifications_active"
-          accentStyle="text-error font-bold"
-          iconBgStyle="bg-error-container/20 text-error"
-        />
-
-        <MetricCard
-          label="Resolved Incidents"
-          value={summary?.incidents?.resolved}
-          helperText="Closed operations"
-          icon="check_circle"
-          accentStyle="text-emerald-600"
-          iconBgStyle="bg-emerald-100 text-emerald-800"
-        />
-      </div>
-
-      {/* Analytical Charts Bento Section */}
-      <div className="bg-surface-container-lowest border border-outline-variant rounded p-6 shadow-sm">
-        <h2 className="text-xl font-semibold text-on-surface mb-6 flex items-center space-x-2 border-b border-outline-variant pb-3">
-          <span className="material-symbols-outlined text-primary">bar_chart</span>
-          <span>Analytical Operations Reports</span>
-        </h2>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-surface-container-low border border-outline-variant rounded p-4">
-            <StatusBarChart data={incidentStats?.byStatus} title={user.role === 'admin' ? 'Global Incidents Status log' : 'Personal Incident status'} />
-          </div>
-          <div className="bg-surface-container-low border border-outline-variant rounded p-4">
-            <TypePieChart data={incidentStats?.byType} title={user.role === 'admin' ? 'Global Incidents Type mapping' : 'Personal Incident type mapping'} />
-          </div>
-          {user.role !== 'citizen' && (
-            <div className="bg-surface-container-low border border-outline-variant rounded p-4">
-              <StatusBarChart data={resourceStats?.byStatus} title="Global Resources Deployment Status" />
-            </div>
-          )}
-          <div className="bg-surface-container-low border border-outline-variant rounded p-4">
-            <TypePieChart data={alertStats?.byPriority} title="Alert Broadcast Priority Scope" />
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Section: Resource Status Levels & Recent Activity Table */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Resource Levels Mini Widget */}
-        <div className="lg:col-span-1 bg-surface-container-lowest border border-outline-variant rounded shadow-sm p-4 text-left flex flex-col justify-between">
-          <div>
-            <h3 className="font-headline-sm text-headline-sm text-on-surface mb-4 font-semibold flex items-center gap-2 border-b pb-2 border-outline-variant">
-              <span className="material-symbols-outlined text-primary">inventory_2</span>
-              Resource Stocks
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between font-label-sm text-label-sm mb-1">
-                  <span className="text-on-surface-variant">Global Availability</span>
-                  <span className="text-emerald-600 font-bold">{availPercent}%</span>
-                </div>
-                <div className="w-full bg-surface-container h-2 rounded-full overflow-hidden">
-                  <div className="bg-emerald-500 h-full" style={{ width: `${availPercent}%` }}></div>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between font-label-sm text-label-sm mb-1">
-                  <span className="text-on-surface-variant">Staging Capacity</span>
-                  <span className="text-amber-600 font-bold">60%</span>
-                </div>
-                <div className="w-full bg-surface-container h-2 rounded-full overflow-hidden">
-                  <div className="bg-amber-500 h-full" style={{ width: '60%' }}></div>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between font-label-sm text-label-sm mb-1">
-                  <span className="text-on-surface-variant">Rations Dispatch Rate</span>
-                  <span className="text-error font-bold">25%</span>
-                </div>
-                <div className="w-full bg-surface-container h-2 rounded-full overflow-hidden">
-                  <div className="bg-error h-full" style={{ width: '25%' }}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <button 
-            onClick={fetchDashboardData}
-            className="mt-6 w-full px-3 py-2 border border-outline-variant rounded text-primary font-label-md text-label-md hover:bg-surface-container-low transition-colors font-semibold flex items-center justify-center gap-1.5"
-          >
-            <span className="material-symbols-outlined text-sm">sync</span>
-            Refresh Database
-          </button>
-        </div>
-
-        {/* Recent Incidents Activity List */}
-        <div className="lg:col-span-3">
-          <RecentIncidents incidents={incidentStats?.recentIncidents} />
-        </div>
-      </div>
-
-      {/* Alerts feed */}
-      <div className="w-full">
-        <RecentAlerts alerts={alertStats?.recentAlerts} user={user} />
-      </div>
+      {/* Render sub-dashboard by role */}
+      {user.role === 'admin' && (
+        <AdminDashboard data={data} user={user} fetchDashboardData={fetchDashboardData} />
+      )}
+      {user.role === 'responder' && (
+        <ResponderDashboard data={data} user={user} fetchDashboardData={fetchDashboardData} />
+      )}
+      {user.role === 'citizen' && (
+        <CitizenDashboard data={data} user={user} fetchDashboardData={fetchDashboardData} />
+      )}
     </div>
   );
 }

@@ -5,7 +5,7 @@ import useSocket from '../../hooks/useSocket';
 import Badge from '../ui/Badge';
 
 export default function Topbar({ onMenuClick }) {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { connected, liveAlerts } = useSocket();
 
   if (!user) return null;
@@ -58,17 +58,19 @@ export default function Topbar({ onMenuClick }) {
             </span>
           </div>
           <Badge variant={user.role === 'admin' ? 'error' : user.role === 'responder' ? 'primary' : 'success'} className="tracking-wider uppercase text-[10px]">
-            {user.role}
+            {user.role === 'admin' ? 'Command Admin' : user.role === 'responder' ? 'Field Responder' : 'Citizen Reporter'}
           </Badge>
         </div>
 
-        <Link
-          to="/dashboard/incidents/new"
-          className="hidden sm:flex items-center space-x-1 bg-error hover:opacity-90 text-on-error py-1.5 px-4 rounded-lg font-label-md text-label-md transition-all ml-3 border border-transparent shrink-0"
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>report</span>
-          <span>Report Incident</span>
-        </Link>
+        {user.role === 'citizen' && (
+          <Link
+            to="/dashboard/incidents/new"
+            className="hidden sm:flex items-center space-x-1 bg-error hover:opacity-90 text-on-error py-1.5 px-4 rounded-lg font-label-md text-label-md transition-all ml-3 border border-transparent shrink-0"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>report</span>
+            <span>Report Incident</span>
+          </Link>
+        )}
       </div>
     </header>
   );
