@@ -21,6 +21,7 @@
 - **Step 3 completed**: MERN foundation created with backend/ and frontend/ folders.
 - **Step 4 completed**: backend database connection and core server architecture added.
 - **Step 5 completed**: backend JWT authentication and role-based access added for the MERN app. Legacy SHA-256 users are not reused.
+- **Step 6 completed**: frontend auth and dashboard shell setup finished.
 
 ## Next Steps
 - Implement and set up the Express.js backend.

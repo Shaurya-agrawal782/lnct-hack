@@ -18,8 +18,8 @@ export default function Landing() {
             <Link to="/login" className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition">
               Sign In
             </Link>
-            <Link to="/login" className="px-4 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg shadow-lg shadow-indigo-650/30 transition">
-              Get Started
+            <Link to="/register" className="px-4 py-2 text-sm font-medium bg-indigo-650 hover:bg-indigo-500 text-white rounded-lg shadow-lg shadow-indigo-650/30 transition">
+              Register
             </Link>
           </nav>
         </div>
@@ -27,9 +27,12 @@ export default function Landing() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col justify-center items-center py-20 px-4 max-w-5xl mx-auto text-center">
-        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent mb-6">
-          Real-time Disaster Response & Resource Coordination
+        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent mb-2">
+          Event Crowd Heatmap & Safety Alert System
         </h1>
+        <h2 className="text-2xl md:text-3xl font-bold text-indigo-400 tracking-tight mb-8">
+          powered by DisasterConnect
+        </h2>
         <p className="text-lg md:text-xl text-slate-400 max-w-2xl mb-10">
           Connect critical emergency resources, track active incidents on interactive maps, and coordinate response teams instantly.
         </p>
