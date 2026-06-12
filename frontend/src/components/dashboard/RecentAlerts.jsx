@@ -27,7 +27,7 @@ export default function RecentAlerts({ alerts = [], user }) {
         return 'text-error font-bold';
       case 'high':
       case 'medium':
-        return 'text-amber-805 font-bold';
+        return 'text-amber-800 font-bold';
       default:
         return 'text-primary font-bold';
     }

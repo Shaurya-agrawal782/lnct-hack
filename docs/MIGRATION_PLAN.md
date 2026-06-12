@@ -40,6 +40,7 @@
 - **Role UX audit completed: route protection and role-specific controls verified/fixed across dashboards, incidents, and resources.**
 - **QA Hardening Pass 1 completed: responder incident scoping, incident creation role restrictions, alert ObjectId checks, Tailwind cleanup, radius config, dashboard fake metrics, and reports visibility were fixed.**
 - **QA Hardening Pass 2 completed: README, API docs, demo accounts, user guide, deployment notes, and product claims were cleaned for hackathon consistency.**
+- **UI Human Polish Pass 1 completed: Admin, Responder, and Citizen dashboards were refined to reduce AI-generated feel and improve role-specific product clarity.**
 
 ## Next Steps
 - Deploy to Render (backend) and Vercel (frontend) with MongoDB Atlas.

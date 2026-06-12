@@ -21,17 +21,32 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
 
   return (
     <div className="space-y-6 text-left">
-      {/* Overview stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        <MetricCard
-          label="Total Incidents"
-          value={summary?.incidents?.total}
-          helperText="Global database log"
-          icon="layers"
-          accentStyle="text-primary"
-          iconBgStyle="bg-primary-container/15 text-primary"
-        />
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-outline-variant">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Command Overview</h1>
+          <p className="text-sm text-slate-500 mt-1">Live incident, resource, and alert activity across the response network.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/dashboard/map"
+            className="px-4 py-2 border border-slate-200 text-slate-700 hover:bg-slate-100 transition rounded-lg text-xs font-bold inline-flex items-center gap-1.5 shadow-sm"
+          >
+            <span className="material-symbols-outlined text-sm">map</span>
+            <span>Open Map</span>
+          </Link>
+          <Link
+            to="/dashboard/incidents"
+            className="px-4 py-2 bg-primary text-on-primary hover:opacity-90 transition rounded-lg text-xs font-bold inline-flex items-center gap-1.5 shadow-sm"
+          >
+            <span className="material-symbols-outlined text-sm">emergency</span>
+            <span>View Incidents</span>
+          </Link>
+        </div>
+      </div>
 
+      {/* Summary Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
           label="Active Incidents"
           value={summary?.incidents?.active}
@@ -67,62 +82,74 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
           accentStyle="text-error font-bold"
           iconBgStyle="bg-error-container/20 text-error"
         />
-
-        <MetricCard
-          label="Resolved Incidents"
-          value={summary?.incidents?.resolved}
-          helperText="Completed files"
-          icon="check_circle"
-          accentStyle="text-emerald-600"
-          iconBgStyle="bg-emerald-100 text-emerald-800"
-        />
       </div>
 
-      {/* Quick Actions Panel */}
-      <div className="bg-surface border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500">
-          Command Quick Actions
-        </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <Link
-            to="/dashboard/incidents"
-            className="flex flex-col items-center justify-center p-4 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 hover:border-slate-300 transition text-center space-y-2 group"
-          >
-            <span className="material-symbols-outlined text-blue-600 text-[24px]">emergency</span>
-            <span className="text-xs font-bold text-slate-800">View Incidents</span>
-          </Link>
-          
-          <Link
-            to="/dashboard/resources/new"
-            className="flex flex-col items-center justify-center p-4 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 hover:border-slate-300 transition text-center space-y-2 group"
-          >
-            <span className="material-symbols-outlined text-blue-600 text-[24px]">add_circle</span>
-            <span className="text-xs font-bold text-slate-800">Add Resource</span>
-          </Link>
+      {/* Main Content Layout (2 Columns) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column: Recent Incident Activity */}
+        <div className="lg:col-span-8 flex flex-col">
+          <RecentIncidents incidents={incidentStats?.recentIncidents} />
+        </div>
 
-          <Link
-            to="/dashboard/map"
-            className="flex flex-col items-center justify-center p-4 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 hover:border-slate-300 transition text-center space-y-2 group"
-          >
-            <span className="material-symbols-outlined text-blue-600 text-[24px]">map</span>
-            <span className="text-xs font-bold text-slate-800">Open Map</span>
-          </Link>
+        {/* Right Column: Alerts & Resource Snapshot */}
+        <div className="lg:col-span-4 flex flex-col space-y-6">
+          <RecentAlerts alerts={alertStats?.recentAlerts} user={user} />
 
-          <Link
-            to="/dashboard/alerts"
-            className="flex flex-col items-center justify-center p-4 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 hover:border-slate-300 transition text-center space-y-2 group"
-          >
-            <span className="material-symbols-outlined text-blue-600 text-[24px]">notifications_active</span>
-            <span className="text-xs font-bold text-slate-800">View Alerts</span>
-          </Link>
+          <div className="bg-surface border border-outline-variant rounded-xl p-5 shadow-sm flex flex-col justify-between text-left">
+            <div className="space-y-4">
+              <h3 className="font-semibold text-slate-900 flex items-center gap-2 border-b border-outline-variant pb-2 text-sm">
+                <span className="material-symbols-outlined text-primary text-lg">inventory_2</span>
+                Resource Stocks
+              </h3>
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-slate-500">Global Availability</span>
+                    <span className="text-emerald-600 font-bold">{availPercent}%</span>
+                  </div>
+                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                    <div className="bg-emerald-500 h-full" style={{ width: `${availPercent}%` }}></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-slate-500">Active Deployments</span>
+                    <span className="text-amber-600 font-bold">{busyPercent}%</span>
+                  </div>
+                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                    <div className="bg-amber-500 h-full" style={{ width: `${busyPercent}%` }}></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-slate-500">In Maintenance</span>
+                    <span className="text-error font-bold">{maintPercent}%</span>
+                  </div>
+                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                    <div className="bg-error h-full" style={{ width: `${maintPercent}%` }}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <button 
+              onClick={fetchDashboardData}
+              className="mt-6 w-full py-2 border border-slate-200 rounded text-slate-700 hover:bg-slate-100 transition text-xs font-bold flex items-center justify-center gap-1.5"
+            >
+              <span className="material-symbols-outlined text-sm">sync</span>
+              Refresh Database
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Analytics Charts */}
+      {/* Operational Trends (Charts lower on page) */}
       <div className="bg-surface border border-outline-variant rounded-xl p-5 shadow-sm space-y-6">
-        <h2 className="text-lg font-bold text-slate-900 border-b border-outline-variant pb-3 flex items-center gap-2">
-          <span className="material-symbols-outlined text-blue-600">bar_chart</span>
-          Global Operational Analytics
+        <h2 className="text-base font-bold text-slate-900 border-b border-outline-variant pb-3 flex items-center gap-2">
+          <span className="material-symbols-outlined text-primary text-lg">timeline</span>
+          Operational Trends
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -139,68 +166,6 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
             <TypePieChart data={alertStats?.byPriority} title="Alert Broadcast Priority Scope" />
           </div>
         </div>
-      </div>
-
-      {/* Stocks & Recent Incidents */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Stocks widget */}
-        <div className="lg:col-span-1 bg-surface border border-outline-variant rounded-xl p-5 shadow-sm flex flex-col justify-between">
-          <div className="space-y-4">
-            <h3 className="font-semibold text-slate-900 flex items-center gap-2 border-b border-outline-variant pb-2 text-sm">
-              <span className="material-symbols-outlined text-blue-600 text-lg">inventory_2</span>
-              Resource Stocks
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-slate-500">Global Availability</span>
-                  <span className="text-emerald-600 font-bold">{availPercent}%</span>
-                </div>
-                <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                  <div className="bg-emerald-500 h-full" style={{ width: `${availPercent}%` }}></div>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-slate-500">Active Deployments</span>
-                  <span className="text-amber-600 font-bold">{busyPercent}%</span>
-                </div>
-                <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                  <div className="bg-amber-500 h-full" style={{ width: `${busyPercent}%` }}></div>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-slate-500">In Maintenance</span>
-                  <span className="text-error font-bold">{maintPercent}%</span>
-                </div>
-                <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                  <div className="bg-error h-full" style={{ width: `${maintPercent}%` }}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <button 
-            onClick={fetchDashboardData}
-            className="mt-6 w-full py-2 border border-slate-200 rounded text-slate-700 hover:bg-slate-100 transition text-xs font-bold flex items-center justify-center gap-1.5"
-          >
-            <span className="material-symbols-outlined text-sm">sync</span>
-            Refresh Database
-          </button>
-        </div>
-
-        {/* Recent Incidents */}
-        <div className="lg:col-span-3">
-          <RecentIncidents incidents={incidentStats?.recentIncidents} />
-        </div>
-      </div>
-
-      {/* Alerts feed */}
-      <div className="w-full">
-        <RecentAlerts alerts={alertStats?.recentAlerts} user={user} />
       </div>
     </div>
   );

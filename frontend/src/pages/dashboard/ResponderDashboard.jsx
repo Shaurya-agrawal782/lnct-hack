@@ -1,18 +1,45 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import MetricCard from '../../components/dashboard/MetricCard';
-import RecentIncidents from '../../components/dashboard/RecentIncidents';
 import RecentAlerts from '../../components/dashboard/RecentAlerts';
-import StatusBarChart from '../../components/charts/StatusBarChart';
-import TypePieChart from '../../components/charts/TypePieChart';
+import Badge from '../../components/ui/Badge';
 
 export default function ResponderDashboard({ data, user, fetchDashboardData }) {
   const { summary, incidentStats, alertStats } = data || {};
+  const incidents = incidentStats?.recentIncidents || [];
+
+  const formatTime = (dateStr) => {
+    if (!dateStr) return '—';
+    return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' ' + new Date(dateStr).toLocaleDateString([], { month: 'short', day: 'numeric' });
+  };
 
   return (
     <div className="space-y-6 text-left">
-      
-      {/* Metric Cards - Focused on Responder active items */}
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-outline-variant">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">My Response Queue</h1>
+          <p className="text-sm text-slate-500 mt-1">Assigned incidents, status updates, and operational alerts for field response.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/dashboard/map"
+            className="px-4 py-2 border border-slate-200 text-slate-700 hover:bg-slate-100 transition rounded-lg text-xs font-bold inline-flex items-center gap-1.5 shadow-sm"
+          >
+            <span className="material-symbols-outlined text-sm">map</span>
+            <span>Open Map</span>
+          </Link>
+          <button
+            onClick={fetchDashboardData}
+            className="px-4 py-2 bg-primary text-on-primary hover:opacity-90 transition rounded-lg text-xs font-bold inline-flex items-center gap-1.5 shadow-sm"
+          >
+            <span className="material-symbols-outlined text-sm">sync</span>
+            <span>Refresh Tasks</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Focus Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <MetricCard
           label="Assigned Incidents"
@@ -24,9 +51,9 @@ export default function ResponderDashboard({ data, user, fetchDashboardData }) {
         />
 
         <MetricCard
-          label="Active Incidents"
+          label="In Progress"
           value={summary?.incidents?.active}
-          helperText="Assigned in-progress items"
+          helperText="Assigned active tasks"
           icon="warning"
           accentStyle="text-amber-600"
           iconBgStyle="bg-amber-100 text-amber-800"
@@ -42,84 +69,95 @@ export default function ResponderDashboard({ data, user, fetchDashboardData }) {
         />
       </div>
 
-      {/* Quick Actions Panel */}
-      <div className="bg-surface border border-outline-variant rounded-xl p-5 shadow-sm space-y-4">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500">
-          Field Quick Actions
-        </h3>
-        <div className="grid grid-cols-3 gap-4">
-          <Link
-            to="/dashboard/incidents"
-            className="flex flex-col items-center justify-center p-4 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 hover:border-slate-300 transition text-center space-y-2 group"
-          >
-            <span className="material-symbols-outlined text-blue-600 text-[24px]">assignment</span>
-            <span className="text-xs font-bold text-slate-800">View My Incidents</span>
-          </Link>
-
-          <Link
-            to="/dashboard/map"
-            className="flex flex-col items-center justify-center p-4 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 hover:border-slate-300 transition text-center space-y-2 group"
-          >
-            <span className="material-symbols-outlined text-blue-600 text-[24px]">map</span>
-            <span className="text-xs font-bold text-slate-800">Open Map</span>
-          </Link>
-
-          <Link
-            to="/dashboard/alerts"
-            className="flex flex-col items-center justify-center p-4 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 hover:border-slate-300 transition text-center space-y-2 group"
-          >
-            <span className="material-symbols-outlined text-blue-600 text-[24px]">notifications_active</span>
-            <span className="text-xs font-bold text-slate-800">View Alerts</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* My Response Queue Charts */}
-      <div className="bg-surface border border-outline-variant rounded-xl p-5 shadow-sm space-y-6">
-        <h2 className="text-lg font-bold text-slate-900 border-b border-outline-variant pb-3 flex items-center gap-2">
-          <span className="material-symbols-outlined text-blue-600">bar_chart</span>
-          My Response Queue Analytics
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 col-span-1 md:col-span-2">
-            <StatusBarChart data={incidentStats?.byStatus} title="Assigned Incidents Status Log" />
-          </div>
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-            <TypePieChart data={incidentStats?.byType} title="Assigned Incident Types" />
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Assigned Incidents */}
+      {/* Main Grid (2 Columns) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8">
-          <RecentIncidents incidents={incidentStats?.recentIncidents} />
+        {/* Left Column: Assigned Incidents Queue */}
+        <div className="lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden flex flex-col">
+          <div className="px-5 py-4 border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary">assignment</span>
+              Active Task Queue
+            </h3>
+          </div>
+
+          <div className="overflow-x-auto flex-grow">
+            {incidents.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 px-6 text-center space-y-2">
+                <span className="material-symbols-outlined text-slate-300 text-5xl">assignment_late</span>
+                <p className="text-sm font-medium text-slate-800">No incidents assigned yet</p>
+                <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
+                  New assignments will appear here when command dispatches a case.
+                </p>
+              </div>
+            ) : (
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50 font-label-sm text-label-sm text-slate-500 border-b border-slate-200">
+                    <th className="px-5 py-3 font-bold">Incident</th>
+                    <th className="px-5 py-3 font-bold">Severity</th>
+                    <th className="px-5 py-3 font-bold">Status</th>
+                    <th className="px-5 py-3 font-bold">Location</th>
+                    <th className="px-5 py-3 font-bold">Updated</th>
+                    <th className="px-5 py-3 font-bold text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="font-body-sm text-body-sm text-slate-700 divide-y divide-slate-100">
+                  {incidents.map((incident) => (
+                    <tr key={incident._id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-5 py-3 font-semibold text-slate-900 max-w-[180px] truncate">
+                        {incident.title}
+                        <span className="block text-[10px] text-slate-400 font-mono font-normal uppercase mt-0.5">{incident.type}</span>
+                      </td>
+                      <td className="px-5 py-3">
+                        <Badge variant={incident.severity === 'critical' ? 'error' : incident.severity === 'high' ? 'warning' : incident.severity === 'medium' ? 'warning' : 'success'}>
+                          {incident.severity}
+                        </Badge>
+                      </td>
+                      <td className="px-5 py-3">
+                        <Badge variant={incident.status === 'resolved' ? 'success' : incident.status === 'in-progress' ? 'warning' : incident.status === 'assigned' ? 'primary' : 'default'}>
+                          {incident.status === 'in-progress' ? 'Active' : incident.status}
+                        </Badge>
+                      </td>
+                      <td className="px-5 py-3 text-xs text-slate-500 max-w-[150px] truncate" title={incident.location?.address}>
+                        {incident.location?.address}
+                      </td>
+                      <td className="px-5 py-3 text-xs text-slate-500 font-mono">
+                        {formatTime(incident.updatedAt || incident.createdAt)}
+                      </td>
+                      <td className="px-5 py-3 text-right">
+                        <Link
+                          to={`/dashboard/incidents/${incident._id}`}
+                          className="px-3 py-1 bg-slate-100 text-slate-700 hover:bg-slate-200 transition text-xs font-semibold rounded-lg inline-flex items-center gap-0.5"
+                        >
+                          <span>Manage</span>
+                          <span className="material-symbols-outlined text-xs">chevron_right</span>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
-        <div className="lg:col-span-4 flex flex-col justify-between p-5 bg-surface border border-outline-variant rounded-xl shadow-sm">
-          <div className="space-y-3">
-            <h3 className="font-bold text-sm text-slate-900 border-b pb-2">Operational Guidelines</h3>
-            <ul className="text-xs text-slate-500 space-y-2 list-disc pl-4">
+
+        {/* Right Column: Live Alerts & Guidelines */}
+        <div className="lg:col-span-4 flex flex-col space-y-6">
+          <RecentAlerts alerts={alertStats?.recentAlerts} user={user} />
+
+          <div className="p-5 bg-surface border border-outline-variant rounded-xl shadow-sm text-left">
+            <h3 className="font-bold text-sm text-slate-900 border-b pb-2 flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary text-lg">fact_check</span>
+              Operational Guidelines
+            </h3>
+            <ul className="text-xs text-slate-500 mt-3 space-y-2 list-disc pl-4 leading-relaxed">
               <li>Log status changes promptly on task arrival and departure.</li>
               <li>Coordinate with dispatchers for staging resource requests.</li>
               <li>View resource stock lists to locate nearby water/rations.</li>
             </ul>
           </div>
-          <button 
-            onClick={fetchDashboardData}
-            className="mt-6 w-full py-2 border border-slate-200 rounded text-slate-700 hover:bg-slate-100 transition text-xs font-bold flex items-center justify-center gap-1.5"
-          >
-            <span className="material-symbols-outlined text-sm">sync</span>
-            Refresh Database
-          </button>
         </div>
       </div>
-
-      {/* Alerts */}
-      <div className="w-full">
-        <RecentAlerts alerts={alertStats?.recentAlerts} user={user} />
-      </div>
-
     </div>
   );
 }
