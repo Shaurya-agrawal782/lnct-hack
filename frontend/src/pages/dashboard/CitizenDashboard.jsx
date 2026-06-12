@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import MetricCard from '../../components/dashboard/MetricCard';
 import RecentAlerts from '../../components/dashboard/RecentAlerts';
 import Badge from '../../components/ui/Badge';
+import { motion } from 'motion/react';
+import { fadeUp, staggerContainer, listItem, panelReveal } from '../../utils/motion';
 
 export default function CitizenDashboard({ data, user, fetchDashboardData }) {
   const { summary, incidentStats, alertStats } = data || {};
@@ -16,7 +18,12 @@ export default function CitizenDashboard({ data, user, fetchDashboardData }) {
   return (
     <div className="space-y-6 text-left">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-outline-variant">
+      <motion.div 
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-outline-variant"
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+      >
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Citizen Reporting</h1>
           <p className="text-sm text-slate-500 mt-1">Submit incident reports and track updates from the response team.</p>
@@ -37,42 +44,58 @@ export default function CitizenDashboard({ data, user, fetchDashboardData }) {
             <span>Refresh Feed</span>
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <MetricCard
-          label="My Reports"
-          value={summary?.incidents?.total}
-          helperText="My total submitted cases"
-          icon="history"
-          accentStyle="text-primary"
-          iconBgStyle="bg-primary-container/15 text-primary"
-        />
+      <motion.div 
+        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div variants={listItem}>
+          <MetricCard
+            label="My Reports"
+            value={summary?.incidents?.total}
+            helperText="My total submitted cases"
+            icon="history"
+            accentStyle="text-primary"
+            iconBgStyle="bg-primary-container/15 text-primary"
+          />
+        </motion.div>
 
-        <MetricCard
-          label="Open Reports"
-          value={summary?.incidents?.active}
-          helperText="Awaiting resolution"
-          icon="pending_actions"
-          accentStyle="text-amber-600"
-          iconBgStyle="bg-amber-100 text-amber-800"
-        />
+        <motion.div variants={listItem}>
+          <MetricCard
+            label="Open Reports"
+            value={summary?.incidents?.active}
+            helperText="Awaiting resolution"
+            icon="pending_actions"
+            accentStyle="text-amber-600"
+            iconBgStyle="bg-amber-100 text-amber-800"
+          />
+        </motion.div>
 
-        <MetricCard
-          label="Resolved Reports"
-          value={summary?.incidents?.resolved}
-          helperText="Cases successfully closed"
-          icon="check_circle"
-          accentStyle="text-emerald-600"
-          iconBgStyle="bg-emerald-100 text-emerald-800"
-        />
-      </div>
+        <motion.div variants={listItem}>
+          <MetricCard
+            label="Resolved Reports"
+            value={summary?.incidents?.resolved}
+            helperText="Cases successfully closed"
+            icon="check_circle"
+            accentStyle="text-emerald-600"
+            iconBgStyle="bg-emerald-100 text-emerald-800"
+          />
+        </motion.div>
+      </motion.div>
 
       {/* Main Grid (2 Columns) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: My Incident Reports Table */}
-        <div className="lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden flex flex-col">
+        <motion.div 
+          className="lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden flex flex-col"
+          variants={panelReveal}
+          initial="hidden"
+          animate="visible"
+        >
           <div className="px-5 py-4 border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
             <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
               <span className="material-symbols-outlined text-primary">history</span>
@@ -135,10 +158,15 @@ export default function CitizenDashboard({ data, user, fetchDashboardData }) {
               </table>
             )}
           </div>
-        </div>
+        </motion.div>
 
         {/* Right Column: Live Safety Alerts & Info Card */}
-        <div className="lg:col-span-4 flex flex-col space-y-6">
+        <motion.div 
+          className="lg:col-span-4 flex flex-col space-y-6"
+          variants={panelReveal}
+          initial="hidden"
+          animate="visible"
+        >
           <RecentAlerts alerts={alertStats?.recentAlerts} user={user} />
 
           <div className="p-5 bg-blue-50 border border-blue-200 rounded-xl text-left space-y-3">
@@ -150,7 +178,7 @@ export default function CitizenDashboard({ data, user, fetchDashboardData }) {
               Your report is reviewed by the command team before responders and resources are assigned. Once validated, dispatch details and notifications will display here immediately.
             </p>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

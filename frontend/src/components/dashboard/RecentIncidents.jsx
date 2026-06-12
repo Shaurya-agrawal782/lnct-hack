@@ -1,38 +1,39 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Badge from '../ui/Badge';
 
 export default function RecentIncidents({ incidents = [] }) {
   const getSeverityBadge = (sev) => {
     switch (sev) {
       case 'low':
-        return <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] uppercase font-bold rounded">Low</span>;
+        return <Badge variant="success">Low</Badge>;
       case 'medium':
-        return <span className="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] uppercase font-bold rounded">Medium</span>;
+        return <Badge variant="warning">Medium</Badge>;
       case 'high':
-        return <span className="px-2 py-0.5 bg-orange-100 text-orange-800 text-[10px] uppercase font-bold rounded">High</span>;
+        return <Badge variant="warning">High</Badge>;
       case 'critical':
-        return <span className="px-2 py-0.5 bg-error-container text-on-error-container text-[10px] uppercase font-bold rounded animate-pulse">Critical</span>;
+        return <Badge variant="error" pulse={true}>Critical</Badge>;
       default:
-        return <span className="px-2 py-0.5 bg-surface-container-high text-on-surface-variant text-[10px] uppercase font-bold rounded">{sev}</span>;
+        return <Badge variant="default">{sev}</Badge>;
     }
   };
 
   const getStatusBadge = (stat) => {
     switch (stat) {
       case 'reported':
-        return <span className="px-2 py-0.5 bg-surface-container-high text-on-surface-variant text-[10px] uppercase font-bold rounded">Reported</span>;
+        return <Badge variant="default">Reported</Badge>;
       case 'verified':
-        return <span className="px-2 py-0.5 bg-primary-container/20 text-primary text-[10px] uppercase font-bold rounded">Verified</span>;
+        return <Badge variant="primary">Verified</Badge>;
       case 'assigned':
-        return <span className="px-2 py-0.5 bg-secondary-container text-on-secondary-container text-[10px] uppercase font-bold rounded">Assigned</span>;
+        return <Badge variant="secondary">Assigned</Badge>;
       case 'in-progress':
-        return <span className="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] uppercase font-bold rounded">Active</span>;
+        return <Badge variant="warning" pulse={true}>Active</Badge>;
       case 'resolved':
-        return <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] uppercase font-bold rounded">Resolved</span>;
+        return <Badge variant="success">Resolved</Badge>;
       case 'closed':
-        return <span className="px-2 py-0.5 bg-surface-dim text-on-surface-variant text-[10px] uppercase font-bold rounded">Closed</span>;
+        return <Badge variant="default">Closed</Badge>;
       default:
-        return <span className="px-2 py-0.5 bg-surface-container-high text-on-surface text-[10px] uppercase font-bold rounded">{stat}</span>;
+        return <Badge variant="default">{stat}</Badge>;
     }
   };
 

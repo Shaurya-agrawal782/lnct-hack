@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import MetricCard from '../../components/dashboard/MetricCard';
 import RecentAlerts from '../../components/dashboard/RecentAlerts';
 import Badge from '../../components/ui/Badge';
+import { motion } from 'motion/react';
+import { fadeUp, staggerContainer, listItem, panelReveal } from '../../utils/motion';
 
 export default function ResponderDashboard({ data, user, fetchDashboardData }) {
   const { summary, incidentStats, alertStats } = data || {};
@@ -16,7 +18,12 @@ export default function ResponderDashboard({ data, user, fetchDashboardData }) {
   return (
     <div className="space-y-6 text-left">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-outline-variant">
+      <motion.div 
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-outline-variant"
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+      >
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">My Response Queue</h1>
           <p className="text-sm text-slate-500 mt-1">Assigned incidents, status updates, and operational alerts for field response.</p>
@@ -37,42 +44,58 @@ export default function ResponderDashboard({ data, user, fetchDashboardData }) {
             <span>Refresh Tasks</span>
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Focus Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <MetricCard
-          label="Assigned Incidents"
-          value={summary?.incidents?.total}
-          helperText="My response log queue"
-          icon="assignment"
-          accentStyle="text-primary"
-          iconBgStyle="bg-primary-container/15 text-primary"
-        />
+      <motion.div 
+        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div variants={listItem}>
+          <MetricCard
+            label="Assigned Incidents"
+            value={summary?.incidents?.total}
+            helperText="My response log queue"
+            icon="assignment"
+            accentStyle="text-primary"
+            iconBgStyle="bg-primary-container/15 text-primary"
+          />
+        </motion.div>
 
-        <MetricCard
-          label="In Progress"
-          value={summary?.incidents?.active}
-          helperText="Assigned active tasks"
-          icon="warning"
-          accentStyle="text-amber-600"
-          iconBgStyle="bg-amber-100 text-amber-800"
-        />
+        <motion.div variants={listItem}>
+          <MetricCard
+            label="In Progress"
+            value={summary?.incidents?.active}
+            helperText="Assigned active tasks"
+            icon="warning"
+            accentStyle="text-amber-600"
+            iconBgStyle="bg-amber-100 text-amber-800"
+          />
+        </motion.div>
 
-        <MetricCard
-          label="Unread Alerts"
-          value={summary?.alerts?.unread}
-          helperText="New dispatch alerts"
-          icon="notifications_active"
-          accentStyle="text-error font-bold"
-          iconBgStyle="bg-error-container/20 text-error animate-pulse"
-        />
-      </div>
+        <motion.div variants={listItem}>
+          <MetricCard
+            label="Unread Alerts"
+            value={summary?.alerts?.unread}
+            helperText="New dispatch alerts"
+            icon="notifications_active"
+            accentStyle="text-error font-bold"
+            iconBgStyle="bg-error-container/20 text-error"
+          />
+        </motion.div>
+      </motion.div>
 
       {/* Main Grid (2 Columns) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Assigned Incidents Queue */}
-        <div className="lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden flex flex-col">
+        <motion.div 
+          className="lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden flex flex-col"
+          variants={panelReveal}
+          initial="hidden"
+          animate="visible"
+        >
           <div className="px-5 py-4 border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
             <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
               <span className="material-symbols-outlined text-primary">assignment</span>
@@ -139,10 +162,15 @@ export default function ResponderDashboard({ data, user, fetchDashboardData }) {
               </table>
             )}
           </div>
-        </div>
+        </motion.div>
 
         {/* Right Column: Live Alerts & Guidelines */}
-        <div className="lg:col-span-4 flex flex-col space-y-6">
+        <motion.div 
+          className="lg:col-span-4 flex flex-col space-y-6"
+          variants={panelReveal}
+          initial="hidden"
+          animate="visible"
+        >
           <RecentAlerts alerts={alertStats?.recentAlerts} user={user} />
 
           <div className="p-5 bg-surface border border-outline-variant rounded-xl shadow-sm text-left">
@@ -156,7 +184,7 @@ export default function ResponderDashboard({ data, user, fetchDashboardData }) {
               <li>View resource stock lists to locate nearby water/rations.</li>
             </ul>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Shield } from 'lucide-react';
+import { motion } from 'motion/react';
+import { fadeIn } from '../../utils/motion';
 
 export default function AuthShell({ children }) {
   return (
@@ -75,9 +77,14 @@ export default function AuthShell({ children }) {
             <span>DisasterConnect</span>
           </Link>
         </div>
-        <div className="w-full max-w-[400px]">
+        <motion.div 
+          className="w-full max-w-[400px]"
+          variants={fadeIn}
+          initial="hidden"
+          animate="visible"
+        >
           {children}
-        </div>
+        </motion.div>
       </div>
     </div>
   );

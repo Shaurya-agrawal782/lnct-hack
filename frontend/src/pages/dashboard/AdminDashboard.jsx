@@ -5,6 +5,8 @@ import RecentIncidents from '../../components/dashboard/RecentIncidents';
 import RecentAlerts from '../../components/dashboard/RecentAlerts';
 import StatusBarChart from '../../components/charts/StatusBarChart';
 import TypePieChart from '../../components/charts/TypePieChart';
+import { motion } from 'motion/react';
+import { fadeUp, staggerContainer, listItem, panelReveal } from '../../utils/motion';
 
 export default function AdminDashboard({ data, user, fetchDashboardData }) {
   const { summary, incidentStats, resourceStats, alertStats } = data || {};
@@ -22,7 +24,12 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
   return (
     <div className="space-y-6 text-left">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-outline-variant">
+      <motion.div 
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-outline-variant"
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+      >
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Command Overview</h1>
           <p className="text-sm text-slate-500 mt-1">Live incident, resource, and alert activity across the response network.</p>
@@ -43,56 +50,79 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
             <span>View Incidents</span>
           </Link>
         </div>
-      </div>
+      </motion.div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard
-          label="Active Incidents"
-          value={summary?.incidents?.active}
-          helperText="Requiring dispatch"
-          icon="warning"
-          accentStyle="text-amber-600"
-          iconBgStyle="bg-amber-100 text-amber-800"
-        />
+      <motion.div 
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div variants={listItem}>
+          <MetricCard
+            label="Active Incidents"
+            value={summary?.incidents?.active}
+            helperText="Requiring dispatch"
+            icon="warning"
+            accentStyle="text-amber-600"
+            iconBgStyle="bg-amber-100 text-amber-800"
+          />
+        </motion.div>
 
-        <MetricCard
-          label="Critical Incidents"
-          value={summary?.incidents?.critical}
-          helperText="High priority alerts"
-          icon="campaign"
-          accentStyle="text-error"
-          iconBgStyle="bg-error-container/20 text-error animate-pulse"
-        />
+        <motion.div variants={listItem}>
+          <MetricCard
+            label="Critical Incidents"
+            value={summary?.incidents?.critical}
+            helperText="High priority alerts"
+            icon="campaign"
+            accentStyle="text-error"
+            iconBgStyle="bg-error-container/20 text-error"
+          />
+        </motion.div>
 
-        <MetricCard
-          label="Available Resources"
-          value={summary?.resources?.available}
-          helperText="Ready for assignment"
-          icon="home_repair_service"
-          accentStyle="text-emerald-600"
-          iconBgStyle="bg-emerald-100 text-emerald-800"
-        />
+        <motion.div variants={listItem}>
+          <MetricCard
+            label="Available Resources"
+            value={summary?.resources?.available}
+            helperText="Ready for assignment"
+            icon="home_repair_service"
+            accentStyle="text-emerald-600"
+            iconBgStyle="bg-emerald-100 text-emerald-800"
+          />
+        </motion.div>
 
-        <MetricCard
-          label="Unread Alerts"
-          value={summary?.alerts?.unread}
-          helperText="Require broadcast review"
-          icon="notifications_active"
-          accentStyle="text-error font-bold"
-          iconBgStyle="bg-error-container/20 text-error"
-        />
-      </div>
+        <motion.div variants={listItem}>
+          <MetricCard
+            label="Unread Alerts"
+            value={summary?.alerts?.unread}
+            helperText="Require broadcast review"
+            icon="notifications_active"
+            accentStyle="text-error font-bold"
+            iconBgStyle="bg-error-container/20 text-error"
+          />
+        </motion.div>
+      </motion.div>
 
       {/* Main Content Layout (2 Columns) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Recent Incident Activity */}
-        <div className="lg:col-span-8 flex flex-col">
+        <motion.div 
+          className="lg:col-span-8 flex flex-col"
+          variants={panelReveal}
+          initial="hidden"
+          animate="visible"
+        >
           <RecentIncidents incidents={incidentStats?.recentIncidents} />
-        </div>
+        </motion.div>
 
         {/* Right Column: Alerts & Resource Snapshot */}
-        <div className="lg:col-span-4 flex flex-col space-y-6">
+        <motion.div 
+          className="lg:col-span-4 flex flex-col space-y-6"
+          variants={panelReveal}
+          initial="hidden"
+          animate="visible"
+        >
           <RecentAlerts alerts={alertStats?.recentAlerts} user={user} />
 
           <div className="bg-surface border border-outline-variant rounded-xl p-5 shadow-sm flex flex-col justify-between text-left">
@@ -142,11 +172,17 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
               Refresh Database
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Operational Trends (Charts lower on page) */}
-      <div className="bg-surface border border-outline-variant rounded-xl p-5 shadow-sm space-y-6">
+      <motion.div 
+        className="bg-surface border border-outline-variant rounded-xl p-5 shadow-sm space-y-6"
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-50px" }}
+      >
         <h2 className="text-base font-bold text-slate-900 border-b border-outline-variant pb-3 flex items-center gap-2">
           <span className="material-symbols-outlined text-primary text-lg">timeline</span>
           Operational Trends
@@ -166,7 +202,7 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
             <TypePieChart data={alertStats?.byPriority} title="Alert Broadcast Priority Scope" />
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

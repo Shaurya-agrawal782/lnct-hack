@@ -7,6 +7,8 @@ import MapFilters from '../../components/map/MapFilters';
 import MapLegend from '../../components/map/MapLegend';
 import MapMarker from '../../components/map/MapMarker';
 import { geoJsonToLeafletPosition } from '../../utils/geo';
+import { motion } from 'motion/react';
+import { fadeUp, staggerContainer, listItem, panelReveal } from '../../utils/motion';
 
 // Import Leaflet CSS
 import 'leaflet/dist/leaflet.css';
@@ -173,7 +175,12 @@ export default function MapView() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-outline-variant">
+      <motion.div 
+        className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-outline-variant"
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+      >
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
             <span className="material-symbols-outlined text-[24px]">map</span>
@@ -233,12 +240,17 @@ export default function MapView() {
             <span>Refresh Map</span>
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Statistics Panels (Top widgets) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <motion.div 
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+      >
         {/* Total incidents widget */}
-        <div className="bg-surface border border-outline-variant rounded-xl p-4 flex items-center justify-between shadow-sm text-left">
+        <motion.div variants={listItem} className="bg-surface border border-outline-variant rounded-xl p-4 flex items-center justify-between shadow-sm text-left">
           <div className="space-y-1">
             <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Incidents Shown</span>
             <span className="text-2xl font-extrabold text-on-surface">{totalIncidentsCount}</span>
@@ -246,21 +258,21 @@ export default function MapView() {
           <div className="p-2 rounded-lg bg-error-container text-error flex items-center justify-center">
             <span className="material-symbols-outlined text-[24px]">emergency</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Critical incidents widget */}
-        <div className="bg-surface border border-outline-variant rounded-xl p-4 flex items-center justify-between shadow-sm text-left">
+        <motion.div variants={listItem} className="bg-surface border border-outline-variant rounded-xl p-4 flex items-center justify-between shadow-sm text-left">
           <div className="space-y-1">
             <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Critical Severity</span>
             <span className="text-2xl font-extrabold text-error">{criticalIncidentsCount}</span>
           </div>
-          <div className="p-2 rounded-lg bg-error-container text-error animate-pulse flex items-center justify-center">
+          <div className="p-2 rounded-lg bg-error-container text-error flex items-center justify-center">
             <span className="material-symbols-outlined text-[24px]">warning</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Total resources widget */}
-        <div className="bg-surface border border-outline-variant rounded-xl p-4 flex items-center justify-between shadow-sm text-left">
+        <motion.div variants={listItem} className="bg-surface border border-outline-variant rounded-xl p-4 flex items-center justify-between shadow-sm text-left">
           <div className="space-y-1">
             <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Resources Shown</span>
             <span className="text-2xl font-extrabold text-on-surface">{totalResourcesCount}</span>
@@ -268,10 +280,10 @@ export default function MapView() {
           <div className="p-2 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
             <span className="material-symbols-outlined text-[24px]">inventory_2</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Available resources widget */}
-        <div className="bg-surface border border-outline-variant rounded-xl p-4 flex items-center justify-between shadow-sm text-left">
+        <motion.div variants={listItem} className="bg-surface border border-outline-variant rounded-xl p-4 flex items-center justify-between shadow-sm text-left">
           <div className="space-y-1">
             <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Available Assets</span>
             <span className="text-2xl font-extrabold text-emerald-600">{availableResourcesCount}</span>
@@ -279,21 +291,28 @@ export default function MapView() {
           <div className="p-2 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
             <span className="material-symbols-outlined text-[24px]">build</span>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Map Control Filters */}
-      <MapFilters
-        filters={filters}
-        setFilters={setFilters}
-        onReset={handleResetFilters}
-        onRefresh={fetchData}
-      />
+      <motion.div variants={fadeUp} initial="hidden" animate="visible">
+        <MapFilters
+          filters={filters}
+          setFilters={setFilters}
+          onReset={handleResetFilters}
+          onRefresh={fetchData}
+        />
+      </motion.div>
 
       {/* Primary Map Window */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* React Leaflet Map container (occupies 3/4 width on desktop) */}
-        <div className="lg:col-span-3 h-[60vh] md:h-[65vh] relative rounded-2xl border border-outline-variant bg-surface overflow-hidden shadow-sm z-0">
+        <motion.div 
+          className="lg:col-span-3 h-[60vh] md:h-[65vh] relative rounded-2xl border border-outline-variant bg-surface overflow-hidden shadow-sm z-0"
+          variants={panelReveal}
+          initial="hidden"
+          animate="visible"
+        >
           {loading ? (
             <div className="absolute inset-0 bg-surface/85 backdrop-blur-sm flex flex-col items-center justify-center z-50">
               <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
@@ -373,10 +392,15 @@ export default function MapView() {
               ))}
             </MapContainer>
           )}
-        </div>
+        </motion.div>
 
         {/* Legend & Info panel (occupies 1/4 width on desktop) */}
-        <div className="space-y-4">
+        <motion.div 
+          className="space-y-4"
+          variants={panelReveal}
+          initial="hidden"
+          animate="visible"
+        >
           {/* Map Legend */}
           <MapLegend />
 
@@ -419,7 +443,7 @@ export default function MapView() {
               Structured to support live crowd-risk heatmap layers.
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

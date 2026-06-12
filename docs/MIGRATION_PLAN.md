@@ -45,6 +45,7 @@
 - **Incident Report UX upgraded: browser geolocation and map-based incident location picker added with manual coordinate fallback.**
 - **Demo data seed added: clustered incidents, responder assignments, citizen reports, resources, and alerts for hackathon walkthrough.**
 - **Repository cleanup completed: Legacy Python prototype removed from final repository to keep the hackathon submission focused on the MERN platform.**
+- **Visual Wow Pass 1 completed: controlled Motion/GSAP polish, command visuals, premium micro-interactions, and Spline-ready visual slot added without changing core workflows.**
 
 ## Next Steps
 - Deploy to Render (backend) and Vercel (frontend) with MongoDB Atlas.
