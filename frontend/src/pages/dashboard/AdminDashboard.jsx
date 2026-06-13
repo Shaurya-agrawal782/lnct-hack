@@ -6,6 +6,9 @@ import { getIncidents } from '../../api/incidentApi';
 import { getIncidentGroups } from '../../api/incidentGroupApi';
 import StatusBarChart from '../../components/charts/StatusBarChart';
 import TypePieChart from '../../components/charts/TypePieChart';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 // Consistent Status Badge
 const StatusBadge = ({ status }) => {
@@ -39,6 +42,32 @@ const SeverityBadge = ({ severity }) => {
       {severity}
     </span>
   );
+};
+
+// Incident Marker Severity Icon Builder
+const getIncidentIcon = (severity) => {
+  let colorClass = 'bg-emerald-500';
+  let pulseClass = '';
+  const sev = severity?.toLowerCase();
+  if (sev === 'medium') colorClass = 'bg-amber-500';
+  else if (sev === 'high') colorClass = 'bg-orange-500';
+  else if (sev === 'critical') {
+    colorClass = 'bg-red-500';
+    pulseClass = 'animate-ping';
+  }
+
+  return L.divIcon({
+    className: 'custom-leaflet-icon-incident',
+    html: `
+      <div class="relative flex items-center justify-center w-6 h-6">
+        <span class="absolute inline-flex h-full w-full rounded-full ${colorClass} opacity-75 ${pulseClass}"></span>
+        <span class="relative inline-flex rounded-full h-3.5 w-3.5 ${colorClass} border-2 border-white shadow-lg"></span>
+      </div>
+    `,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+    popupAnchor: [0, -12]
+  });
 };
 
 export default function AdminDashboard({ data, user, fetchDashboardData }) {
@@ -199,7 +228,7 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
       >
         {/* Critical Open */}
         <motion.div 
-          className="bg-white border border-[#DDE3EA] rounded-[16px] p-4 shadow-sm border-l-4 border-l-[#DC2626]"
+          className="bg-white border border-[#DDE3EA] rounded-[16px] p-4 shadow-sm border-l-4 border-l-[#DC2626] hover:-translate-y-0.5 hover:shadow-md transition-all duration-300"
           variants={listItem}
         >
           <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Critical Open</span>
@@ -209,7 +238,7 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
 
         {/* Active Incidents */}
         <motion.div 
-          className="bg-white border border-[#DDE3EA] rounded-[16px] p-4 shadow-sm border-l-4 border-l-[#2563EB]"
+          className="bg-white border border-[#DDE3EA] rounded-[16px] p-4 shadow-sm border-l-4 border-l-[#2563EB] hover:-translate-y-0.5 hover:shadow-md transition-all duration-300"
           variants={listItem}
         >
           <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Active Incidents</span>
@@ -219,7 +248,7 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
 
         {/* Grouped Cases */}
         <motion.div 
-          className="bg-white border border-[#DDE3EA] rounded-[16px] p-4 shadow-sm border-l-4 border-l-indigo-600"
+          className="bg-white border border-[#DDE3EA] rounded-[16px] p-4 shadow-sm border-l-4 border-l-indigo-600 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300"
           variants={listItem}
         >
           <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Grouped Cases</span>
@@ -229,7 +258,7 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
 
         {/* Available Resources */}
         <motion.div 
-          className="bg-white border border-[#DDE3EA] rounded-[16px] p-4 shadow-sm border-l-4 border-l-[#16A34A]"
+          className="bg-white border border-[#DDE3EA] rounded-[16px] p-4 shadow-sm border-l-4 border-l-[#16A34A] hover:-translate-y-0.5 hover:shadow-md transition-all duration-300"
           variants={listItem}
         >
           <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Available Assets</span>
@@ -239,7 +268,7 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
 
         {/* Unread Alerts */}
         <motion.div 
-          className="bg-white border border-[#DDE3EA] rounded-[16px] p-4 shadow-sm border-l-4 border-l-[#F59E0B]"
+          className="bg-white border border-[#DDE3EA] rounded-[16px] p-4 shadow-sm border-l-4 border-l-[#F59E0B] hover:-translate-y-0.5 hover:shadow-md transition-all duration-300"
           variants={listItem}
         >
           <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Unread Alerts</span>
@@ -267,8 +296,8 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-              {/* GIS Cartesian Coordinate Plotting Board */}
-              <div className="md:col-span-8 bg-slate-900 rounded-lg relative overflow-hidden aspect-[1.6]">
+              {/* GIS Live Interactive Leaflet Map */}
+              <div className="md:col-span-8 bg-slate-900 rounded-lg relative overflow-hidden aspect-[1.6] z-0">
                 {loadingLocal ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
                     <span className="material-symbols-outlined text-lg text-[#2563EB] animate-spin mb-1">sync</span>
@@ -280,61 +309,49 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
                     <span className="text-[10px] font-mono">GRID OFFLINE • NO ACTIVE COORDINATES</span>
                   </div>
                 ) : (
-                  <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full">
-                    {/* Grid lines */}
-                    {gridX.map((x, i) => (
-                      <g key={`x-${i}`}>
-                        <line x1={x} y1={padding} x2={x} y2={height - padding} stroke="#334155" strokeWidth="0.5" strokeDasharray="3 3" />
-                        <text x={x} y={height - padding + 15} fill="#64748B" fontSize="8" textAnchor="middle" fontFamily="monospace">
-                          {(minLng + (i / 4) * (maxLng - minLng)).toFixed(3)}
-                        </text>
-                      </g>
-                    ))}
-                    {gridY.map((y, i) => (
-                      <g key={`y-${i}`}>
-                        <line x1={padding} y1={y} x2={width - padding} y2={y} stroke="#334155" strokeWidth="0.5" strokeDasharray="3 3" />
-                        <text x={padding - 5} y={y + 3} fill="#64748B" fontSize="8" textAnchor="end" fontFamily="monospace">
-                          {(maxLat - (i / 3) * (maxLat - minLat)).toFixed(3)}
-                        </text>
-                      </g>
-                    ))}
-
-                    {/* Active incident coordinates */}
+                  <MapContainer
+                    center={[23.2599, 77.4126]}
+                    zoom={12}
+                    style={{ width: '100%', height: '100%' }}
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
                     {activeCoords.map((incident) => {
-                      const x = getSvgX(incident.location.coordinates[0]);
-                      const y = getSvgY(incident.location.coordinates[1]);
-                      const isSelected = selectedIncident?._id === incident._id;
-
+                      const pos = [incident.location.coordinates[1], incident.location.coordinates[0]];
                       return (
-                        <g 
+                        <Marker 
                           key={incident._id} 
-                          onClick={() => setSelectedIncident(incident)}
-                          className="cursor-pointer"
+                          position={pos} 
+                          icon={getIncidentIcon(incident.severity)}
+                          eventHandlers={{
+                            click: () => setSelectedIncident(incident)
+                          }}
                         >
-                          {isSelected && (
-                            <circle cx={x} cy={y} r="9" fill="none" stroke="#2563EB" strokeWidth="1.2" />
-                          )}
-                          <circle 
-                            cx={x} 
-                            cy={y} 
-                            r={isSelected ? "5" : "4"} 
-                            fill={
-                              incident.severity === 'critical' ? '#DC2626' :
-                              incident.severity === 'high' ? '#F59E0B' :
-                              incident.severity === 'medium' ? '#F59E0B' : '#2563EB'
-                            }
-                            stroke="#FFFFFF" 
-                            strokeWidth="1"
-                          />
-                        </g>
+                          <Popup className="custom-leaflet-popup">
+                            <div className="p-2.5 text-slate-800 text-xs text-left max-w-[200px] space-y-1">
+                              <span className="text-[9px] uppercase tracking-wider text-rose-600 font-bold block">Incident Queue</span>
+                              <h4 className="font-bold text-slate-900 leading-tight m-0">{incident.title}</h4>
+                              <p className="text-[10px] text-slate-500 mt-1">Ticket: {incident.ticketNumber}</p>
+                              <div className="flex gap-2 mt-1.5">
+                                <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded uppercase border ${
+                                  incident.severity === 'critical' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-amber-50 text-amber-700 border-amber-200'
+                                }`}>
+                                  {incident.severity}
+                                </span>
+                              </div>
+                            </div>
+                          </Popup>
+                        </Marker>
                       );
                     })}
-                  </svg>
+                  </MapContainer>
                 )}
               </div>
 
               {/* Coordinate Telemetry Side Reader */}
-              <div className="md:col-span-4 flex flex-col justify-between border border-[#DDE3EA] rounded-lg p-4 bg-slate-50">
+              <div className="md:col-span-4 flex flex-col justify-between border border-[#DDE3EA] rounded-xl p-4 bg-white shadow-sm">
                 <div className="space-y-3">
                   <h4 className="text-[11px] font-bold text-[#64748B] uppercase tracking-wide border-b pb-1 border-[#DDE3EA]">
                     Telemetry Data Link
@@ -386,13 +403,13 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
                   <div className="mt-4 pt-3 border-t border-[#DDE3EA] flex gap-2">
                     <Link
                       to={`/dashboard/incidents/${selectedIncident._id}`}
-                      className="flex-grow py-1 bg-[#2563EB] text-white text-center text-[11px] font-bold rounded hover:opacity-90 transition"
+                      className="flex-grow py-1 bg-[#2563EB] hover:bg-blue-700 text-white text-center text-[11px] font-bold rounded-lg transition shadow-sm"
                     >
                       Dossier
                     </Link>
                     <button
                       onClick={() => setSelectedIncident(null)}
-                      className="px-2 py-1 border border-[#DDE3EA] text-[#64748B] bg-white rounded hover:bg-slate-100 text-[11px] font-bold"
+                      className="px-2 py-1 border border-[#DDE3EA] text-[#64748B] bg-white rounded-lg hover:bg-slate-50 text-[11px] font-bold transition shadow-sm"
                     >
                       Clear
                     </button>
@@ -519,6 +536,7 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
                   const scoreColor = score >= 80 ? 'text-[#DC2626] bg-red-50 border-red-200' :
                                      score >= 50 ? 'text-[#F59E0B] bg-amber-50 border-amber-200' :
                                      'text-[#16A34A] bg-emerald-50 border-emerald-200';
+                  const isHigh = score >= 80;
 
                   return (
                     <div 
@@ -527,7 +545,8 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
                     >
                       <div className="space-y-1 max-w-[80%]">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] font-bold border ${scoreColor}`}>
+                          <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] font-bold border flex items-center gap-1.5 ${scoreColor}`}>
+                            {isHigh && <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626] animate-pulse"></span>}
                             {score}% RISK
                           </span>
                           <span className="font-mono text-[10px] text-[#64748B]">
