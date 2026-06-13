@@ -311,6 +311,12 @@ export default function Incidents() {
                       <td className="px-4 py-2 font-semibold">
                         <div className="font-semibold text-on-surface truncate text-sm max-w-xs">{incident.title}</div>
                         <div className="text-xs text-on-surface-variant truncate max-w-xs mt-0.5 font-normal">{incident.description}</div>
+                        {incident.incidentGroup && (
+                          <div className="text-[10px] text-indigo-700 bg-indigo-50 border border-indigo-100 px-1.5 py-0.5 mt-1 rounded font-bold inline-flex items-center gap-0.5 max-w-max">
+                            <span className="material-symbols-outlined text-[12px] font-bold">folder_zip</span>
+                            <span>Group: {incident.incidentGroup.groupNumber}</span>
+                          </div>
+                        )}
                       </td>
                       <td className="px-4 py-2">
                         {incident.ticketNumber ? (

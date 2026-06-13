@@ -180,6 +180,28 @@ export default function ResponderIncidentDetailScreen({ route, navigation }) {
             <Text style={styles.dateText}>Last Update: {formatDateTime(incident.updatedAt)}</Text>
           </View>
 
+          {/* Group Info Section */}
+          {incident.incidentGroup ? (
+            <View style={[styles.card, styles.groupCard]}>
+              <View style={styles.groupCardHeader}>
+                <Text style={styles.groupCardHeaderTitle}>📁 Grouped Incident Case</Text>
+                <View style={[styles.miniBadge, { backgroundColor: '#EFF6FF', borderColor: '#3B82F6' }]}>
+                  <Text style={{ fontSize: 9, fontWeight: '800', color: '#1E40AF' }}>
+                    {incident.incidentGroup.groupNumber}
+                  </Text>
+                </View>
+              </View>
+              <Text style={styles.groupCardText}>
+                This report is grouped under a consolidated event. Multiple citizen tickets refer to this incident context.
+              </Text>
+              {incident.incidentGroup.incidentCount !== undefined && (
+                <Text style={styles.groupStatusText}>
+                  Linked Reports Count: <Text style={{ fontWeight: 'bold' }}>{incident.incidentGroup.incidentCount}</Text>
+                </Text>
+              )}
+            </View>
+          ) : null}
+
           {/* Incident Description */}
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Case Description</Text>
@@ -810,6 +832,35 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#DBEAFE',
     paddingTop: 8,
+    marginTop: 4,
+  },
+  groupCard: {
+    borderColor: '#0284C7',
+    borderLeftWidth: 4,
+    backgroundColor: '#F0F9FF',
+  },
+  groupCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  groupCardHeaderTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#0369A1',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  groupCardText: {
+    fontSize: 13,
+    color: '#075985',
+    lineHeight: 18,
+    marginBottom: 6,
+  },
+  groupStatusText: {
+    fontSize: 11,
+    color: '#0284C7',
     marginTop: 4,
   },
 });

@@ -61,6 +61,7 @@
 - **Step 62 completed**: Incident ticket tracking added: every new incident gets a unique human-readable ticket number (format: `DC-YYYYMMDD-XXXXX`) generated with cryptographic randomness. A public `/api/incidents/track/:ticketNumber` endpoint returns safe, privacy-filtered status data. Web and mobile UIs show ticket numbers prominently on creation success banners, detail views, and listing tables. A public `/track-report` page allows citizens to track any report by ticket. A backfill script handles legacy incidents.
 - **Step 63 completed**: Admin Responder Management added: admins can create, view, activate/deactivate, and safely delete responder accounts while public registration remains citizen-only.
 - **Step 64 completed**: Responder safety profiles added: admin-managed responder ID, department, specialization, service zone, verification status, and emergency contact details.
+- **Step 65 completed**: Smart Incident Grouping added: nearby same-type reports within a 3-hour window are grouped for admin review, and resolving a group updates and notifies all linked citizen reports.
 
 ## Next Steps
 - Seed demo data on production MongoDB Atlas (`npm run seed:users && npm run seed:demo`).

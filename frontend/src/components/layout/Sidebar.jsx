@@ -19,7 +19,8 @@ export default function Sidebar({ isOpen, onClose }) {
           { name: 'Interactive Map', path: '/dashboard/map', icon: 'map' },
           { name: 'Alerts', path: '/dashboard/alerts', icon: 'notifications_active' },
           { name: 'Reports', path: '/dashboard/reports', icon: 'bar_chart' },
-          { name: 'Responders', path: '/dashboard/responders', icon: 'badge' }
+          { name: 'Responders', path: '/dashboard/responders', icon: 'badge' },
+          { name: 'Incident Groups', path: '/dashboard/groups', icon: 'folder_zip' }
         ];
       case 'responder':
         return [

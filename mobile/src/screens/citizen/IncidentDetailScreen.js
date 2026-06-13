@@ -99,6 +99,28 @@ export default function IncidentDetailScreen({ route, navigation }) {
           <Text style={styles.dateText}>Reported: {formatDateTime(incident.createdAt)}</Text>
         </View>
 
+        {/* Group Link Section */}
+        {incident.incidentGroup ? (
+          <View style={[styles.card, styles.groupCard]}>
+            <View style={styles.groupCardHeader}>
+              <Text style={styles.groupCardHeaderTitle}>📁 Linked Group Case</Text>
+              <View style={[styles.miniBadge, { backgroundColor: '#EFF6FF', borderColor: '#3B82F6' }]}>
+                <Text style={{ fontSize: 9, fontWeight: '800', color: '#1E40AF' }}>
+                  {incident.incidentGroup.groupNumber}
+                </Text>
+              </View>
+            </View>
+            <Text style={styles.groupCardText}>
+              This report is grouped with nearby similar reports for faster response.
+            </Text>
+            {incident.incidentGroup.status && (
+              <Text style={styles.groupStatusText}>
+                Group Status: <Text style={{ fontWeight: 'bold' }}>{incident.incidentGroup.status.toUpperCase()}</Text>
+              </Text>
+            )}
+          </View>
+        ) : null}
+
         {/* Description Section */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Description</Text>
@@ -485,5 +507,34 @@ const styles = StyleSheet.create({
     color: '#475569',
     fontStyle: 'italic',
     lineHeight: 16,
+  },
+  groupCard: {
+    borderColor: '#0284C7',
+    borderLeftWidth: 4,
+    backgroundColor: '#F0F9FF',
+  },
+  groupCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  groupCardHeaderTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#0369A1',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  groupCardText: {
+    fontSize: 13,
+    color: '#075985',
+    lineHeight: 18,
+    marginBottom: 6,
+  },
+  groupStatusText: {
+    fontSize: 11,
+    color: '#0284C7',
+    marginTop: 4,
   },
 });

@@ -79,6 +79,11 @@ const incidentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     },
+    incidentGroup: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'IncidentGroup',
+      default: null
+    },
     assignedResources: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Resource'
@@ -130,6 +135,7 @@ incidentSchema.index({ type: 1 });
 incidentSchema.index({ reportedBy: 1 });
 incidentSchema.index({ assignedResponder: 1 });
 incidentSchema.index({ assignedResources: 1 });
+incidentSchema.index({ incidentGroup: 1 });
 incidentSchema.index({ createdAt: -1 });
 
 // Pre-save hook: On new incident, add initial statusHistory entry

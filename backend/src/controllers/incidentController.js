@@ -113,6 +113,14 @@ const createIncident = asyncHandler(async (req, res, next) => {
     }
   }
 
+  // Group incident automatically
+  try {
+    const { assignIncidentToGroup } = require('../services/incidentGroupingService');
+    await assignIncidentToGroup(incident);
+  } catch (groupingErr) {
+    console.error('[Incident Grouping Error] Failed to group incident:', groupingErr.message);
+  }
+
   res.status(201).json(
     new ApiResponse(201, { incident }, 'Incident created successfully')
   );
@@ -169,6 +177,7 @@ const getIncidents = asyncHandler(async (req, res, next) => {
     .limit(limitNum)
     .populate('reportedBy', 'name email')
     .populate('assignedResponder', 'name email')
+    .populate('incidentGroup', 'groupNumber status')
     .populate('assignedResources', 'name type status capacity currentLocation.address');
 
   const totalIncidents = await Incident.countDocuments(query);
@@ -193,6 +202,7 @@ const getIncidentById = asyncHandler(async (req, res, next) => {
   const incident = await Incident.findById(req.params.id)
     .populate('reportedBy', 'name email')
     .populate('assignedResponder', 'name email')
+    .populate('incidentGroup', 'groupNumber status incidentCount')
     .populate('assignedResources', 'name type status capacity currentLocation.address');
 
   if (!incident) {
@@ -661,7 +671,7 @@ const getIncidentByTicket = asyncHandler(async (req, res, next) => {
     return next(new AppError(400, 'Please provide a ticket number.'));
   }
 
-  const incident = await Incident.findOne({ ticketNumber });
+  const incident = await Incident.findOne({ ticketNumber }).populate('incidentGroup');
 
   if (!incident) {
     return res.status(404).json({
@@ -687,6 +697,14 @@ const getIncidentByTicket = asyncHandler(async (req, res, next) => {
       changedAt: h.changedAt
     }))
   };
+
+  if (incident.incidentGroup) {
+    safeData.groupInfo = {
+      groupNumber: incident.incidentGroup.groupNumber,
+      status: incident.incidentGroup.status,
+      message: "This report is linked to a grouped incident being handled by the command team."
+    };
+  }
 
   return res.status(200).json({
     success: true,

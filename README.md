@@ -47,6 +47,7 @@ In critical event crowds, crowd density transitions to crowd hazard in seconds. 
 - **Incident Geolocation Lock:** Citizen incident reports enforce device GPS/browser geolocation with manual coordinates inputs disabled to prevent spoofing. Human-readable context is collected via landmark inputs.
 - **Incident Ticket Tracking:** Every incident is assigned a unique human-readable ticket number (`DC-YYYYMMDD-XXXXX`). Citizens see their ticket on the submission success screen, on report cards, and in detail views. A public `/track-report` page allows anyone to check incident status, safety notes, and status timeline using only a ticket number — without exposing reporter identity, GPS coordinates, or internal notes.
 - **Admin Responder Management & Safety Profiles:** Admins can provision responder accounts, manage safety profiles (badge ID, specialization, zone, department), toggle status (deactivate/activate), set verification status (pending, verified, suspended), and safely delete responder accounts (blocked if they have active incidents). Only active, verified responders can be assigned to incidents. Public registration remains citizen-only.
+- **Smart Incident Grouping:** Citizen reports of the same category, submitted from nearby locations (within 300 meters) and time windows (within 3 hours), are automatically aggregated into Incident Groups to eliminate duplicates. Resolving a group updates status and alerts all linked reporters simultaneously.
 
 ---
 

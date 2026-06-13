@@ -22,6 +22,7 @@ import MapView from './pages/dashboard/MapView';
 import Alerts from './pages/dashboard/Alerts';
 import Reports from './pages/dashboard/Reports';
 import Responders from './pages/dashboard/Responders';
+import IncidentGroups from './pages/dashboard/IncidentGroups';
 
 import './App.css';
 
@@ -172,6 +173,16 @@ function App() {
               element={
                 <RoleRoute allowedRoles={['admin']}>
                   <Responders />
+                </RoleRoute>
+              } 
+            />
+
+            {/* Admin only */}
+            <Route 
+              path="groups" 
+              element={
+                <RoleRoute allowedRoles={['admin']}>
+                  <IncidentGroups />
                 </RoleRoute>
               } 
             />
