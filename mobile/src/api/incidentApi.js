@@ -14,3 +14,8 @@ export const getIncidentById = async (id) => {
   const response = await client.get(`/incidents/${id}`);
   return response.data;
 };
+
+export const updateIncidentStatus = async (id, payload) => {
+  const response = await client.patch(`/incidents/${id}/status`, payload);
+  return response.data;
+};

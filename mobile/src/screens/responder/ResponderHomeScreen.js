@@ -30,7 +30,7 @@ export default function ResponderHomeScreen({ navigation }) {
         <View style={styles.menuList}>
           <TouchableOpacity
             style={styles.menuCard}
-            onPress={() => navigation.navigate('AssignedIncidentsPlaceholder')}
+            onPress={() => navigation.navigate('AssignedIncidents')}
           >
             <View style={styles.cardHeader}>
               <Text style={styles.cardIcon}>📋</Text>

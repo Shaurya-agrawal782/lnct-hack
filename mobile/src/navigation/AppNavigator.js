@@ -12,7 +12,8 @@ import ReportIncidentScreen from '../screens/citizen/ReportIncidentScreen';
 import MyReportsScreen from '../screens/citizen/MyReportsScreen';
 import IncidentDetailScreen from '../screens/citizen/IncidentDetailScreen';
 import ResponderHomeScreen from '../screens/responder/ResponderHomeScreen';
-import AssignedIncidentsPlaceholderScreen from '../screens/responder/AssignedIncidentsPlaceholderScreen';
+import AssignedIncidentsScreen from '../screens/responder/AssignedIncidentsScreen';
+import ResponderIncidentDetailScreen from '../screens/responder/ResponderIncidentDetailScreen';
 import AdminMobileNoticeScreen from '../screens/admin/AdminMobileNoticeScreen';
 
 const Stack = createNativeStackNavigator();
@@ -91,9 +92,14 @@ export default function AppNavigator() {
                 options={{ title: 'Field Response' }}
               />
               <Stack.Screen 
-                name="AssignedIncidentsPlaceholder" 
-                component={AssignedIncidentsPlaceholderScreen} 
+                name="AssignedIncidents" 
+                component={AssignedIncidentsScreen} 
                 options={{ title: 'Assigned Incidents' }}
+              />
+              <Stack.Screen 
+                name="ResponderIncidentDetail" 
+                component={ResponderIncidentDetailScreen} 
+                options={{ title: 'Incident Detail' }}
               />
               <Stack.Screen 
                 name="Alerts" 

@@ -52,6 +52,7 @@
 - **Mobile Phase 1 completed: Expo React Native foundation added with backend authentication and role-based mobile home screens.**
 - **Mobile Phase 2 completed: Citizen incident reporting added with Expo location GPS capture, manual coordinate fallback, and backend incident creation.**
 - **Mobile Phase 3 completed: Citizen My Reports list and read-only incident detail tracking added.**
+- **Mobile Phase 4 completed: Responder assigned incident list, detail view, and field status update workflow added.**
 
 ## Next Steps
 - Seed demo data on production MongoDB Atlas (`npm run seed:users && npm run seed:demo`).
