@@ -3,9 +3,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import { createIncident } from '../../api/incidentApi';
 import { analyzeReportDraft } from '../../api/aiApi';
 import IncidentLocationPicker from '../../components/map/IncidentLocationPicker';
+import useAuth from '../../hooks/useAuth';
 
 export default function IncidentCreate() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
 
   // Form states
   const [title, setTitle] = useState('');
@@ -15,6 +18,7 @@ export default function IncidentCreate() {
   const [address, setAddress] = useState('');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
+  const [landmark, setLandmark] = useState('');
 
   // AI assistant states
   const [aiDraft, setAiDraft] = useState('');
@@ -135,16 +139,10 @@ export default function IncidentCreate() {
         setLocationLoading(false);
         switch (err.code) {
           case err.PERMISSION_DENIED:
-            setLocationError('Permission denied. Please allow location access or enter coordinates manually.');
-            break;
-          case err.POSITION_UNAVAILABLE:
-            setLocationError('Location information is unavailable. Please enter coordinates manually.');
-            break;
-          case err.TIMEOUT:
-            setLocationError('Location request timed out. Please try again or enter manually.');
+            setLocationError('Location permission is required to submit an incident report. Please allow location access and try again.');
             break;
           default:
-            setLocationError('An unknown error occurred while retrieving location.');
+            setLocationError('Unable to fetch current location. Please try again in an open area or enable location services.');
         }
       },
       {
@@ -161,8 +159,20 @@ export default function IncidentCreate() {
     setError(null);
 
     // Validate fields
-    if (!title.trim() || !description.trim() || !address.trim() || !latitude || !longitude) {
+    if (!title.trim() || !description.trim()) {
       setError('Please fill in all required fields.');
+      setLoading(false);
+      return;
+    }
+
+    if (!latitude || !longitude) {
+      setError('Current location is required to report an incident.');
+      setLoading(false);
+      return;
+    }
+
+    if (!isAdmin && !landmark.trim()) {
+      setError('Please enter a landmark or nearby place to help responders locate the incident.');
       setLoading(false);
       return;
     }
@@ -183,6 +193,10 @@ export default function IncidentCreate() {
     }
 
     try {
+      const finalAddress = !isAdmin && landmark.trim()
+        ? `${landmark.trim()} — Detected: ${address.trim()}`
+        : address.trim();
+
       // Assemble payload with coordinate order [longitude, latitude]
       const payload = {
         title: title.trim(),
@@ -191,7 +205,7 @@ export default function IncidentCreate() {
         severity,
         location: {
           coordinates: [lngNum, latNum], // [lng, lat]
-          address: address.trim()
+          address: finalAddress
         }
       };
 
@@ -489,11 +503,32 @@ export default function IncidentCreate() {
             )}
 
             {/* Map Picker */}
-            <IncidentLocationPicker
-              latitude={latitude}
-              longitude={longitude}
-              onPositionChange={handlePositionChange}
-            />
+            {isAdmin ? (
+              <IncidentLocationPicker
+                latitude={latitude}
+                longitude={longitude}
+                onPositionChange={handlePositionChange}
+              />
+            ) : (
+              <div className="bg-surface-container border border-outline-variant/60 rounded-xl p-4 text-xs text-on-surface-variant italic">
+                Interactive map picker is restricted to dispatch administrators. Citizens must use live GPS location.
+              </div>
+            )}
+
+            {/* Landmark / Nearby Place */}
+            <div className="space-y-2">
+              <label className="block font-label-lg text-label-lg text-on-surface font-semibold">
+                Landmark / Nearby Place {!isAdmin && '*'}
+              </label>
+              <input
+                type="text"
+                required={!isAdmin}
+                placeholder="Example: Main gate, near parking area, Block A entrance"
+                value={landmark}
+                onChange={(e) => setLandmark(e.target.value)}
+                className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2.5 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+              />
+            </div>
 
             {/* Address field */}
             <div className="space-y-2">
@@ -504,7 +539,8 @@ export default function IncidentCreate() {
                 placeholder="e.g. Street 40, Block B, Main Market Area"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2.5 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                readOnly={!isAdmin}
+                className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2.5 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors read-only:opacity-75 read-only:bg-surface-container-low"
               />
             </div>
 
@@ -517,17 +553,21 @@ export default function IncidentCreate() {
                   required
                   placeholder="e.g. 23.2599"
                   value={latitude}
-                  onChange={(e) => setLatitude(e.target.value)}
+                  onChange={(e) => isAdmin && setLatitude(e.target.value)}
+                  readOnly={!isAdmin}
                   onBlur={(e) => {
+                    if (!isAdmin) return;
                     const latNum = parseFloat(e.target.value);
                     const lngNum = parseFloat(longitude);
                     if (!isNaN(latNum) && latNum >= -90 && latNum <= 90 && !isNaN(lngNum) && lngNum >= -180 && lngNum <= 180) {
                       reverseGeocode(latNum, lngNum);
                     }
                   }}
-                  className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2.5 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                  className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2.5 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors read-only:opacity-75 read-only:bg-surface-container-low"
                 />
-                <span className="text-[11px] font-label-sm text-on-surface-variant/60 block">Values between -90 and 90. Auto-filled from your location or map selection.</span>
+                <span className="text-[11px] font-label-sm text-on-surface-variant/60 block">
+                  {isAdmin ? "Values between -90 and 90. Auto-filled from your location or map selection." : "Auto-filled from GPS sensor location."}
+                </span>
               </div>
 
               <div className="space-y-2">
@@ -537,17 +577,21 @@ export default function IncidentCreate() {
                   required
                   placeholder="e.g. 77.4126"
                   value={longitude}
-                  onChange={(e) => setLongitude(e.target.value)}
+                  onChange={(e) => isAdmin && setLongitude(e.target.value)}
+                  readOnly={!isAdmin}
                   onBlur={(e) => {
+                    if (!isAdmin) return;
                     const latNum = parseFloat(latitude);
                     const lngNum = parseFloat(e.target.value);
                     if (!isNaN(latNum) && latNum >= -90 && latNum <= 90 && !isNaN(lngNum) && lngNum >= -180 && lngNum <= 180) {
                       reverseGeocode(latNum, lngNum);
                     }
                   }}
-                  className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2.5 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                  className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2.5 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors read-only:opacity-75 read-only:bg-surface-container-low"
                 />
-                <span className="text-[11px] font-label-sm text-on-surface-variant/60 block">Values between -180 and 180. Auto-filled from your location or map selection.</span>
+                <span className="text-[11px] font-label-sm text-on-surface-variant/60 block">
+                  {isAdmin ? "Values between -180 and 180. Auto-filled from your location or map selection." : "Auto-filled from GPS sensor location."}
+                </span>
               </div>
             </div>
 

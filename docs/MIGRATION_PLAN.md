@@ -57,6 +57,7 @@
 - **Mobile Final QA Pass completed: Expo mobile app validated across citizen, responder, admin, GPS reporting, report tracking, status updates, and alerts.**
 - **Step 59 completed**: Gemini AI Triage Assistant added as backend-only advisory decision-support for incident reports.
 - **Step 60 completed**: AI Report Assistant added: pre-submit Gemini-powered report classification, severity suggestion, description improvement, missing-question prompts, and citizen safety tips.
+- **Step 61 completed**: Incident report location UX updated: citizen reports now require current GPS capture, hide manual coordinate editing, and use landmark notes for human-readable context.
 
 ## Next Steps
 - Seed demo data on production MongoDB Atlas (`npm run seed:users && npm run seed:demo`).

@@ -40,6 +40,7 @@ export default function ReportIncidentScreen({ navigation }) {
   const [address, setAddress] = useState('');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
+  const [landmark, setLandmark] = useState('');
 
   // AI assistant states
   const [aiDraft, setAiDraft] = useState('');
@@ -121,14 +122,14 @@ export default function ReportIncidentScreen({ navigation }) {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        setLocationError('Permission denied. Please enter coordinates manually.');
+        setLocationError('Location permission is required to submit an incident report. Please allow location access and try again.');
         setLocationLoading(false);
         return;
       }
 
       const enabled = await Location.hasServicesEnabledAsync();
       if (!enabled) {
-        setLocationError('Location services disabled. Please enter coordinates manually.');
+        setLocationError('Unable to fetch current location. Please try again in an open area or enable location services.');
         setLocationLoading(false);
         return;
       }
@@ -165,11 +166,11 @@ export default function ReportIncidentScreen({ navigation }) {
           console.warn('Nominatim reverse geocoding skipped/failed:', reverseErr);
         }
       } else {
-        setLocationError('Failed to capture location coordinates. Enter manually.');
+        setLocationError('Unable to fetch current location. Please try again in an open area or enable location services.');
       }
     } catch (err) {
       console.warn('GPS Error:', err);
-      setLocationError('Location services timed out. Enter coordinates manually.');
+      setLocationError('Unable to fetch current location. Please try again in an open area or enable location services.');
     } finally {
       setLocationLoading(false);
     }
@@ -179,8 +180,18 @@ export default function ReportIncidentScreen({ navigation }) {
     setError('');
     setSuccess('');
 
-    if (!title.trim() || !description.trim() || !address.trim() || !latitude || !longitude) {
+    if (!title.trim() || !description.trim()) {
       setError('Please fill in all required fields.');
+      return;
+    }
+
+    if (!latitude || !longitude) {
+      setError('Location permission is required to submit an incident report. Please allow location access and try again.');
+      return;
+    }
+
+    if (!landmark.trim()) {
+      setError('Please enter a landmark or nearby place to help responders locate the incident.');
       return;
     }
 
@@ -199,6 +210,8 @@ export default function ReportIncidentScreen({ navigation }) {
 
     setLoading(true);
     try {
+      const finalAddress = `${landmark.trim()} — Detected: ${address.trim()}`;
+
       const payload = {
         title: title.trim(),
         description: description.trim(),
@@ -206,7 +219,7 @@ export default function ReportIncidentScreen({ navigation }) {
         severity,
         location: {
           coordinates: [lngNum, latNum], // [lng, lat] GeoJSON order
-          address: address.trim()
+          address: finalAddress
         }
       };
 
@@ -218,6 +231,7 @@ export default function ReportIncidentScreen({ navigation }) {
         setAddress('');
         setLatitude('');
         setLongitude('');
+        setLandmark('');
         setAccuracy(null);
 
         setTimeout(() => {
@@ -499,43 +513,46 @@ export default function ReportIncidentScreen({ navigation }) {
               </View>
             ) : null}
 
+            {/* Landmark / Nearby Place */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Location Address *</Text>
+              <Text style={styles.label}>Landmark / Nearby Place *</Text>
               <TextInput
                 style={styles.input}
-                placeholder="e.g. Street 40, Block B, Main Market"
+                placeholder="Example: Main gate, near parking area, Block A entrance"
                 placeholderTextColor="#94A3B8"
-                value={address}
-                onChangeText={setAddress}
+                value={landmark}
+                onChangeText={setLandmark}
               />
             </View>
 
-            {/* Editable Lat/Lng fields */}
-            <View style={styles.coordinateRow}>
-              <View style={[styles.inputGroup, styles.coordCol]}>
-                <Text style={styles.label}>Latitude *</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="e.g. 23.2599"
-                  placeholderTextColor="#94A3B8"
-                  value={latitude}
-                  onChangeText={setLatitude}
-                  keyboardType="numeric"
-                />
-              </View>
+            {/* Read-Only Location Summary Card */}
+            {(latitude && longitude) ? (
+              <View style={styles.locationSummaryCard}>
+                <Text style={styles.locationSummaryTitle}>📍 Captured GPS Coordinates</Text>
+                
+                <View style={styles.locationSummaryGrid}>
+                  <View style={styles.locationSummaryCol}>
+                    <Text style={styles.locationSummaryLabel}>Latitude</Text>
+                    <Text style={styles.locationSummaryValue}>{latitude}</Text>
+                  </View>
+                  <View style={styles.locationSummaryCol}>
+                    <Text style={styles.locationSummaryLabel}>Longitude</Text>
+                    <Text style={styles.locationSummaryValue}>{longitude}</Text>
+                  </View>
+                </View>
 
-              <View style={[styles.inputGroup, styles.coordCol]}>
-                <Text style={styles.label}>Longitude *</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="e.g. 77.4126"
-                  placeholderTextColor="#94A3B8"
-                  value={longitude}
-                  onChangeText={setLongitude}
-                  keyboardType="numeric"
-                />
+                {accuracy !== null ? (
+                  <Text style={styles.locationSummaryAccuracy}>GPS Accuracy: ±{Math.round(accuracy)}m</Text>
+                ) : null}
+
+                {address ? (
+                  <View style={styles.locationSummaryAddressBox}>
+                    <Text style={styles.locationSummaryLabel}>Detected Address</Text>
+                    <Text style={styles.locationSummaryAddressText}>{address}</Text>
+                  </View>
+                ) : null}
               </View>
-            </View>
+            ) : null}
 
             <Text style={styles.noteText}>
               Privacy Note: Your location is used only for this incident report and command response.
@@ -996,5 +1013,56 @@ const styles = StyleSheet.create({
     color: '#475569',
     fontSize: 13,
     fontWeight: '600',
+  },
+  locationSummaryCard: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    padding: 12,
+    marginBottom: 16,
+  },
+  locationSummaryTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#0F172A',
+    marginBottom: 8,
+  },
+  locationSummaryGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+    gap: 12,
+  },
+  locationSummaryCol: {
+    flex: 1,
+  },
+  locationSummaryLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#64748B',
+    marginBottom: 2,
+  },
+  locationSummaryValue: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#334155',
+  },
+  locationSummaryAccuracy: {
+    fontSize: 11,
+    color: '#059669',
+    fontWeight: '500',
+    marginBottom: 8,
+  },
+  locationSummaryAddressBox: {
+    borderTopWidth: 1,
+    borderTopColor: '#EFF6FF',
+    paddingTop: 8,
+    marginTop: 4,
+  },
+  locationSummaryAddressText: {
+    fontSize: 12,
+    color: '#334155',
+    lineHeight: 16,
   },
 });

@@ -34,7 +34,11 @@ const createIncident = asyncHandler(async (req, res, next) => {
 
   // Validate coordinates
   const { coordinates, address } = location;
-  if (!coordinates || !Array.isArray(coordinates) || coordinates.length !== 2 || !address) {
+  if (!coordinates || !Array.isArray(coordinates) || coordinates.length !== 2) {
+    return next(new AppError(400, 'Current location is required to report an incident.'));
+  }
+
+  if (!address) {
     return next(new AppError(400, 'Please provide valid location details: coordinates as [longitude, latitude] and address.'));
   }
 

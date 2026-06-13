@@ -53,8 +53,11 @@ Use the following pre-configured credentials:
      * Review the suggested title, category, severity, improved description, missing questions, safety tips, and disclaimer.
      * Tap **Apply Suggestions** to automatically populate the form fields.
    * Review, edit, or keep the suggested Title, Description, Type, and Severity manually.
-   * Tap **📍 Use Current Location**. If prompted, grant location access permissions. The coordinates will capture automatically, and Nominatim reverse geocoding will populate the address field.
-   * If location is disabled or coordinates fail, manually enter the Latitude/Longitude and Address.
+   * **Location Verification**:
+     * Manual coordinate inputs are disabled to ensure report authenticity.
+     * Tap **📍 Use Current Location** (location permission is required to submit the report).
+     * Once captured, a read-only location card displays your Latitude, Longitude, GPS accuracy, and reverse-geocoded address.
+     * Enter a human-readable note in **Landmark / Nearby Place \*** (e.g. `"Near Main Gate"`) to help responders find you.
    * Tap **Submit Report**. You will be redirected to the **My Reports** history list.
 4. **Track Report & Timeline**:
    * Tap your newly created incident in the list.
