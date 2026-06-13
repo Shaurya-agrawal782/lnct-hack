@@ -84,6 +84,7 @@ graph TD
 
 ```
 DisasterConnect/
+├── mobile/                # Expo React Native mobile application
 ├── backend/               # Express backend application
 │   ├── src/
 │   │   ├── config/        # Environment configurations & DB connections
@@ -186,6 +187,21 @@ VITE_API_URL=http://localhost:5000/api
    - **Local Ports:**
      - Backend API: `http://localhost:5000` (Health Check: `http://localhost:5000/api/health`)
      - Frontend Dev Server: `http://localhost:5173`
+
+---
+
+## 📱 Mobile App (Expo React Native)
+
+A separate Expo React Native mobile client is located under the `mobile/` directory, optimized for Citizen and Responder workflows.
+
+- **Setup & Execution:**
+  ```bash
+  cd mobile
+  npm install
+  npx expo start
+  ```
+- **Backend Sync:** Interfaces directly with the deployed API (`https://disasterconnect-87so.onrender.com/api`).
+- **Features:** Role-based navigation redirecting to Citizen reporting dashboard or Field Responder task logs, utilizing secure JWT Bearer authorization persistence.
 
 ---
 
