@@ -2,7 +2,7 @@
 
 This is the Expo React Native mobile client for **DisasterConnect**, designed to coordinate emergency response workflows for Citizens and Field Responders.
 
-## Current Scope (Phase 4)
+## Current Scope (Phase 5)
 - **Expo React Native Foundation**: Bootstrapped with JavaScript and React Navigation.
 - **Backend Authentication Integration**: Implemented JWT Bearer token authorization using the existing backend endpoints.
 - **Secure Session Persistence**: Local token storage using `@react-native-async-storage/async-storage`.
@@ -10,6 +10,8 @@ This is the Expo React Native mobile client for **DisasterConnect**, designed to
 - **GPS Incident Reporting**: Captures coordinates using `expo-location`, supports Nominatim reverse geocoding for automated address filling, and integrates manual fallback overrides.
 - **Incident List & Detail Tracking**: Citizens can list their reported incidents (with RefreshControl) and view read-only detail dashboards mapping coordinates, assigned responders, dispatched resource units, and chronological status timelines.
 - **Field Responder Incident Updates**: Responders can list assigned dispatches and perform field status updates (e.g. to `in-progress` or `resolved` with custom notes) adhering to backend status transition logic.
+- **Role-Aware Safety Alerts Feed**: Real-time status and priority alerts feed for Citizens ("Safety Updates") and Field Responders ("Field Alerts") with pull-to-refresh, individual "Mark read" controls, and "Mark all read" header actions.
+- **Unread Alerts Badge Counter**: Synchronized count badges overlaid on Citizens and Responders dashboard cards, fetching unread counts on screen focus.
 
 ## Tech Stack
 - Expo React Native
@@ -63,4 +65,4 @@ Use these pre-configured accounts to verify authentication and role-based views:
 - **Phase 2 (Completed)**: Citizen incident reporting with GPS/location coordinates.
 - **Phase 3 (Completed)**: My Incident Reports list & detail views.
 - **Phase 4 (Completed)**: Responder assigned incidents mapping & status updates (auto-release resources).
-- **Phase 5**: Real-time Socket.io safety alerts & notifications.
+- **Phase 5 (Completed)**: Safety alerts & notifications feed with mark-as-read.

@@ -1,9 +1,29 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useCallback } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../../context/AuthContext';
+import { getMyAlerts } from '../../api/alertApi';
 
 export default function CitizenHomeScreen({ navigation }) {
   const { user, logout } = useContext(AuthContext);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const fetchUnreadCount = useCallback(async () => {
+    try {
+      const res = await getMyAlerts({ unreadOnly: 'true', limit: 1 });
+      if (res && res.success && res.data && res.data.pagination) {
+        setUnreadCount(res.data.pagination.totalItems || 0);
+      }
+    } catch (err) {
+      console.warn('Unread count fetch warning:', err);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUnreadCount();
+    }, [fetchUnreadCount])
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -41,7 +61,9 @@ export default function CitizenHomeScreen({ navigation }) {
             style={styles.card}
             onPress={() => navigation.navigate('MyReports')}
           >
-            <Text style={styles.cardIcon}>📁</Text>
+            <View style={styles.cardHeaderRow}>
+              <Text style={styles.cardIcon}>📁</Text>
+            </View>
             <Text style={styles.cardTitle}>My Reports</Text>
             <Text style={styles.cardDesc}>View your submitted incident reports</Text>
           </TouchableOpacity>
@@ -50,7 +72,14 @@ export default function CitizenHomeScreen({ navigation }) {
             style={styles.card}
             onPress={() => navigation.navigate('Alerts')}
           >
-            <Text style={styles.cardIcon}>🔔</Text>
+            <View style={styles.cardHeaderRow}>
+              <Text style={styles.cardIcon}>🔔</Text>
+              {unreadCount > 0 && (
+                <View style={styles.badgeOverlay}>
+                  <Text style={styles.badgeOverlayText}>{unreadCount}</Text>
+                </View>
+              )}
+            </View>
             <Text style={styles.cardTitle}>Alerts Feed</Text>
             <Text style={styles.cardDesc}>Safety warnings & alerts</Text>
           </TouchableOpacity>
@@ -173,9 +202,29 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+    minHeight: 28,
+  },
   cardIcon: {
     fontSize: 24,
-    marginBottom: 12,
+  },
+  badgeOverlay: {
+    backgroundColor: '#DC2626',
+    borderRadius: 12,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    minWidth: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeOverlayText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '800',
   },
   cardTitle: {
     fontSize: 16,

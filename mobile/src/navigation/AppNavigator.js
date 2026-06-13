@@ -6,7 +6,7 @@ import { AuthContext } from '../context/AuthContext';
 import LoginScreen from '../screens/auth/LoginScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
 import LoadingScreen from '../screens/common/LoadingScreen';
-import AlertsPlaceholderScreen from '../screens/common/AlertsPlaceholderScreen';
+import AlertsScreen from '../screens/common/AlertsScreen';
 import CitizenHomeScreen from '../screens/citizen/CitizenHomeScreen';
 import ReportIncidentScreen from '../screens/citizen/ReportIncidentScreen';
 import MyReportsScreen from '../screens/citizen/MyReportsScreen';
@@ -78,7 +78,7 @@ export default function AppNavigator() {
               />
               <Stack.Screen 
                 name="Alerts" 
-                component={AlertsPlaceholderScreen} 
+                component={AlertsScreen} 
                 options={{ title: 'Notifications & Alerts' }}
               />
             </>
@@ -103,7 +103,7 @@ export default function AppNavigator() {
               />
               <Stack.Screen 
                 name="Alerts" 
-                component={AlertsPlaceholderScreen} 
+                component={AlertsScreen} 
                 options={{ title: 'Notifications & Alerts' }}
               />
             </>

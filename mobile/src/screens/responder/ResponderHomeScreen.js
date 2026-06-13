@@ -1,9 +1,29 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useCallback } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../../context/AuthContext';
+import { getMyAlerts } from '../../api/alertApi';
 
 export default function ResponderHomeScreen({ navigation }) {
   const { user, logout } = useContext(AuthContext);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const fetchUnreadCount = useCallback(async () => {
+    try {
+      const res = await getMyAlerts({ unreadOnly: 'true', limit: 1 });
+      if (res && res.success && res.data && res.data.pagination) {
+        setUnreadCount(res.data.pagination.totalItems || 0);
+      }
+    } catch (err) {
+      console.warn('Unread count fetch warning:', err);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUnreadCount();
+    }, [fetchUnreadCount])
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -33,8 +53,10 @@ export default function ResponderHomeScreen({ navigation }) {
             onPress={() => navigation.navigate('AssignedIncidents')}
           >
             <View style={styles.cardHeader}>
-              <Text style={styles.cardIcon}>📋</Text>
-              <Text style={styles.cardTitle}>My Assigned Incidents</Text>
+              <View style={styles.cardHeaderLeft}>
+                <Text style={styles.cardIcon}>📋</Text>
+                <Text style={styles.cardTitle}>My Assigned Incidents</Text>
+              </View>
             </View>
             <Text style={styles.cardDesc}>
               View details, map routing, and update status of your assigned incident cases.
@@ -46,8 +68,15 @@ export default function ResponderHomeScreen({ navigation }) {
             onPress={() => navigation.navigate('Alerts')}
           >
             <View style={styles.cardHeader}>
-              <Text style={styles.cardIcon}>🔔</Text>
-              <Text style={styles.cardTitle}>Emergency Alerts Feed</Text>
+              <View style={styles.cardHeaderLeft}>
+                <Text style={styles.cardIcon}>🔔</Text>
+                <Text style={styles.cardTitle}>Emergency Alerts Feed</Text>
+              </View>
+              {unreadCount > 0 && (
+                <View style={styles.badgeOverlay}>
+                  <Text style={styles.badgeOverlayText}>{unreadCount}</Text>
+                </View>
+              )}
             </View>
             <Text style={styles.cardDesc}>
               Read real-time disaster alerts, area warnings, and admin updates.
@@ -147,7 +176,12 @@ const styles = StyleSheet.create({
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 8,
+  },
+  cardHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   cardIcon: {
     fontSize: 20,
@@ -163,6 +197,20 @@ const styles = StyleSheet.create({
     color: '#64748B',
     lineHeight: 18,
   },
+  badgeOverlay: {
+    backgroundColor: '#DC2626',
+    borderRadius: 12,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    minWidth: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeOverlayText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '800',
+  },
   logoutBtn: {
     borderColor: '#64748B',
     borderWidth: 1,
@@ -176,3 +224,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+

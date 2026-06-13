@@ -53,11 +53,9 @@
 - **Mobile Phase 2 completed: Citizen incident reporting added with Expo location GPS capture, manual coordinate fallback, and backend incident creation.**
 - **Mobile Phase 3 completed: Citizen My Reports list and read-only incident detail tracking added.**
 - **Mobile Phase 4 completed: Responder assigned incident list, detail view, and field status update workflow added.**
+- **Mobile Phase 5 completed: Safety alerts feed with role-based adaptive titles, mark-as-read controls, mark-all-read action, and Home screen unread count badges.**
 
 ## Next Steps
 - Seed demo data on production MongoDB Atlas (`npm run seed:users && npm run seed:demo`).
-- Verify deployed login → dashboard flow end-to-end after Render cold start.
-
-
 
 
