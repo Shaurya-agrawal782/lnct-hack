@@ -99,25 +99,27 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 text-left">
       {/* Welcome banner */}
-      <div className="bg-surface border border-outline-variant rounded-xl p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-on-surface">
-            Welcome back, {user.name}
-          </h1>
-          <p className="text-on-surface-variant text-sm mt-1">
-            {getWelcomeMessage()}{' '}
-            <span className="font-bold text-primary uppercase tracking-wide">
-              [{getRoleDisplayName()}]
-            </span>
-          </p>
-        </div>
+      {user.role !== 'admin' && (
+        <div className="bg-surface border border-outline-variant rounded-xl p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-on-surface">
+              Welcome back, {user.name}
+            </h1>
+            <p className="text-on-surface-variant text-sm mt-1">
+              {getWelcomeMessage()}{' '}
+              <span className="font-bold text-primary uppercase tracking-wide">
+                [{getRoleDisplayName()}]
+              </span>
+            </p>
+          </div>
 
-        {/* Socket connection indicator */}
-        <div className="flex items-center space-x-2 px-3 py-1.5 rounded bg-surface-container border border-outline-variant text-xs shrink-0">
-          <span className={`h-2.5 w-2.5 rounded-full ${connected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`}></span>
-          <span className="text-on-surface-variant font-bold uppercase tracking-wider">{connected ? 'Live Sync' : 'Offline'}</span>
+          {/* Socket connection indicator */}
+          <div className="flex items-center space-x-2 px-3 py-1.5 rounded bg-surface-container border border-outline-variant text-xs shrink-0">
+            <span className={`h-2.5 w-2.5 rounded-full ${connected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`}></span>
+            <span className="text-on-surface-variant font-bold uppercase tracking-wider">{connected ? 'Live Sync' : 'Offline'}</span>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Render sub-dashboard by role */}
       {user.role === 'admin' && (

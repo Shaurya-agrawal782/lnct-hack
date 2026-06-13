@@ -10,16 +10,16 @@ import TypePieChart from '../../components/charts/TypePieChart';
 // Consistent Status Badge
 const StatusBadge = ({ status }) => {
   const styles = {
-    reported: 'bg-slate-50 text-slate-700 border-slate-200',
+    reported: 'bg-slate-100 text-slate-700 border-slate-200',
     verified: 'bg-indigo-50 text-indigo-700 border-indigo-200',
     assigned: 'bg-amber-50 text-amber-700 border-amber-200',
-    'in-progress': 'bg-blue-50 text-blue-700 border-blue-200',
-    resolved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    'in-progress': 'bg-blue-50 text-[#2563EB] border-blue-200',
+    resolved: 'bg-emerald-50 text-[#16A34A] border-emerald-200',
     closed: 'bg-slate-100 text-slate-500 border-slate-200'
   };
-  const current = styles[status?.toLowerCase()] || 'bg-slate-50 text-slate-700 border-slate-200';
+  const current = styles[status?.toLowerCase()] || 'bg-slate-100 text-slate-700 border-slate-200';
   return (
-    <span className={`px-2 py-0.5 rounded text-[10px] font-bold border uppercase tracking-wide shrink-0 ${current}`}>
+    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border uppercase tracking-wider shrink-0 ${current}`}>
       {status}
     </span>
   );
@@ -28,14 +28,14 @@ const StatusBadge = ({ status }) => {
 // Consistent Severity Badge
 const SeverityBadge = ({ severity }) => {
   const styles = {
-    critical: 'bg-rose-50 text-rose-700 border-rose-200 font-extrabold animate-pulse',
-    high: 'bg-amber-50 text-amber-800 border-amber-200',
-    medium: 'bg-amber-50 text-amber-700 border-amber-200/60',
-    low: 'bg-blue-50 text-blue-700 border-blue-200'
+    critical: 'bg-red-50 text-[#DC2626] border-red-200 font-bold',
+    high: 'bg-amber-50 text-[#F59E0B] border-amber-200 font-semibold',
+    medium: 'bg-amber-50/50 text-[#D97706] border-amber-100',
+    low: 'bg-blue-50 text-[#2563EB] border-blue-100'
   };
   const current = styles[severity?.toLowerCase()] || 'bg-slate-50 text-slate-700 border-slate-200';
   return (
-    <span className={`px-2 py-0.5 rounded text-[10px] font-bold border uppercase tracking-wide shrink-0 ${current}`}>
+    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border uppercase tracking-wider shrink-0 ${current}`}>
       {severity}
     </span>
   );
@@ -44,8 +44,9 @@ const SeverityBadge = ({ severity }) => {
 export default function AdminDashboard({ data, user, fetchDashboardData }) {
   const { summary, incidentStats, resourceStats, alertStats } = data || {};
 
-  // Clock state
+  // Clock & Sync state
   const [time, setTime] = useState(new Date());
+  const [lastRefreshed, setLastRefreshed] = useState(new Date());
 
   // Local Data State
   const [incidents, setIncidents] = useState([]);
@@ -73,6 +74,7 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
       if (grpRes.success) {
         setGroups(grpRes.data.groups || []);
       }
+      setLastRefreshed(new Date());
     } catch (err) {
       console.error('[Telemetry Load Error]', err);
     } finally {
@@ -87,7 +89,20 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
   // Derived telemetry metrics
   const activeIncidents = incidents.filter(i => ['reported', 'verified', 'assigned', 'in-progress'].includes(i.status));
   const activeCoords = activeIncidents.filter(inc => inc.location?.coordinates && inc.location.coordinates.length === 2);
-  const aiPriorityIncidents = incidents
+  
+  // Sort Incident Queue by severity rank (Critical first) and newest
+  const severityRanks = { critical: 4, high: 3, medium: 2, low: 1 };
+  const queueIncidents = [...activeIncidents]
+    .sort((a, b) => {
+      const aRank = severityRanks[a.severity?.toLowerCase()] || 0;
+      const bRank = severityRanks[b.severity?.toLowerCase()] || 0;
+      if (bRank !== aRank) return bRank - aRank;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    })
+    .slice(0, 6);
+
+  // AI Watchlist
+  const aiTriageWatchlist = incidents
     .filter(i => i.aiTriage && ['reported', 'verified', 'assigned', 'in-progress'].includes(i.status))
     .sort((a, b) => (b.aiTriage.riskScore || 0) - (a.aiTriage.riskScore || 0))
     .slice(0, 3);
@@ -140,296 +155,243 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
     return alert.readBy && alert.readBy.some(entry => entry.user === user._id || entry.user?._id === user._id);
   };
 
+  const handleRefreshClick = () => {
+    fetchDashboardData();
+    loadTelemetry();
+  };
+
   return (
-    <div className="space-y-6 text-left">
-      {/* 1. Header Section */}
-      <motion.div 
-        className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-outline-variant"
-        variants={fadeUp}
-        initial="hidden"
-        animate="visible"
-      >
+    <div className="bg-[#F4F6FA] min-h-screen -m-6 p-6 space-y-6 text-left text-[#0F172A]">
+      {/* 1. Compact Command Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#DDE3EA]">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">DisasterConnect Command Center</h1>
-          <p className="text-sm text-slate-500 mt-1">Live incident coordination, responder dispatch, and risk monitoring</p>
+          <h1 className="text-xl font-bold text-[#07111F] tracking-tight">Emergency Operations Command</h1>
+          <p className="text-xs text-[#64748B] mt-0.5">Live incident monitoring, responder dispatch, grouped cases and AI triage</p>
         </div>
         
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Status Pill */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 text-xs font-bold shadow-sm">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-emerald-200 bg-emerald-50 text-[#16A34A] text-[11px] font-bold">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#16A34A] animate-pulse"></span>
             <span>LIVE SYSTEM</span>
           </div>
 
-          {/* Clock */}
-          <div className="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 font-mono text-xs font-bold text-slate-700 shadow-sm">
-            {time.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })} • {time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })}
-          </div>
+          <span className="text-xs text-[#64748B]">
+            Sync: <strong className="text-[#0F172A] font-mono">{lastRefreshed.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</strong>
+          </span>
 
-          {/* Sync control */}
           <button 
-            onClick={() => {
-              fetchDashboardData();
-              loadTelemetry();
-            }}
-            className="p-2 border border-slate-200 text-slate-700 hover:bg-slate-50 transition rounded-lg text-xs font-bold inline-flex items-center justify-center shadow-sm"
-            title="Reload database telemetry"
+            onClick={handleRefreshClick}
+            className="p-1.5 border border-[#DDE3EA] bg-white text-[#64748B] hover:bg-slate-50 transition rounded-md text-xs font-bold flex items-center justify-center shadow-sm"
+            title="Refresh logs"
           >
             <span className="material-symbols-outlined text-sm">sync</span>
           </button>
         </div>
-      </motion.div>
+      </div>
 
-      {/* 2. Metric Strip */}
+      {/* 2. Top KPI Summary Strip */}
       <motion.div 
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
       >
-        {/* Critical Card */}
+        {/* Critical Open */}
         <motion.div 
-          className="bg-white border border-outline-variant rounded-xl p-5 shadow-sm flex items-center justify-between border-l-4 border-l-rose-500"
+          className="bg-white border border-[#DDE3EA] rounded-[16px] p-4 shadow-sm border-l-4 border-l-[#DC2626]"
           variants={listItem}
         >
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Critical Incidents</span>
-            <span className="text-3xl font-extrabold text-slate-900">{summary?.incidents?.critical ?? 0}</span>
-            <span className="text-xs text-rose-600 font-semibold block">Requires immediate dispatch</span>
-          </div>
-          <div className="p-3 rounded-lg bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center shadow-inner">
-            <span className="material-symbols-outlined text-[24px]">campaign</span>
-          </div>
+          <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Critical Open</span>
+          <span className="text-2xl font-bold text-[#0F172A] mt-1 block">{summary?.incidents?.critical ?? 0}</span>
+          <span className="text-[10px] text-[#DC2626] font-medium block mt-1">Immediate dispatch needed</span>
         </motion.div>
 
-        {/* Active Tickets Card */}
+        {/* Active Incidents */}
         <motion.div 
-          className="bg-white border border-outline-variant rounded-xl p-5 shadow-sm flex items-center justify-between border-l-4 border-l-blue-500"
+          className="bg-white border border-[#DDE3EA] rounded-[16px] p-4 shadow-sm border-l-4 border-l-[#2563EB]"
           variants={listItem}
         >
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Active Tickets</span>
-            <span className="text-3xl font-extrabold text-slate-900">{summary?.incidents?.active ?? 0}</span>
-            <span className="text-xs text-blue-600 font-semibold block">Under triage or response</span>
-          </div>
-          <div className="p-3 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shadow-inner">
-            <span className="material-symbols-outlined text-[24px]">emergency</span>
-          </div>
+          <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Active Incidents</span>
+          <span className="text-2xl font-bold text-[#0F172A] mt-1 block">{summary?.incidents?.active ?? 0}</span>
+          <span className="text-[10px] text-[#2563EB] font-medium block mt-1">Ongoing rescue ops</span>
         </motion.div>
 
-        {/* Available Resources Card */}
+        {/* Grouped Cases */}
         <motion.div 
-          className="bg-white border border-outline-variant rounded-xl p-5 shadow-sm flex items-center justify-between border-l-4 border-l-emerald-500"
+          className="bg-white border border-[#DDE3EA] rounded-[16px] p-4 shadow-sm border-l-4 border-l-indigo-600"
           variants={listItem}
         >
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Available Resources</span>
-            <span className="text-3xl font-extrabold text-slate-900">{summary?.resources?.available ?? 0}</span>
-            <span className="text-xs text-emerald-600 font-semibold block">Ready to deploy</span>
-          </div>
-          <div className="p-3 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shadow-inner">
-            <span className="material-symbols-outlined text-[24px]">support</span>
-          </div>
+          <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Grouped Cases</span>
+          <span className="text-2xl font-bold text-[#0F172A] mt-1 block">{activeGroups.length}</span>
+          <span className="text-[10px] text-indigo-600 font-medium block mt-1">Clusters detected</span>
         </motion.div>
 
-        {/* Unread Alerts Card */}
+        {/* Available Resources */}
         <motion.div 
-          className="bg-white border border-outline-variant rounded-xl p-5 shadow-sm flex items-center justify-between border-l-4 border-l-amber-500"
+          className="bg-white border border-[#DDE3EA] rounded-[16px] p-4 shadow-sm border-l-4 border-l-[#16A34A]"
           variants={listItem}
         >
-          <div className="space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Unread Alerts</span>
-            <span className="text-3xl font-extrabold text-slate-900">{summary?.alerts?.unread ?? 0}</span>
-            <span className="text-xs text-amber-600 font-semibold block">Broadcast feed backlog</span>
-          </div>
-          <div className="p-3 rounded-lg bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shadow-inner">
-            <span className="material-symbols-outlined text-[24px]">notifications_active</span>
-          </div>
+          <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Available Assets</span>
+          <span className="text-2xl font-bold text-[#0F172A] mt-1 block">{summary?.resources?.available ?? 0}</span>
+          <span className="text-[10px] text-[#16A34A] font-medium block mt-1">Ready to deploy</span>
+        </motion.div>
+
+        {/* Unread Alerts */}
+        <motion.div 
+          className="bg-white border border-[#DDE3EA] rounded-[16px] p-4 shadow-sm border-l-4 border-l-[#F59E0B]"
+          variants={listItem}
+        >
+          <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Unread Alerts</span>
+          <span className="text-2xl font-bold text-[#0F172A] mt-1 block">{summary?.alerts?.unread ?? 0}</span>
+          <span className="text-[10px] text-[#F59E0B] font-medium block mt-1">Requires supervisor review</span>
         </motion.div>
       </motion.div>
 
-      {/* 3. Main Command Layout: Map & Incident Queue */}
+      {/* 3. Main Command Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left 65%: Operational Map Overview */}
+        {/* Left 8 columns: Live Incident Map Overview */}
         <motion.div 
-          className="lg:col-span-8 bg-white border border-outline-variant rounded-xl p-5 shadow-sm flex flex-col justify-between"
+          className="lg:col-span-8 bg-white border border-[#DDE3EA] rounded-[16px] p-5 shadow-sm flex flex-col justify-between"
           variants={fadeUp}
           initial="hidden"
           animate="visible"
         >
-          <div>
-            <div className="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
-              <h3 className="font-semibold text-slate-900 text-sm uppercase tracking-wide flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-lg">radar</span>
-                Operational Radar Console
+          <div className="space-y-4">
+            <div className="flex justify-between items-center pb-2 border-b border-[#DDE3EA]">
+              <h3 className="font-semibold text-[#07111F] text-sm uppercase tracking-wide flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[#2563EB] text-lg">map</span>
+                Live Incident Map
               </h3>
-              <span className="text-[10px] font-bold text-slate-400 uppercase font-mono">
-                Telemetry Grid
-              </span>
+              <span className="text-[10px] font-bold text-[#64748B] uppercase font-mono">GPS Coordinates</span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-              {/* SVG Map grid wrapper */}
-              <div className="md:col-span-8 bg-slate-950 rounded-xl relative border border-slate-800 shadow-inner overflow-hidden aspect-[5/3]">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
+              {/* GIS Cartesian Coordinate Plotting Board */}
+              <div className="md:col-span-8 bg-slate-900 rounded-lg relative overflow-hidden aspect-[1.6]">
                 {loadingLocal ? (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 bg-slate-950/80">
-                    <span className="material-symbols-outlined text-[32px] text-primary animate-spin mb-2">sync</span>
-                    <span className="text-xs font-mono">Acquiring coordinates...</span>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
+                    <span className="material-symbols-outlined text-lg text-[#2563EB] animate-spin mb-1">sync</span>
+                    <span className="text-[10px] font-mono">Syncing GPS...</span>
                   </div>
                 ) : activeCoords.length === 0 ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
-                    <span className="material-symbols-outlined text-[40px] text-slate-700 animate-pulse">radar</span>
-                    <span className="text-xs font-mono mt-2">NO ACTIVE COORDINATES REPORTED</span>
+                    <span className="material-symbols-outlined text-[36px] text-slate-700 mb-1">pin_drop</span>
+                    <span className="text-[10px] font-mono">GRID OFFLINE • NO ACTIVE COORDINATES</span>
                   </div>
                 ) : (
-                  <>
-                    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full">
-                      {/* Grid lines */}
-                      {gridX.map((x, i) => (
-                        <g key={`x-${i}`}>
-                          <line x1={x} y1={padding} x2={x} y2={height - padding} stroke="#334155" strokeWidth="0.5" strokeDasharray="3 3" />
-                          <text x={x} y={height - padding + 15} fill="#64748B" fontSize="8" textAnchor="middle" fontFamily="monospace">
-                            {(minLng + (i / 4) * (maxLng - minLng)).toFixed(3)}
-                          </text>
-                        </g>
-                      ))}
-                      {gridY.map((y, i) => (
-                        <g key={`y-${i}`}>
-                          <line x1={padding} y1={y} x2={width - padding} y2={y} stroke="#334155" strokeWidth="0.5" strokeDasharray="3 3" />
-                          <text x={padding - 5} y={y + 3} fill="#64748B" fontSize="8" textAnchor="end" fontFamily="monospace">
-                            {(maxLat - (i / 3) * (maxLat - minLat)).toFixed(3)}
-                          </text>
-                        </g>
-                      ))}
-
-                      {/* Compass widget */}
-                      <g transform="translate(445, 50)" opacity="0.15">
-                        <circle r="16" fill="none" stroke="#94A3B8" strokeWidth="1" strokeDasharray="2 2" />
-                        <line x1="0" y1="-20" x2="0" y2="20" stroke="#94A3B8" strokeWidth="1" />
-                        <line x1="-20" y1="0" x2="20" y2="0" stroke="#94A3B8" strokeWidth="1" />
-                        <polygon points="0,-20 -3,-4 0,-6" fill="#94A3B8" />
-                        <polygon points="0,-20 3,-4 0,-6" fill="#64748B" />
-                        <text x="0" y="-23" textAnchor="middle" fontSize="7" fontWeight="bold" fill="#94A3B8">N</text>
+                  <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full">
+                    {/* Grid lines */}
+                    {gridX.map((x, i) => (
+                      <g key={`x-${i}`}>
+                        <line x1={x} y1={padding} x2={x} y2={height - padding} stroke="#334155" strokeWidth="0.5" strokeDasharray="3 3" />
+                        <text x={x} y={height - padding + 15} fill="#64748B" fontSize="8" textAnchor="middle" fontFamily="monospace">
+                          {(minLng + (i / 4) * (maxLng - minLng)).toFixed(3)}
+                        </text>
                       </g>
+                    ))}
+                    {gridY.map((y, i) => (
+                      <g key={`y-${i}`}>
+                        <line x1={padding} y1={y} x2={width - padding} y2={y} stroke="#334155" strokeWidth="0.5" strokeDasharray="3 3" />
+                        <text x={padding - 5} y={y + 3} fill="#64748B" fontSize="8" textAnchor="end" fontFamily="monospace">
+                          {(maxLat - (i / 3) * (maxLat - minLat)).toFixed(3)}
+                        </text>
+                      </g>
+                    ))}
 
-                      {/* Active coordinates markers */}
-                      {activeCoords.map((incident) => {
-                        const x = getSvgX(incident.location.coordinates[0]);
-                        const y = getSvgY(incident.location.coordinates[1]);
-                        const isSelected = selectedIncident?._id === incident._id;
-                        const isCritical = incident.severity === 'critical';
+                    {/* Active incident coordinates */}
+                    {activeCoords.map((incident) => {
+                      const x = getSvgX(incident.location.coordinates[0]);
+                      const y = getSvgY(incident.location.coordinates[1]);
+                      const isSelected = selectedIncident?._id === incident._id;
 
-                        return (
-                          <g 
-                            key={incident._id} 
-                            onClick={() => setSelectedIncident(incident)}
-                            className="cursor-pointer group"
-                          >
-                            {isCritical && (
-                              <circle 
-                                cx={x} 
-                                cy={y} 
-                                r="9" 
-                                fill="none" 
-                                stroke="#EF4444" 
-                                strokeWidth="1.5" 
-                                className="animate-ping" 
-                                style={{ transformOrigin: `${x}px ${y}px`, animationDuration: '3s' }}
-                              />
-                            )}
-                            {isSelected && (
-                              <>
-                                <circle cx={x} cy={y} r="11" fill="none" stroke="#3B82F6" strokeWidth="1.5" strokeDasharray="2 2" />
-                                <line x1={x - 15} y1={y} x2={x + 15} y2={y} stroke="#3B82F6" strokeWidth="0.8" />
-                                <line x1={x} y1={y - 15} x2={x} y2={y + 15} stroke="#3B82F6" strokeWidth="0.8" />
-                              </>
-                            )}
-                            <circle 
-                              cx={x} 
-                              cy={y} 
-                              r={isSelected ? "5.5" : "4.5"} 
-                              fill={
-                                incident.severity === 'critical' ? '#EF4444' :
-                                incident.severity === 'high' ? '#F59E0B' :
-                                incident.severity === 'medium' ? '#F59E0B' : '#3B82F6'
-                              }
-                              stroke="#FFFFFF" 
-                              strokeWidth="1.2"
-                              className="transition-all duration-200 group-hover:scale-125"
-                            />
-                          </g>
-                        );
-                      })}
-                    </svg>
-
-                    {/* Full map note */}
-                    <div className="absolute top-2.5 right-2.5 bg-slate-900/80 border border-slate-700 rounded px-2 py-1 text-[9px] font-bold text-slate-400 font-mono">
-                      GPS GRID ACTIVE
-                    </div>
-                  </>
+                      return (
+                        <g 
+                          key={incident._id} 
+                          onClick={() => setSelectedIncident(incident)}
+                          className="cursor-pointer"
+                        >
+                          {isSelected && (
+                            <circle cx={x} cy={y} r="9" fill="none" stroke="#2563EB" strokeWidth="1.2" />
+                          )}
+                          <circle 
+                            cx={x} 
+                            cy={y} 
+                            r={isSelected ? "5" : "4"} 
+                            fill={
+                              incident.severity === 'critical' ? '#DC2626' :
+                              incident.severity === 'high' ? '#F59E0B' :
+                              incident.severity === 'medium' ? '#F59E0B' : '#2563EB'
+                            }
+                            stroke="#FFFFFF" 
+                            strokeWidth="1"
+                          />
+                        </g>
+                      );
+                    })}
+                  </svg>
                 )}
               </div>
 
-              {/* Coordinates details panel */}
-              <div className="md:col-span-4 flex flex-col justify-between border border-slate-100 rounded-xl p-4 bg-slate-50/50">
+              {/* Coordinate Telemetry Side Reader */}
+              <div className="md:col-span-4 flex flex-col justify-between border border-[#DDE3EA] rounded-lg p-4 bg-slate-50">
                 <div className="space-y-3">
-                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wide border-b pb-1.5 border-slate-200">
-                    Live Telemetry Detail
+                  <h4 className="text-[11px] font-bold text-[#64748B] uppercase tracking-wide border-b pb-1 border-[#DDE3EA]">
+                    Telemetry Data Link
                   </h4>
                   {selectedIncident ? (
-                    <div className="space-y-2.5 text-xs">
+                    <div className="space-y-2.5 text-xs text-[#0F172A]">
                       <div>
-                        <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Ticket Code</span>
-                        <span className="font-mono font-bold text-slate-800">{selectedIncident.ticketNumber || 'N/A'}</span>
+                        <span className="text-[9px] text-[#64748B] uppercase tracking-wider block">Incident ID</span>
+                        <span className="font-mono font-bold">{selectedIncident.ticketNumber || 'N/A'}</span>
                       </div>
                       <div>
-                        <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Incident Title</span>
-                        <span className="font-semibold text-slate-900 block truncate" title={selectedIncident.title}>
+                        <span className="text-[9px] text-[#64748B] uppercase tracking-wider block">Title</span>
+                        <span className="font-semibold block truncate" title={selectedIncident.title}>
                           {selectedIncident.title}
                         </span>
                       </div>
                       <div className="flex gap-2">
                         <div>
-                          <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Severity</span>
+                          <span className="text-[9px] text-[#64748B] uppercase tracking-wider block">Severity</span>
                           <SeverityBadge severity={selectedIncident.severity} />
                         </div>
                         <div>
-                          <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Status</span>
+                          <span className="text-[9px] text-[#64748B] uppercase tracking-wider block">Status</span>
                           <StatusBadge status={selectedIncident.status} />
                         </div>
                       </div>
                       <div>
-                        <span className="text-[10px] text-slate-400 uppercase tracking-wider block">GPS Coordinates</span>
+                        <span className="text-[9px] text-[#64748B] uppercase tracking-wider block">GPS Grid</span>
                         <span className="font-mono text-[11px] text-slate-700 block">
                           Lat: {selectedIncident.location?.coordinates[1]?.toFixed(5)}°<br/>
                           Lng: {selectedIncident.location?.coordinates[0]?.toFixed(5)}°
                         </span>
                       </div>
                       <div>
-                        <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Dispatch Site</span>
+                        <span className="text-[9px] text-[#64748B] uppercase tracking-wider block">Address</span>
                         <span className="text-slate-600 block text-[11px] line-clamp-2" title={selectedIncident.location?.address}>
-                          📍 {selectedIncident.location?.address || 'No location address available'}
+                          {selectedIncident.location?.address || 'No details'}
                         </span>
                       </div>
                     </div>
                   ) : (
-                    <div className="py-6 text-center text-slate-400 text-[11px] italic">
-                      Select any active coordinate node on the grid scanner to view live dispatcher details.
+                    <div className="py-8 text-center text-[#64748B] text-[11px] italic">
+                      Click any coordinate plot on the grid to display live dispatcher data.
                     </div>
                   )}
                 </div>
 
                 {selectedIncident && (
-                  <div className="mt-4 pt-3 border-t border-slate-200 flex gap-2">
+                  <div className="mt-4 pt-3 border-t border-[#DDE3EA] flex gap-2">
                     <Link
                       to={`/dashboard/incidents/${selectedIncident._id}`}
-                      className="flex-1 py-1.5 bg-primary text-white text-center text-xs font-bold rounded-lg hover:opacity-95 transition"
+                      className="flex-grow py-1 bg-[#2563EB] text-white text-center text-[11px] font-bold rounded hover:opacity-90 transition"
                     >
-                      Open Dossier
+                      Dossier
                     </Link>
                     <button
                       onClick={() => setSelectedIncident(null)}
-                      className="px-2 py-1.5 border border-slate-200 text-slate-500 rounded-lg hover:bg-slate-100 text-xs font-bold"
+                      className="px-2 py-1 border border-[#DDE3EA] text-[#64748B] bg-white rounded hover:bg-slate-100 text-[11px] font-bold"
                     >
                       Clear
                     </button>
@@ -439,70 +401,71 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
             </div>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500">
+          <div className="mt-4 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#64748B]">
             <div className="flex gap-4">
-              <span>Active GPS Markers: <strong className="text-slate-800">{activeCoords.length}</strong></span>
-              <span>High Severity cases: <strong className="text-rose-600">{activeIncidents.filter(i => ['critical', 'high'].includes(i.severity)).length}</strong></span>
+              <span>Active coordinate units: <strong className="text-[#0F172A]">{activeCoords.length}</strong></span>
+              <span>High-priority incidents: <strong className="text-[#DC2626]">{activeIncidents.filter(i => ['critical', 'high'].includes(i.severity)).length}</strong></span>
+              <span>Grouped incident cases: <strong className="text-indigo-600">{activeIncidents.filter(i => i.incidentGroup).length}</strong></span>
             </div>
             
             <Link
               to="/dashboard/map"
-              className="text-primary font-bold inline-flex items-center gap-1 hover:underline"
+              className="text-[#2563EB] font-bold inline-flex items-center gap-0.5 hover:underline"
             >
-              <span>Open Map Command Center for full live map</span>
+              <span>Open Interactive Map for full GIS view</span>
               <span className="material-symbols-outlined text-sm">chevron_right</span>
             </Link>
           </div>
         </motion.div>
 
-        {/* Right 35%: Live Incident Queue */}
+        {/* Right 4 columns: Priority Incident Queue */}
         <motion.div 
-          className="lg:col-span-4 bg-white border border-outline-variant rounded-xl p-5 shadow-sm flex flex-col justify-between"
+          className="lg:col-span-4 bg-white border border-[#DDE3EA] rounded-[16px] p-5 shadow-sm flex flex-col justify-between"
           variants={fadeUp}
           initial="hidden"
           animate="visible"
         >
           <div className="space-y-4">
-            <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-              <h3 className="font-semibold text-slate-900 text-sm uppercase tracking-wide flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-lg">list_alt</span>
-                Live Incident Queue
+            <div className="flex justify-between items-center pb-2 border-b border-[#DDE3EA]">
+              <h3 className="font-semibold text-[#07111F] text-sm uppercase tracking-wide flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[#2563EB] text-lg">list_alt</span>
+                Priority Incident Queue
               </h3>
-              <span className="px-2 py-0.5 text-[10px] font-bold text-blue-600 border border-blue-200 bg-blue-50 rounded uppercase">
-                Active
+              <span className="px-1.5 py-0.5 text-[9px] font-bold text-rose-700 border border-rose-200 bg-rose-50 rounded uppercase">
+                Alerts
               </span>
             </div>
 
-            <div className="space-y-3">
-              {activeIncidents.length === 0 ? (
-                <div className="py-12 text-center text-slate-400 text-xs italic">
-                  No active incidents requiring dispatcher triage.
+            <div className="space-y-2">
+              {queueIncidents.length === 0 ? (
+                <div className="py-12 text-center text-[#64748B] text-xs italic">
+                  No active incidents recorded.
                 </div>
               ) : (
-                activeIncidents.slice(0, 5).map((inc) => (
+                queueIncidents.map((inc) => (
                   <Link 
                     key={inc._id}
                     to={`/dashboard/incidents/${inc._id}`}
-                    className="block p-3 border border-slate-100 rounded-lg bg-slate-50/50 hover:bg-slate-50 hover:border-slate-200 transition text-left"
+                    className="block p-2.5 border border-slate-100 rounded-lg bg-slate-50 hover:bg-slate-100/70 hover:border-slate-200 transition text-left"
                   >
-                    <div className="flex justify-between items-start gap-2">
-                      <span className="text-[10px] font-mono font-bold text-slate-400 block tracking-wide">
+                    <div className="flex justify-between items-start gap-2 text-[10px]">
+                      <span className="font-mono font-bold text-[#64748B] tracking-wide">
                         {inc.ticketNumber || 'NO TICKET'}
                       </span>
-                      <span className="text-[10px] font-medium text-slate-400">
+                      <span className="text-[#64748B]">
                         {new Date(inc.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
 
-                    <h4 className="text-xs font-bold text-slate-900 mt-1 truncate" title={inc.title}>
+                    <h4 className="text-xs font-bold text-[#0F172A] mt-1 truncate" title={inc.title}>
                       {inc.title}
                     </h4>
 
-                    <p className="text-[10px] text-slate-500 mt-1 line-clamp-1">
+                    <p className="text-[10px] text-[#64748B] mt-0.5 truncate">
                       📍 {inc.location?.address || 'No address details'}
                     </p>
 
-                    <div className="flex gap-2 mt-2 pt-2 border-t border-slate-100">
+                    <div className="flex gap-2 mt-2 pt-2 border-t border-slate-200/40">
                       <SeverityBadge severity={inc.severity} />
                       <StatusBadge status={inc.status} />
                     </div>
@@ -515,7 +478,7 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
           {activeIncidents.length > 0 && (
             <Link 
               to="/dashboard/incidents"
-              className="mt-4 w-full py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 text-center text-xs font-bold rounded-lg border border-slate-200 block transition"
+              className="mt-4 w-full py-2 bg-slate-50 hover:bg-slate-100 text-[#0F172A] text-center text-xs font-bold rounded-lg border border-[#DDE3EA] block transition"
             >
               View all incidents
             </Link>
@@ -523,145 +486,129 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
         </motion.div>
       </div>
 
-      {/* 4. AI Priority Section */}
-      <motion.div 
-        className="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-4"
-        variants={fadeUp}
-        initial="hidden"
-        animate="visible"
-      >
-        <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-          <h3 className="font-semibold text-slate-900 text-sm uppercase tracking-wide flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary text-lg">psychology</span>
-            AI Triage Priority Queue
-          </h3>
-          <span className="text-[10px] font-mono font-bold text-indigo-500 uppercase">
-            Gemini Advisory Systems
-          </span>
-        </div>
-
-        {aiPriorityIncidents.length === 0 ? (
-          <div className="flex flex-col items-center justify-center p-8 text-center bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
-            <span className="material-symbols-outlined text-slate-300 text-[40px] mb-2">psychology</span>
-            <p className="text-sm font-medium text-slate-700">AI triage database empty</p>
-            <p className="text-xs text-slate-400 max-w-sm mt-1">AI triage appears here after incident reports are analyzed.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {aiPriorityIncidents.map((inc) => {
-              const score = inc.aiTriage.riskScore || 0;
-              const scoreColor = score >= 80 ? 'text-rose-600 bg-rose-50 border-rose-200' :
-                                 score >= 50 ? 'text-amber-600 bg-amber-50 border-amber-200' :
-                                 'text-emerald-600 bg-emerald-50 border-emerald-200';
-
-              return (
-                <div 
-                  key={inc._id}
-                  className="border border-slate-200/80 rounded-xl p-4 bg-slate-50/30 text-left flex flex-col justify-between"
-                >
-                  <div className="space-y-2.5">
-                    {/* Header */}
-                    <div className="flex justify-between items-center">
-                      <span className={`px-2 py-0.5 rounded font-mono text-xs font-black border ${scoreColor}`}>
-                        {score}% RISK
-                      </span>
-                      <SeverityBadge severity={inc.aiTriage.recommendedPriority || inc.severity} />
-                    </div>
-
-                    <div>
-                      <span className="text-[10px] font-mono text-slate-400 block uppercase">
-                        {inc.ticketNumber || 'NO TICKET'}
-                      </span>
-                      <h4 className="text-xs font-bold text-slate-900 truncate mt-0.5" title={inc.title}>
-                        {inc.title}
-                      </h4>
-                    </div>
-
-                    <p className="text-xs text-slate-600 line-clamp-3 bg-white p-2.5 rounded border border-slate-100/60 leading-relaxed italic">
-                      "{inc.aiTriage.shortSummary}"
-                    </p>
-
-                    {inc.aiTriage.likelyRisks && inc.aiTriage.likelyRisks.length > 0 && (
-                      <div className="flex flex-wrap gap-1 pt-1.5">
-                        {inc.aiTriage.likelyRisks.slice(0, 3).map((risk, idx) => (
-                          <span key={idx} className="px-1.5 py-0.5 bg-slate-100 text-[9px] text-slate-600 rounded font-medium border border-slate-200/40">
-                            ⚠️ {risk}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <Link
-                    to={`/dashboard/incidents/${inc._id}`}
-                    className="mt-4 w-full py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-center text-xs font-bold rounded-lg border border-indigo-200 block transition"
-                  >
-                    Open AI Dossier
-                  </Link>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </motion.div>
-
-      {/* 5. Grouped Reports & 6. Recent Alerts (Grid of 2 items) */}
+      {/* 4. Second Row: AI Watchlist & Grouped Incident Cases */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Column: Grouped Incident Cases */}
+        {/* Left: AI Triage Watchlist */}
         <motion.div 
-          className="bg-white border border-outline-variant rounded-xl p-5 shadow-sm flex flex-col justify-between"
+          className="bg-white border border-[#DDE3EA] rounded-[16px] p-5 shadow-sm flex flex-col justify-between"
           variants={fadeUp}
           initial="hidden"
           animate="visible"
         >
           <div className="space-y-4">
-            <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-              <h3 className="font-semibold text-slate-900 text-sm uppercase tracking-wide flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-lg">folder_shared</span>
-                Smart Grouped Cases
+            <div className="flex justify-between items-center pb-2 border-b border-[#DDE3EA]">
+              <h3 className="font-semibold text-[#07111F] text-sm uppercase tracking-wide flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[#2563EB] text-lg">psychology</span>
+                AI Triage Watchlist
               </h3>
-              <span className="px-2 py-0.5 text-[10px] font-bold text-indigo-600 border border-indigo-200 bg-indigo-50 rounded uppercase">
-                {activeGroups.length} ACTIVE GROUPS
+              <span className="text-[9px] font-mono font-bold text-indigo-600 uppercase">
+                Gemini Advisory
               </span>
             </div>
 
-            <div className="space-y-3">
+            {aiTriageWatchlist.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-10 text-center bg-slate-50 rounded-lg border border-dashed border-[#DDE3EA]">
+                <span className="material-symbols-outlined text-slate-300 text-[32px] mb-1">psychology</span>
+                <p className="text-xs font-medium text-slate-700">AI triage appears here after incident reports are analyzed.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {aiTriageWatchlist.map((inc) => {
+                  const score = inc.aiTriage.riskScore || 0;
+                  const scoreColor = score >= 80 ? 'text-[#DC2626] bg-red-50 border-red-200' :
+                                     score >= 50 ? 'text-[#F59E0B] bg-amber-50 border-amber-200' :
+                                     'text-[#16A34A] bg-emerald-50 border-emerald-200';
+
+                  return (
+                    <div 
+                      key={inc._id}
+                      className="border border-[#DDE3EA] rounded-lg p-3 bg-slate-50/50 flex flex-col md:flex-row justify-between md:items-center gap-3 text-left"
+                    >
+                      <div className="space-y-1 max-w-[80%]">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] font-bold border ${scoreColor}`}>
+                            {score}% RISK
+                          </span>
+                          <span className="font-mono text-[10px] text-[#64748B]">
+                            {inc.ticketNumber}
+                          </span>
+                          <SeverityBadge severity={inc.aiTriage.recommendedPriority || inc.severity} />
+                        </div>
+                        <h4 className="text-xs font-bold text-[#0F172A] truncate">
+                          {inc.title}
+                        </h4>
+                        <p className="text-[11px] text-[#64748B] line-clamp-1 italic">
+                          "{inc.aiTriage.shortSummary}"
+                        </p>
+                      </div>
+
+                      <Link
+                        to={`/dashboard/incidents/${inc._id}`}
+                        className="py-1 px-3 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-indigo-700 text-center text-[10px] font-bold rounded transition shrink-0 block"
+                      >
+                        AI Dossier
+                      </Link>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Right: Grouped Incident Cases */}
+        <motion.div 
+          className="bg-white border border-[#DDE3EA] rounded-[16px] p-5 shadow-sm flex flex-col justify-between"
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+        >
+          <div className="space-y-4">
+            <div className="flex justify-between items-center pb-2 border-b border-[#DDE3EA]">
+              <h3 className="font-semibold text-[#07111F] text-sm uppercase tracking-wide flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[#2563EB] text-lg">folder_shared</span>
+                Grouped Incident Cases
+              </h3>
+              <span className="px-1.5 py-0.5 text-[9px] font-bold text-indigo-700 border border-indigo-200 bg-indigo-50 rounded uppercase">
+                {activeGroups.length} Active Groups
+              </span>
+            </div>
+
+            <div className="space-y-2.5">
               {activeGroups.length === 0 ? (
-                <div className="py-12 text-center text-slate-400 text-xs italic">
-                  No overlapping cases grouped at this time.
+                <div className="py-12 text-center text-[#64748B] text-xs italic">
+                  No incident clusters grouped currently.
                 </div>
               ) : (
-                activeGroups.slice(0, 3).map((group) => (
+                topActiveGroups.map((group) => (
                   <div 
                     key={group._id}
-                    className="p-3 border border-slate-100 rounded-lg bg-slate-50/50 flex items-center justify-between text-left"
+                    className="p-3 border border-slate-100 rounded-lg bg-slate-50/50 flex items-center justify-between text-left text-xs"
                   >
-                    <div className="space-y-1 max-w-[75%]">
+                    <div className="space-y-1 max-w-[70%]">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-black text-xs text-indigo-600 block">
-                          {group.groupNumber}
-                        </span>
-                        <span className="text-[10px] px-1.5 py-0.5 bg-slate-100 border rounded text-slate-500 uppercase font-bold tracking-wide">
+                        <span className="font-mono font-bold text-indigo-700">{group.groupNumber}</span>
+                        <span className="text-[9px] px-1 bg-slate-100 border rounded text-slate-500 uppercase font-bold">
                           {group.type}
                         </span>
                       </div>
-                      <p className="text-xs font-bold text-slate-800 truncate">
-                        {group.primaryIncident?.title || 'Group Case'}
+                      <p className="font-bold text-[#0F172A] truncate">
+                        {group.primaryIncident?.title || 'Cluster incident'}
                       </p>
-                      <p className="text-[10px] text-slate-500 truncate">
-                        📍 {group.locationSummary || 'Incident location cluster'}
+                      <p className="text-[10px] text-[#64748B] truncate">
+                        📍 {group.locationSummary || 'Incident area'}
                       </p>
                     </div>
 
-                    <div className="text-right space-y-1">
-                      <span className="inline-block px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded text-[10px] font-bold">
+                    <div className="text-right flex flex-col items-end shrink-0">
+                      <span className="px-1.5 py-0.5 bg-blue-50 text-[#2563EB] border border-blue-200 rounded text-[10px] font-bold block">
                         {group.incidentCount} Reports
                       </span>
                       <Link
                         to="/dashboard/groups"
-                        className="text-primary hover:underline text-[10px] font-bold block mt-1"
+                        className="text-[#2563EB] hover:underline text-[10px] font-bold block mt-1.5"
                       >
-                        Manage Group
+                        Manage
                       </Link>
                     </div>
                   </div>
@@ -670,67 +617,140 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
             </div>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-slate-100">
+          <div className="mt-4 pt-3 border-t border-slate-100">
             <Link 
               to="/dashboard/groups"
-              className="text-xs text-primary font-bold hover:underline inline-flex items-center gap-1"
+              className="text-xs text-[#2563EB] font-bold hover:underline inline-flex items-center gap-0.5"
             >
-              <span>Analyze smart groupings in the Incident Groups Center</span>
+              <span>Analyze smart groupings in Incident Groups Center</span>
+              <span className="material-symbols-outlined text-sm">chevron_right</span>
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* 5. Third Row: Resource Readiness & Recent Command Alerts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left: Resource Readiness */}
+        <motion.div 
+          className="bg-white border border-[#DDE3EA] rounded-[16px] p-5 shadow-sm"
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+        >
+          <h3 className="font-semibold text-[#07111F] text-sm uppercase tracking-wide flex items-center gap-1.5 pb-2 border-b border-[#DDE3EA] mb-4">
+            <span className="material-symbols-outlined text-[#2563EB] text-lg">inventory_2</span>
+            Resource Readiness
+          </h3>
+
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-[#64748B]">Available Units</span>
+                <span className="text-[#16A34A] font-bold">
+                  {summary?.resources?.available ?? 0} / {summary?.resources?.total ?? 1}
+                </span>
+              </div>
+              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                <div 
+                  className="bg-[#16A34A] h-full" 
+                  style={{ width: `${Math.min(Math.round(((summary?.resources?.available ?? 0) / (summary?.resources?.total || 1)) * 100), 100)}%` }}
+                ></div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-[#64748B]">Active Deployments</span>
+                <span className="text-[#2563EB] font-bold">
+                  {summary?.resources?.busy ?? 0} / {summary?.resources?.total ?? 1}
+                </span>
+              </div>
+              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                <div 
+                  className="bg-[#2563EB] h-full" 
+                  style={{ width: `${Math.min(Math.round(((summary?.resources?.busy ?? 0) / (summary?.resources?.total || 1)) * 100), 100)}%` }}
+                ></div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-[#64748B]">In Maintenance</span>
+                <span className="text-[#DC2626] font-bold">
+                  {summary?.resources?.maintenance ?? 0} / {summary?.resources?.total ?? 1}
+                </span>
+              </div>
+              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                <div 
+                  className="bg-[#DC2626] h-full" 
+                  style={{ width: `${Math.min(Math.round(((summary?.resources?.maintenance ?? 0) / (summary?.resources?.total || 1)) * 100), 100)}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-5 pt-3 border-t border-slate-100">
+            <Link 
+              to="/dashboard/resources"
+              className="text-xs text-[#2563EB] font-bold hover:underline inline-flex items-center gap-0.5"
+            >
+              <span>Manage all units in Resource Center</span>
               <span className="material-symbols-outlined text-sm">chevron_right</span>
             </Link>
           </div>
         </motion.div>
 
-        {/* Right Column: Recent Command Alerts */}
+        {/* Right: Recent Command Alerts */}
         <motion.div 
-          className="bg-white border border-outline-variant rounded-xl p-5 shadow-sm flex flex-col justify-between"
+          className="bg-white border border-[#DDE3EA] rounded-[16px] p-5 shadow-sm flex flex-col justify-between"
           variants={fadeUp}
           initial="hidden"
           animate="visible"
         >
           <div className="space-y-4">
-            <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-              <h3 className="font-semibold text-slate-900 text-sm uppercase tracking-wide flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-lg">notifications</span>
+            <div className="flex justify-between items-center pb-2 border-b border-[#DDE3EA]">
+              <h3 className="font-semibold text-[#07111F] text-sm uppercase tracking-wide flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[#2563EB] text-lg">notifications</span>
                 Recent Command Alerts
               </h3>
-              <Link to="/dashboard/alerts" className="text-primary hover:underline text-xs font-bold">
+              <Link to="/dashboard/alerts" className="text-[#2563EB] hover:underline text-xs font-bold">
                 Alerts Center
               </Link>
             </div>
 
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {recentAlerts.length === 0 ? (
-                <div className="py-12 text-center text-slate-400 text-xs italic">
-                  No command alerts registered.
+                <div className="py-12 text-center text-[#64748B] text-xs italic">
+                  No alerts in system logs.
                 </div>
               ) : (
-                recentAlerts.slice(0, 4).map((alert) => {
+                recentAlerts.slice(0, 3).map((alert) => {
                   const isRead = checkIsRead(alert);
-                  const pColors = alert.priority === 'critical' ? 'border-l-rose-500 bg-rose-50/30' :
-                                  alert.priority === 'high' || alert.priority === 'medium' ? 'border-l-amber-500 bg-amber-50/30' :
-                                  'border-l-blue-500 bg-blue-50/30';
-                  
+                  const pBorder = alert.priority === 'critical' ? 'border-l-[#DC2626] bg-red-50/20' :
+                                  alert.priority === 'high' || alert.priority === 'medium' ? 'border-l-[#F59E0B] bg-amber-50/20' :
+                                  'border-l-[#2563EB] bg-blue-50/20';
+
                   return (
                     <div 
                       key={alert._id}
-                      className={`p-2.5 border border-slate-100 border-l-4 rounded-r-lg flex gap-2.5 items-start justify-between text-left ${pColors} ${isRead ? 'opacity-70' : ''}`}
+                      className={`p-2 border border-slate-100 border-l-4 rounded-r-lg flex items-start justify-between text-left text-xs gap-3 ${pBorder} ${isRead ? 'opacity-70 font-normal' : 'font-semibold'}`}
                     >
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           {!isRead && (
-                            <span className="h-1.5 w-1.5 rounded-full bg-blue-600 inline-block animate-pulse shrink-0"></span>
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#2563EB] inline-block shrink-0"></span>
                           )}
-                          <span className="text-[10px] font-bold text-slate-800 uppercase tracking-wide">
+                          <span className="text-[10px] font-bold text-[#0F172A] uppercase tracking-wide">
                             {alert.title}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-600 line-clamp-1 leading-relaxed">
+                        <p className="text-[11px] text-[#64748B] line-clamp-1 leading-normal">
                           {alert.message}
                         </p>
                       </div>
 
-                      <span className="font-mono text-[9px] text-slate-400 shrink-0">
+                      <span className="font-mono text-[9px] text-[#64748B] shrink-0">
                         {new Date(alert.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
@@ -739,25 +759,19 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
               )}
             </div>
           </div>
-
-          <div className="mt-4 pt-4 border-t border-slate-100 text-right">
-            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">
-              Secure Communications Link Active
-            </span>
-          </div>
         </motion.div>
       </div>
 
-      {/* Operational Trends Section */}
+      {/* Operational Trends Analytics Section */}
       <motion.div 
-        className="bg-white border border-outline-variant rounded-xl p-5 shadow-sm space-y-6"
+        className="bg-white border border-[#DDE3EA] rounded-[16px] p-5 shadow-sm space-y-6"
         variants={fadeUp}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-50px" }}
       >
-        <h2 className="text-base font-bold text-slate-900 border-b border-outline-variant pb-3 flex items-center gap-2">
-          <span className="material-symbols-outlined text-primary text-lg">timeline</span>
+        <h2 className="text-sm font-bold text-[#07111F] uppercase tracking-wider border-b border-[#DDE3EA] pb-3 flex items-center gap-1.5">
+          <span className="material-symbols-outlined text-[#2563EB] text-lg">timeline</span>
           Operational Trends
         </h2>
         
