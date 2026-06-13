@@ -2,6 +2,10 @@
 
 This is the Expo React Native mobile client for **DisasterConnect**, designed to coordinate emergency response workflows for Citizens and Field Responders.
 
+> [!TIP]
+> **Demo Walkthrough Guide**: Check out the comprehensive [DEMO_MOBILE.md](file:///d:/projects/lnct%20hack/mobile/DEMO_MOBILE.md) for step-by-step reporting, dispatch management, alert checking instructions, demo credentials, and mobile troubleshooting.
+
+
 ## Current Scope (Phase 5)
 - **Expo React Native Foundation**: Bootstrapped with JavaScript and React Navigation.
 - **Backend Authentication Integration**: Implemented JWT Bearer token authorization using the existing backend endpoints.
