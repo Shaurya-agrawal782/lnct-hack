@@ -61,23 +61,23 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
       >
         <motion.div variants={listItem}>
           <MetricCard
-            label="Active Incidents"
-            value={summary?.incidents?.active}
-            helperText="Requiring dispatch"
-            icon="warning"
-            accentStyle="text-amber-600"
-            iconBgStyle="bg-amber-100 text-amber-800"
+            label="Critical Incidents"
+            value={summary?.incidents?.critical}
+            helperText="High priority alerts"
+            icon="campaign"
+            accentStyle="text-red-600 font-bold"
+            iconBgStyle="bg-red-50 text-red-600 border border-red-100"
           />
         </motion.div>
 
         <motion.div variants={listItem}>
           <MetricCard
-            label="Critical Incidents"
-            value={summary?.incidents?.critical}
-            helperText="High priority alerts"
-            icon="campaign"
-            accentStyle="text-error"
-            iconBgStyle="bg-error-container/20 text-error"
+            label="Active Incidents"
+            value={summary?.incidents?.active}
+            helperText="Requiring dispatch"
+            icon="warning"
+            accentStyle="text-amber-600 font-bold"
+            iconBgStyle="bg-amber-50 text-amber-600 border border-amber-100"
           />
         </motion.div>
 
@@ -87,8 +87,8 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
             value={summary?.resources?.available}
             helperText="Ready for assignment"
             icon="home_repair_service"
-            accentStyle="text-emerald-600"
-            iconBgStyle="bg-emerald-100 text-emerald-800"
+            accentStyle="text-emerald-600 font-bold"
+            iconBgStyle="bg-emerald-50 text-emerald-600 border border-emerald-100"
           />
         </motion.div>
 
@@ -98,8 +98,8 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
             value={summary?.alerts?.unread}
             helperText="Require broadcast review"
             icon="notifications_active"
-            accentStyle="text-error font-bold"
-            iconBgStyle="bg-error-container/20 text-error"
+            accentStyle="text-blue-600 font-bold"
+            iconBgStyle="bg-blue-50 text-blue-600 border border-blue-100"
           />
         </motion.div>
       </motion.div>
@@ -166,7 +166,7 @@ export default function AdminDashboard({ data, user, fetchDashboardData }) {
             
             <button 
               onClick={fetchDashboardData}
-              className="mt-6 w-full py-2 border border-slate-200 rounded text-slate-700 hover:bg-slate-100 transition text-xs font-bold flex items-center justify-center gap-1.5"
+              className="mt-6 w-full py-2 border border-outline rounded text-on-surface hover:bg-surface-container-high transition text-xs font-bold flex items-center justify-center gap-1.5"
             >
               <span className="material-symbols-outlined text-sm">sync</span>
               Refresh Database

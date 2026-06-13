@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
 import * as authApi from '../../api/authApi';
+import { theme } from '../../theme';
 
 export default function ResponderProfileScreen({ navigation }) {
   const { user } = useContext(AuthContext);
@@ -42,13 +43,13 @@ export default function ResponderProfileScreen({ navigation }) {
   const getVerificationBadgeColor = (status) => {
     switch (status?.toLowerCase()) {
       case 'verified':
-        return { bg: '#D1FAE5', text: '#059669', border: '#A7F3D0' };
+        return { bg: theme.colors.successGlow, text: theme.colors.success, border: 'rgba(16, 185, 129, 0.2)' };
       case 'pending':
-        return { bg: '#FEF3C7', text: '#B45309', border: '#FDE68A' };
+        return { bg: theme.colors.warningGlow, text: theme.colors.warning, border: 'rgba(245, 158, 11, 0.2)' };
       case 'rejected':
-        return { bg: '#FEE2E2', text: '#DC2626', border: '#FCA5A5' };
+        return { bg: theme.colors.emergencyGlow, text: theme.colors.emergency, border: 'rgba(239, 68, 68, 0.2)' };
       default:
-        return { bg: '#F1F5F9', text: '#475569', border: '#E2E8F0' };
+        return { bg: theme.colors.surface, text: theme.colors.textSecondary, border: theme.colors.border };
     }
   };
 
@@ -56,7 +57,7 @@ export default function ResponderProfileScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         
         {/* Profile Card Header */}
         <View style={styles.headerCard}>
@@ -67,7 +68,7 @@ export default function ResponderProfileScreen({ navigation }) {
           <View style={styles.badgeRow}>
             <View style={[styles.badge, profileUser?.isActive ? styles.activeBadge : styles.inactiveBadge]}>
               <Text style={profileUser?.isActive ? styles.activeBadgeText : styles.inactiveBadgeText}>
-                {profileUser?.isActive ? 'ACTIVE ACCOUNT' : 'INACTIVE ACCOUNT'}
+                {profileUser?.isActive ? 'ACTIVE' : 'INACTIVE'}
               </Text>
             </View>
 
@@ -83,7 +84,7 @@ export default function ResponderProfileScreen({ navigation }) {
 
         {loading ? (
           <View style={styles.centered}>
-            <ActivityIndicator size="large" color="#2563EB" />
+            <ActivityIndicator size="large" color={theme.colors.primary} />
             <Text style={styles.loadingText}>Fetching profile details...</Text>
           </View>
         ) : error ? (
@@ -178,23 +179,21 @@ export default function ResponderProfileScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F8FAFC', // light gray
+    backgroundColor: theme.colors.background,
   },
   container: {
     padding: 20,
     flexGrow: 1,
   },
   headerCard: {
-    backgroundColor: '#0F172A', // Dark Navy
-    borderRadius: 16,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
     padding: 24,
     alignItems: 'center',
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    ...theme.shadows.card,
   },
   avatar: {
     fontSize: 50,
@@ -203,12 +202,12 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: theme.colors.textPrimary,
     marginBottom: 4,
   },
   email: {
     fontSize: 14,
-    color: '#94A3B8',
+    color: theme.colors.textSecondary,
     marginBottom: 16,
   },
   badgeRow: {
@@ -218,27 +217,30 @@ const styles = StyleSheet.create({
   badge: {
     paddingVertical: 4,
     paddingHorizontal: 10,
-    borderRadius: 6,
+    borderRadius: theme.borderRadius.sm,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
   },
   badgeText: {
     fontSize: 9,
     fontWeight: '800',
   },
   activeBadge: {
-    backgroundColor: '#065F46',
+    backgroundColor: theme.colors.successGlow,
+    borderColor: 'rgba(16, 185, 129, 0.2)',
   },
   activeBadgeText: {
-    color: '#34D399',
+    color: theme.colors.success,
     fontSize: 9,
     fontWeight: '800',
   },
   inactiveBadge: {
-    backgroundColor: '#7F1D1D',
+    backgroundColor: theme.colors.emergencyGlow,
+    borderColor: 'rgba(239, 68, 68, 0.2)',
   },
   inactiveBadgeText: {
-    color: '#F87171',
+    color: theme.colors.emergency,
     fontSize: 9,
     fontWeight: '800',
   },
@@ -249,55 +251,51 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 10,
-    color: '#64748B',
+    color: theme.colors.textSecondary,
     fontSize: 14,
   },
   errorBox: {
-    backgroundColor: '#FEE2E2',
-    borderColor: '#EF4444',
+    backgroundColor: theme.colors.emergencyMuted,
+    borderColor: theme.colors.emergency,
     borderWidth: 1,
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.lg,
     padding: 16,
     alignItems: 'center',
     marginBottom: 20,
   },
   errorText: {
-    color: '#991B1B',
+    color: '#FCA5A5',
     fontSize: 14,
     fontWeight: '500',
     textAlign: 'center',
     marginBottom: 12,
   },
   retryBtn: {
-    backgroundColor: '#DC2626',
-    borderRadius: 6,
+    backgroundColor: theme.colors.emergency,
+    borderRadius: theme.borderRadius.sm,
     paddingVertical: 8,
     paddingHorizontal: 16,
   },
   retryBtnText: {
-    color: '#FFFFFF',
+    color: theme.colors.textPrimary,
     fontSize: 12,
     fontWeight: '600',
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: theme.colors.border,
     marginBottom: 16,
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 3,
-    elevation: 1,
+    ...theme.shadows.card,
   },
   cardTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0F172A',
+    color: theme.colors.textPrimary,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    borderBottomColor: theme.colors.border,
     paddingBottom: 10,
     marginBottom: 14,
   },
@@ -306,29 +304,29 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#F8FAFC',
+    borderBottomColor: theme.colors.border,
   },
   infoLabel: {
     fontSize: 13,
-    color: '#64748B',
+    color: theme.colors.textSecondary,
     fontWeight: '500',
   },
   infoValue: {
     fontSize: 13,
-    color: '#0F172A',
+    color: theme.colors.textPrimary,
     fontWeight: '600',
   },
   noticeCard: {
-    backgroundColor: '#EFF6FF',
-    borderColor: '#BFDBFE',
+    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+    borderColor: 'rgba(59, 130, 246, 0.2)',
     borderWidth: 1,
-    borderRadius: 12,
+    borderRadius: theme.borderRadius.lg,
     padding: 16,
     marginBottom: 20,
   },
   noticeText: {
     fontSize: 12,
-    color: '#1E40AF',
+    color: theme.colors.primary,
     lineHeight: 18,
     textAlign: 'center',
   },

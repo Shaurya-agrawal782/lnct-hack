@@ -14,25 +14,25 @@ export default function RecentAlerts({ alerts = [], user }) {
     const opacityClass = isRead ? 'opacity-70' : 'opacity-100 shadow-sm';
     switch (priority) {
       case 'critical':
-        return `p-3 border-l-4 border-error bg-error-container/20 rounded-r ${opacityClass}`;
+        return `p-3 border-l-4 border-red-600 bg-red-50/70 rounded-r ${opacityClass}`;
       case 'high':
       case 'medium':
-        return `p-3 border-l-4 border-amber-500 bg-amber-50 rounded-r ${opacityClass}`;
+        return `p-3 border-l-4 border-amber-500 bg-amber-50/70 rounded-r ${opacityClass}`;
       case 'low':
       default:
-        return `p-3 border-l-4 border-primary bg-primary-container/10 rounded-r ${opacityClass}`;
+        return `p-3 border-l-4 border-blue-600 bg-blue-50/70 rounded-r ${opacityClass}`;
     }
   };
 
   const getAlertTitleColor = (priority) => {
     switch (priority) {
       case 'critical':
-        return 'text-error font-bold';
+        return 'text-red-800 font-bold';
       case 'high':
       case 'medium':
         return 'text-amber-800 font-bold';
       default:
-        return 'text-primary font-bold';
+        return 'text-blue-800 font-bold';
     }
   };
 

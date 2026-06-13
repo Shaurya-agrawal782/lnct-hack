@@ -13,12 +13,14 @@ import {
 } from 'react-native';
 import { trackIncidentByTicket } from '../../api/trackingApi';
 import { formatDateTime, getStatusColor, getSeverityColor, getIncidentTypeLabel } from '../../utils/format';
+import { theme } from '../../theme';
 
 export default function TrackReportScreen({ navigation }) {
   const [ticketNumber, setTicketNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [incidentData, setIncidentData] = useState(null);
+  const [inputFocused, setInputFocused] = useState(false);
 
   const handleTrack = async () => {
     if (!ticketNumber.trim()) {
@@ -66,22 +68,25 @@ export default function TrackReportScreen({ navigation }) {
             </Text>
 
             <TextInput
-              style={styles.input}
+              style={[styles.input, inputFocused && styles.inputFocused]}
               placeholder="DC-YYYYMMDD-XXXXX"
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor={theme.colors.textPlaceholder}
               value={ticketNumber}
               onChangeText={setTicketNumber}
               autoCapitalize="characters"
               autoCorrect={false}
+              onFocus={() => setInputFocused(true)}
+              onBlur={() => setInputFocused(false)}
             />
 
             <TouchableOpacity
               style={[styles.button, loading && styles.disabledButton]}
               onPress={handleTrack}
               disabled={loading}
+              activeOpacity={0.8}
             >
               {loading ? (
-                <ActivityIndicator color="#FFFFFF" />
+                <ActivityIndicator color={theme.colors.textPrimary} />
               ) : (
                 <Text style={styles.buttonText}>Search Status</Text>
               )}
@@ -208,248 +213,254 @@ export default function TrackReportScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0F172A', // Navy theme
+    backgroundColor: theme.colors.background,
   },
   flex: {
     flex: 1,
   },
   container: {
-    padding: 20,
+    padding: theme.spacing.lg,
     flexGrow: 1,
   },
   searchCard: {
-    backgroundColor: '#1E293B',
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.lg,
     borderWidth: 1,
-    borderColor: '#334155',
-    marginBottom: 20,
+    borderColor: theme.colors.border,
+    marginBottom: theme.spacing.lg,
+    ...theme.shadows.card,
   },
   cardTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    marginBottom: 8,
+    fontSize: theme.typography.sizes.xl,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.textPrimary,
+    marginBottom: theme.spacing.xs,
   },
   cardSubtitle: {
-    fontSize: 13,
-    color: '#94A3B8',
-    marginBottom: 16,
+    fontSize: theme.typography.sizes.sm,
+    color: theme.colors.textSecondary,
+    marginBottom: theme.spacing.lg,
     lineHeight: 18,
   },
   input: {
-    backgroundColor: '#0F172A',
-    borderColor: '#334155',
+    backgroundColor: theme.colors.inputBackground,
+    borderColor: theme.colors.border,
     borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: '#FFFFFF',
-    marginBottom: 16,
+    borderRadius: theme.borderRadius.md,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+    fontSize: theme.typography.sizes.md,
+    color: theme.colors.textPrimary,
+    marginBottom: theme.spacing.lg,
+  },
+  inputFocused: {
+    borderColor: theme.colors.borderFocus,
   },
   button: {
-    backgroundColor: '#2563EB',
-    borderRadius: 8,
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.md,
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
+    ...theme.shadows.button,
   },
   disabledButton: {
-    opacity: 0.7,
+    opacity: 0.6,
   },
   buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
+    color: theme.colors.textPrimary,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.bold,
   },
   errorBox: {
-    backgroundColor: '#7F1D1D',
+    backgroundColor: theme.colors.emergencyMuted,
     borderLeftWidth: 4,
-    borderLeftColor: '#F87171',
-    padding: 12,
-    borderRadius: 6,
-    marginTop: 16,
+    borderLeftColor: theme.colors.emergency,
+    padding: theme.spacing.md,
+    borderRadius: theme.borderRadius.sm,
+    marginTop: theme.spacing.lg,
   },
   errorText: {
     color: '#FCA5A5',
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.medium,
   },
   resultsCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.lg,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    marginBottom: 20,
+    borderColor: theme.colors.border,
+    marginBottom: theme.spacing.lg,
+    ...theme.shadows.card,
   },
   headerRow: {
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-    paddingBottom: 10,
-    marginBottom: 12,
+    borderBottomColor: theme.colors.border,
+    paddingBottom: theme.spacing.sm,
+    marginBottom: theme.spacing.md,
   },
   ticketTitle: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: '#0F172A',
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.cyan,
   },
   reportTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 12,
+    fontSize: theme.typography.sizes.xl,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.textPrimary,
+    marginBottom: theme.spacing.md,
   },
   badgeRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginBottom: 16,
+    marginBottom: theme.spacing.lg,
   },
   badge: {
     borderWidth: 1,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 6,
+    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm,
+    borderRadius: theme.borderRadius.sm,
   },
   badgeText: {
-    fontSize: 10,
-    fontWeight: '700',
+    fontSize: theme.typography.sizes.xs,
+    fontWeight: theme.typography.weights.heavy,
   },
   infoGroup: {
-    marginBottom: 14,
+    marginBottom: theme.spacing.md,
   },
   infoLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#64748B',
+    fontSize: theme.typography.sizes.xs,
+    fontWeight: theme.typography.weights.semibold,
+    color: theme.colors.textSecondary,
     textTransform: 'uppercase',
     marginBottom: 2,
   },
   infoValue: {
-    fontSize: 14,
-    color: '#0F172A',
-    fontWeight: '500',
+    fontSize: theme.typography.sizes.md,
+    color: theme.colors.textPrimary,
+    fontWeight: theme.typography.weights.medium,
   },
   groupPanel: {
-    backgroundColor: '#EFF6FF',
-    borderColor: '#BFDBFE',
+    backgroundColor: theme.colors.warningGlow,
+    borderColor: theme.colors.warning,
     borderWidth: 1,
-    borderRadius: 12,
-    padding: 14,
-    marginTop: 8,
-    marginBottom: 16,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.md,
+    marginTop: theme.spacing.sm,
+    marginBottom: theme.spacing.lg,
   },
   groupHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: theme.spacing.sm,
   },
   groupHeaderTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#1E40AF',
+    fontSize: theme.typography.sizes.sm,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.warning,
   },
   miniBadge: {
-    backgroundColor: '#3B82F6',
-    borderRadius: 4,
+    backgroundColor: theme.colors.warning,
+    borderRadius: theme.borderRadius.sm,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
   miniBadgeText: {
-    color: '#FFFFFF',
-    fontSize: 9,
-    fontWeight: '800',
+    color: theme.colors.background,
+    fontSize: 10,
+    fontWeight: theme.typography.weights.heavy,
   },
   groupMessage: {
-    fontSize: 12,
-    color: '#1E3A8A',
-    lineHeight: 16,
-    marginBottom: 8,
+    fontSize: theme.typography.sizes.sm,
+    color: theme.colors.textPrimary,
+    lineHeight: 18,
+    marginBottom: theme.spacing.sm,
   },
   groupStatus: {
-    fontSize: 11,
-    color: '#1E40AF',
+    fontSize: theme.typography.sizes.xs,
+    color: theme.colors.textSecondary,
   },
   aiPanel: {
-    backgroundColor: '#F8FAFC',
-    borderColor: '#E2E8F0',
+    backgroundColor: theme.colors.cyanGlow,
+    borderColor: theme.colors.cyan,
     borderWidth: 1,
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 16,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.md,
+    marginBottom: theme.spacing.lg,
   },
   aiHeaderTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#2563EB',
-    marginBottom: 6,
+    fontSize: theme.typography.sizes.sm,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.cyan,
+    marginBottom: theme.spacing.xs,
   },
   aiSafetyText: {
-    fontSize: 12,
-    color: '#334155',
-    lineHeight: 18,
+    fontSize: theme.typography.sizes.sm,
+    color: theme.colors.textPrimary,
+    lineHeight: 20,
   },
   timelineContainer: {
-    marginTop: 12,
+    marginTop: theme.spacing.md,
     borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
-    paddingTop: 16,
+    borderTopColor: theme.colors.border,
+    paddingTop: theme.spacing.lg,
   },
   timelineHeader: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 14,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.textPrimary,
+    marginBottom: theme.spacing.md,
   },
   timelineItem: {
     flexDirection: 'row',
-    marginBottom: 16,
+    marginBottom: theme.spacing.md,
   },
   timelineBullet: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#2563EB',
+    backgroundColor: theme.colors.primary,
     marginTop: 6,
-    marginRight: 12,
+    marginRight: theme.spacing.md,
   },
   timelineContent: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
-    borderRadius: 8,
-    padding: 10,
+    backgroundColor: theme.colors.inputBackground,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.md,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: theme.colors.border,
   },
   miniStatusBadge: {
     alignSelf: 'flex-start',
     borderWidth: 1,
-    borderRadius: 4,
+    borderRadius: theme.borderRadius.sm,
     paddingHorizontal: 6,
     paddingVertical: 2,
-    marginBottom: 4,
+    marginBottom: theme.spacing.xs,
   },
   timelineTime: {
-    fontSize: 10,
-    color: '#64748B',
-    marginBottom: 4,
+    fontSize: theme.typography.sizes.xs,
+    color: theme.colors.textMuted,
+    marginBottom: theme.spacing.xs,
   },
   timelineNote: {
-    fontSize: 12,
-    color: '#334155',
+    fontSize: theme.typography.sizes.sm,
+    color: theme.colors.textPrimary,
   },
   backButton: {
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10,
+    marginTop: theme.spacing.sm,
   },
   backButtonText: {
-    color: '#60A5FA',
-    fontSize: 15,
-    fontWeight: '600',
+    color: theme.colors.textSecondary,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.semibold,
   },
 });

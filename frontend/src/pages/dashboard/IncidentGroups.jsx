@@ -130,35 +130,35 @@ export default function IncidentGroups() {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'active':
-        return <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-error-container/20 text-error border border-error/20">Active</span>;
+        return <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-red-50 text-red-700 border border-red-200">Active</span>;
       case 'in-progress':
         return <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-50 text-amber-700 border border-amber-200">In Progress</span>;
       case 'resolved':
         return <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Resolved</span>;
       case 'closed':
-        return <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-50 text-slate-600 border border-slate-200">Closed</span>;
+        return <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-100 text-slate-600 border border-slate-200">Closed</span>;
       default:
-        return <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-100 text-slate-800">{status}</span>;
+        return <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-50 text-slate-700 border border-slate-200">{status}</span>;
     }
   };
 
   const getSeverityBadge = (severity) => {
     switch (severity) {
       case 'critical':
-        return <span className="px-2 py-0.5 text-[9px] font-bold rounded bg-red-100 text-red-800 uppercase tracking-wider">Critical</span>;
+        return <span className="px-2 py-0.5 text-[9px] font-bold rounded bg-red-50 text-red-700 border border-red-200 uppercase tracking-wider">Critical</span>;
       case 'high':
-        return <span className="px-2 py-0.5 text-[9px] font-bold rounded bg-orange-100 text-orange-800 uppercase tracking-wider">High</span>;
+        return <span className="px-2 py-0.5 text-[9px] font-bold rounded bg-orange-50 text-orange-700 border border-orange-200 uppercase tracking-wider">High</span>;
       case 'medium':
-        return <span className="px-2 py-0.5 text-[9px] font-bold rounded bg-amber-100 text-amber-800 uppercase tracking-wider">Medium</span>;
+        return <span className="px-2 py-0.5 text-[9px] font-bold rounded bg-amber-50 text-amber-700 border border-amber-200 uppercase tracking-wider">Medium</span>;
       case 'low':
-        return <span className="px-2 py-0.5 text-[9px] font-bold rounded bg-slate-100 text-slate-800 uppercase tracking-wider">Low</span>;
+        return <span className="px-2 py-0.5 text-[9px] font-bold rounded bg-slate-50 text-slate-700 border border-slate-200 uppercase tracking-wider">Low</span>;
       default:
-        return <span className="px-2 py-0.5 text-[9px] font-bold rounded bg-slate-100 text-slate-800 uppercase">{severity}</span>;
+        return <span className="px-2 py-0.5 text-[9px] font-bold rounded bg-slate-50 text-slate-700 border border-slate-200 uppercase">{severity}</span>;
     }
   };
 
   const getTypeBadge = (type) => {
-    return <span className="px-2 py-0.5 text-[10px] font-semibold rounded bg-primary/10 text-primary border border-primary/15 capitalize">{type}</span>;
+    return <span className="px-2 py-0.5 text-[10px] font-semibold rounded bg-blue-50 text-blue-700 border border-blue-200 capitalize">{type}</span>;
   };
 
   // Stats summaries
@@ -170,20 +170,20 @@ export default function IncidentGroups() {
     <div className="space-y-6 text-left">
       {/* Header */}
       <motion.div 
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-outline-variant"
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-200"
         variants={fadeUp}
         initial="hidden"
         animate="visible"
       >
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+          <div className="p-2 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
             <span className="material-symbols-outlined text-[24px]">folder_zip</span>
           </div>
           <div>
-            <h1 className="font-headline-lg text-headline-lg font-bold text-on-background tracking-tight">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
               Smart Incident Grouping
             </h1>
-            <p className="font-body-md text-body-md text-on-surface-variant">
+            <p className="text-sm text-slate-500 mt-1">
               Manage duplicate reports from nearby locations grouped automatically within 3-hour windows
             </p>
           </div>
@@ -211,8 +211,8 @@ export default function IncidentGroups() {
             value={totalGroups}
             helperText="Aggregated duplicate events"
             icon="folder_zip"
-            accentStyle="text-primary"
-            iconBgStyle="bg-primary/10 text-primary"
+            accentStyle="text-slate-900 font-bold"
+            iconBgStyle="bg-blue-50 text-blue-600 border border-blue-100"
           />
         </motion.div>
         <motion.div variants={listItem}>
@@ -221,8 +221,8 @@ export default function IncidentGroups() {
             value={activeGroups}
             helperText="Awaiting dispatcher resolution"
             icon="warning"
-            accentStyle="text-error"
-            iconBgStyle="bg-error-container/10 text-error border border-error/10"
+            accentStyle="text-red-600 font-bold"
+            iconBgStyle="bg-red-50 text-red-600 border border-red-100"
           />
         </motion.div>
         <motion.div variants={listItem}>
@@ -231,36 +231,36 @@ export default function IncidentGroups() {
             value={resolvedGroups}
             helperText="Completed dispatch groups"
             icon="check_circle"
-            accentStyle="text-emerald-600"
+            accentStyle="text-emerald-600 font-bold"
             iconBgStyle="bg-emerald-50 text-emerald-600 border border-emerald-100"
           />
         </motion.div>
       </motion.div>
 
       {/* Filter and Search Panel */}
-      <div className="bg-surface border border-outline-variant rounded-xl p-4 md:p-6 space-y-4 shadow-sm">
+      <div className="bg-white border border-slate-200 rounded-xl p-4 md:p-6 space-y-4 shadow-sm">
         <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
             <input
               type="text"
               placeholder="Search groups by GRP number or location summary..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-surface-container-low border border-outline-variant rounded-lg pl-10 pr-4 py-2 text-sm text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-10 pr-4 py-2 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
             />
           </div>
           <button
             type="submit"
-            className="px-6 py-2 font-label-md text-label-md text-on-surface font-semibold bg-surface border border-outline-variant hover:bg-surface-container transition rounded-lg"
+            className="px-6 py-2 text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition rounded-lg cursor-pointer"
           >
             Search
           </button>
         </form>
 
-        <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-outline-variant">
-          <div className="flex items-center gap-1.5 font-label-sm text-label-sm text-on-surface-variant/70 mr-2">
-            <span className="material-symbols-outlined text-[16px]">filter_list</span>
+        <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-slate-200">
+          <div className="flex items-center gap-1.5 text-xs text-slate-500 mr-2">
+            <span className="material-symbols-outlined text-[16px] text-slate-400">filter_list</span>
             <span>Filters:</span>
           </div>
 
@@ -268,7 +268,7 @@ export default function IncidentGroups() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-surface border border-outline-variant rounded-lg px-3 py-1.5 text-xs text-on-surface focus:outline-none focus:border-primary"
+            className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer"
           >
             <option value="">All Statuses</option>
             <option value="active">Active</option>
@@ -281,7 +281,7 @@ export default function IncidentGroups() {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="bg-surface border border-outline-variant rounded-lg px-3 py-1.5 text-xs text-on-surface focus:outline-none focus:border-primary"
+            className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer"
           >
             <option value="">All Types</option>
             <option value="fire">Fire</option>
@@ -297,7 +297,7 @@ export default function IncidentGroups() {
           {(statusFilter || typeFilter || searchTerm) && (
             <button
               onClick={handleResetFilters}
-              className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-colors"
+              className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
             >
               <span className="material-symbols-outlined text-[16px]">restart_alt</span>
               <span>Reset</span>
@@ -312,55 +312,55 @@ export default function IncidentGroups() {
         <div className="lg:col-span-12">
           {loading ? (
             <div className="flex flex-col items-center justify-center p-12 min-h-[300px] space-y-3">
-              <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-              <span className="text-xs text-on-surface-variant">Loading incident groups...</span>
+              <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-xs text-slate-500">Loading incident groups...</span>
             </div>
           ) : error ? (
-            <div className="bg-error-container/20 border border-error text-error p-6 rounded-xl text-center">
+            <div className="bg-red-50 border border-red-200 text-red-800 p-6 rounded-xl text-center">
               <p className="font-semibold">{error}</p>
-              <button onClick={fetchGroups} className="mt-3 text-xs text-primary hover:underline font-bold inline-flex items-center gap-1">
+              <button onClick={fetchGroups} className="mt-3 text-xs text-blue-600 hover:underline font-bold inline-flex items-center gap-1 cursor-pointer">
                 <span className="material-symbols-outlined text-[14px]">refresh</span> Retry
               </button>
             </div>
           ) : groups.length === 0 ? (
-            <div className="p-8 bg-surface border border-outline-variant rounded-xl flex flex-col justify-center items-center text-center min-h-[250px] shadow-sm">
-              <div className="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant mb-4">
+            <div className="p-8 bg-white border border-slate-200 rounded-xl flex flex-col justify-center items-center text-center min-h-[250px] shadow-sm">
+              <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 mb-4">
                 <span className="material-symbols-outlined text-[28px]">folder_zip</span>
               </div>
-              <h2 className="text-sm font-semibold text-on-surface mb-1">No Incident Groups Found</h2>
-              <p className="text-xs text-on-surface-variant max-w-sm">
+              <h2 className="text-sm font-semibold text-slate-900 mb-1">No Incident Groups Found</h2>
+              <p className="text-xs text-slate-500 max-w-sm">
                 No reports fit the grouping criteria or filters selected.
               </p>
             </div>
           ) : (
-            <div className="bg-surface border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-outline-variant bg-surface-container-low">
-                      <th className="p-3 text-[10px] font-bold tracking-wider text-on-surface-variant uppercase">Group Number</th>
-                      <th className="p-3 text-[10px] font-bold tracking-wider text-on-surface-variant uppercase">Type & Severity</th>
-                      <th className="p-3 text-[10px] font-bold tracking-wider text-on-surface-variant uppercase">Location Summary</th>
-                      <th className="p-3 text-[10px] font-bold tracking-wider text-on-surface-variant uppercase">Timeline</th>
-                      <th className="p-3 text-[10px] font-bold tracking-wider text-on-surface-variant uppercase">Cases</th>
-                      <th className="p-3 text-[10px] font-bold tracking-wider text-on-surface-variant uppercase">Status</th>
-                      <th className="p-3 text-[10px] font-bold tracking-wider text-on-surface-variant uppercase text-right">Actions</th>
+                    <tr className="border-b border-slate-200 bg-slate-50">
+                      <th className="p-3 text-[10px] font-bold tracking-wider text-slate-500 uppercase">Group Number</th>
+                      <th className="p-3 text-[10px] font-bold tracking-wider text-slate-500 uppercase">Type & Severity</th>
+                      <th className="p-3 text-[10px] font-bold tracking-wider text-slate-500 uppercase">Location Summary</th>
+                      <th className="p-3 text-[10px] font-bold tracking-wider text-slate-500 uppercase">Timeline</th>
+                      <th className="p-3 text-[10px] font-bold tracking-wider text-slate-500 uppercase">Cases</th>
+                      <th className="p-3 text-[10px] font-bold tracking-wider text-slate-500 uppercase">Status</th>
+                      <th className="p-3 text-[10px] font-bold tracking-wider text-slate-500 uppercase text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-outline-variant/60 bg-surface-container-lowest">
+                  <tbody className="divide-y divide-slate-100 bg-white">
                     {groups.map((group) => (
-                      <tr key={group._id} className="hover:bg-surface-container-low/30 transition text-xs">
-                        <td className="p-3 font-bold text-on-surface">{group.groupNumber}</td>
+                      <tr key={group._id} className="hover:bg-slate-50/50 transition text-xs">
+                        <td className="p-3 font-bold text-slate-900">{group.groupNumber}</td>
                         <td className="p-3 space-y-1">
                           <div>{getTypeBadge(group.type)}</div>
                           <div>{getSeverityBadge(group.severitySummary)}</div>
                         </td>
-                        <td className="p-3 max-w-xs truncate font-medium text-on-surface">{group.locationSummary}</td>
-                        <td className="p-3 text-[10px] text-on-surface-variant space-y-0.5">
+                        <td className="p-3 max-w-xs truncate font-medium text-slate-800">{group.locationSummary}</td>
+                        <td className="p-3 text-[10px] text-slate-500 space-y-0.5">
                           <div>First: {new Date(group.firstReportedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                           <div>Last: {new Date(group.lastReportedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                         </td>
-                        <td className="p-3 font-semibold text-primary text-sm">
+                        <td className="p-3 font-semibold text-blue-600 text-sm">
                           <span className="inline-flex items-center gap-1">
                             <span className="material-symbols-outlined text-[15px]">tag</span>
                             <span>{group.incidentCount}</span>
@@ -370,7 +370,7 @@ export default function IncidentGroups() {
                         <td className="p-3 text-right">
                           <button
                             onClick={() => handleSelectGroup(group._id)}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 font-bold bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition rounded-lg"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 font-bold bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100/80 transition rounded-lg cursor-pointer"
                           >
                             <span className="material-symbols-outlined text-[15px]">visibility</span>
                             <span>View Group</span>
@@ -391,26 +391,26 @@ export default function IncidentGroups() {
         {selectedGroupId && (
           <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
             <motion.div 
-              className="bg-surface border border-outline-variant rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 relative flex flex-col gap-4 text-left"
+              className="bg-white border border-slate-200 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 relative flex flex-col gap-4 text-left"
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
               transition={{ duration: 0.2 }}
             >
               {/* Modal Header */}
-              <div className="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+              <div className="flex justify-between items-center border-b border-slate-200 pb-3">
                 <div>
-                  <h2 className="text-base font-bold text-on-surface flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-primary">folder_zip</span>
+                  <h2 className="text-base font-bold text-slate-900 flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-blue-600">folder_zip</span>
                     Group Details: {selectedGroup?.groupNumber || '...'}
                   </h2>
-                  <p className="text-xs text-on-surface-variant">
+                  <p className="text-xs text-slate-500">
                     Review and resolve linked incident reports
                   </p>
                 </div>
                 <button 
                   onClick={() => setSelectedGroupId(null)}
-                  className="text-on-surface-variant hover:text-on-surface p-1 rounded-lg hover:bg-surface-container transition flex items-center justify-center"
+                  className="text-slate-500 hover:text-slate-800 p-1 rounded-lg hover:bg-slate-100 transition flex items-center justify-center cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-[20px]">close</span>
                 </button>
@@ -418,66 +418,66 @@ export default function IncidentGroups() {
 
               {detailsLoading ? (
                 <div className="flex flex-col items-center justify-center p-12 min-h-[200px] space-y-3">
-                  <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-xs text-on-surface-variant">Retrieving linked reports...</span>
+                  <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  <span className="text-xs text-slate-500">Retrieving linked reports...</span>
                 </div>
               ) : detailsError ? (
-                <div className="bg-error-container/20 border border-error text-error p-4 rounded-xl text-center text-xs">
+                <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-center text-xs">
                   {detailsError}
                 </div>
               ) : selectedGroup ? (
                 <div className="space-y-4">
                   {/* Summary Details */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3 bg-surface-container-low border border-outline-variant/60 rounded-xl text-xs">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs">
                     <div>
-                      <div className="text-on-surface-variant font-semibold">Incident Type</div>
+                      <div className="text-slate-500 font-semibold">Incident Type</div>
                       <div className="mt-1 font-bold">{getTypeBadge(selectedGroup.type)}</div>
                     </div>
                     <div>
-                      <div className="text-on-surface-variant font-semibold">Severity Summary</div>
+                      <div className="text-slate-500 font-semibold">Severity Summary</div>
                       <div className="mt-1 font-bold">{getSeverityBadge(selectedGroup.severitySummary)}</div>
                     </div>
                     <div>
-                      <div className="text-on-surface-variant font-semibold">Group Status</div>
+                      <div className="text-slate-500 font-semibold">Group Status</div>
                       <div className="mt-1 font-bold">{getStatusBadge(selectedGroup.status)}</div>
                     </div>
                     <div>
-                      <div className="text-on-surface-variant font-semibold">Report Count</div>
-                      <div className="mt-1 font-bold text-sm text-primary">#{selectedGroup.incidentCount}</div>
+                      <div className="text-slate-500 font-semibold">Report Count</div>
+                      <div className="mt-1 font-bold text-sm text-blue-600">#{selectedGroup.incidentCount}</div>
                     </div>
                   </div>
 
-                  <div className="text-xs space-y-1">
-                    <div><span className="text-on-surface-variant font-semibold">Location Address Summary:</span> <span className="font-medium">{selectedGroup.locationSummary}</span></div>
-                    <div><span className="text-on-surface-variant font-semibold">First Incident:</span> <span className="font-medium">{new Date(selectedGroup.firstReportedAt).toLocaleString()}</span></div>
-                    <div><span className="text-on-surface-variant font-semibold">Last Incident:</span> <span className="font-medium">{new Date(selectedGroup.lastReportedAt).toLocaleString()}</span></div>
+                  <div className="text-xs space-y-1 text-slate-700">
+                    <div><span className="text-slate-500 font-semibold">Location Address Summary:</span> <span className="font-medium text-slate-900">{selectedGroup.locationSummary}</span></div>
+                    <div><span className="text-slate-500 font-semibold">First Incident:</span> <span className="font-medium text-slate-900">{new Date(selectedGroup.firstReportedAt).toLocaleString()}</span></div>
+                    <div><span className="text-slate-500 font-semibold">Last Incident:</span> <span className="font-medium text-slate-900">{new Date(selectedGroup.lastReportedAt).toLocaleString()}</span></div>
                   </div>
 
                   {/* Linked Incidents List */}
                   <div className="space-y-2">
-                    <h3 className="text-xs font-bold text-primary uppercase tracking-wider">Linked Citizen Incident Reports</h3>
-                    <div className="border border-outline-variant/60 rounded-xl overflow-hidden max-h-[250px] overflow-y-auto">
+                    <h3 className="text-xs font-bold text-blue-600 uppercase tracking-wider">Linked Citizen Incident Reports</h3>
+                    <div className="border border-slate-200 rounded-xl overflow-hidden max-h-[250px] overflow-y-auto">
                       <table className="w-full text-left border-collapse text-xs">
                         <thead>
-                          <tr className="bg-surface-container-low border-b border-outline-variant/60">
-                            <th className="p-2 text-[9px] font-bold text-on-surface-variant uppercase">Ticket</th>
-                            <th className="p-2 text-[9px] font-bold text-on-surface-variant uppercase">Title</th>
-                            <th className="p-2 text-[9px] font-bold text-on-surface-variant uppercase">Severity</th>
-                            <th className="p-2 text-[9px] font-bold text-on-surface-variant uppercase">Status</th>
-                            <th className="p-2 text-[9px] font-bold text-on-surface-variant uppercase">Location</th>
-                            <th className="p-2 text-[9px] font-bold text-on-surface-variant uppercase text-right">Action</th>
+                          <tr className="bg-slate-50 border-b border-slate-200">
+                            <th className="p-2 text-[9px] font-bold text-slate-500 uppercase">Ticket</th>
+                            <th className="p-2 text-[9px] font-bold text-slate-500 uppercase">Title</th>
+                            <th className="p-2 text-[9px] font-bold text-slate-500 uppercase">Severity</th>
+                            <th className="p-2 text-[9px] font-bold text-slate-500 uppercase">Status</th>
+                            <th className="p-2 text-[9px] font-bold text-slate-500 uppercase">Location</th>
+                            <th className="p-2 text-[9px] font-bold text-slate-500 uppercase text-right">Action</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-outline-variant/40 bg-surface-container-lowest">
+                        <tbody className="divide-y divide-slate-100 bg-white">
                           {selectedGroup.incidents?.map(inc => (
-                            <tr key={inc._id} className="hover:bg-surface-container-low/20">
-                              <td className="p-2 font-bold text-on-surface">{inc.ticketNumber}</td>
+                            <tr key={inc._id} className="hover:bg-slate-50/50">
+                              <td className="p-2 font-bold text-slate-900">{inc.ticketNumber}</td>
                               <td className="p-2 truncate max-w-[120px]" title={inc.title}>{inc.title}</td>
                               <td className="p-2">{getSeverityBadge(inc.severity)}</td>
                               <td className="p-2">
                                 <span className={`px-1.5 py-0.5 rounded text-[9px] font-semibold ${
                                   inc.status === 'resolved' ? 'bg-emerald-50 text-emerald-800 border border-emerald-100' :
-                                  inc.status === 'closed' ? 'bg-slate-100 text-slate-700' : 'bg-amber-50 text-amber-800'
+                                  inc.status === 'closed' ? 'bg-slate-100 text-slate-700 border border-slate-200' : 'bg-amber-50 text-amber-800 border border-amber-200'
                                 }`}>
                                   {inc.status}
                                 </span>
@@ -487,7 +487,7 @@ export default function IncidentGroups() {
                                 <Link
                                   to={`/dashboard/incidents/${inc._id}`}
                                   target="_blank"
-                                  className="text-primary font-bold hover:underline"
+                                  className="text-blue-600 font-bold hover:underline"
                                 >
                                   Details
                                 </Link>
@@ -501,8 +501,8 @@ export default function IncidentGroups() {
 
                   {/* Resolution Notes Panel (Admin Control) */}
                   {['active', 'in-progress'].includes(selectedGroup.status) ? (
-                    <div className="border-t border-outline-variant/60 pt-4 space-y-3">
-                      <h3 className="text-xs font-bold text-primary uppercase tracking-wider">Group Command Resolution</h3>
+                    <div className="border-t border-slate-200 pb-2 pt-4 space-y-3">
+                      <h3 className="text-xs font-bold text-blue-600 uppercase tracking-wider">Group Command Resolution</h3>
                       
                       {!showConfirmResolve ? (
                         <div className="space-y-3">
@@ -514,9 +514,9 @@ export default function IncidentGroups() {
                                 name="res-status"
                                 checked={resolvingStatus === 'resolved'}
                                 onChange={() => setResolvingStatus('resolved')}
-                                className="accent-primary"
+                                className="accent-blue-600"
                               />
-                              <label htmlFor="status-resolved" className="text-xs font-bold text-on-surface">Mark Resolved</label>
+                              <label htmlFor="status-resolved" className="text-xs font-bold text-slate-800 cursor-pointer">Mark Resolved</label>
                             </div>
                             <div className="flex items-center gap-1">
                               <input
@@ -525,20 +525,20 @@ export default function IncidentGroups() {
                                 name="res-status"
                                 checked={resolvingStatus === 'closed'}
                                 onChange={() => setResolvingStatus('closed')}
-                                className="accent-primary"
+                                className="accent-blue-600"
                               />
-                              <label htmlFor="status-closed" className="text-xs font-bold text-on-surface">Mark Closed</label>
+                              <label htmlFor="status-closed" className="text-xs font-bold text-slate-800 cursor-pointer">Mark Closed</label>
                             </div>
                           </div>
 
                           <div>
-                            <label className="block text-[10px] font-semibold text-on-surface-variant mb-1 uppercase tracking-wider">Resolution Note</label>
+                            <label className="block text-[10px] font-semibold text-slate-500 mb-1 uppercase tracking-wider">Resolution Note</label>
                             <textarea
                               rows="2"
                               value={resolutionNote}
                               onChange={(e) => setResolutionNote(e.target.value)}
                               placeholder="Describe actions taken, dispatch summaries, or safety confirmation details..."
-                              className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3 py-1.5 text-xs text-on-surface focus:outline-none focus:border-primary resize-none"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none"
                               required
                             />
                           </div>
@@ -553,7 +553,7 @@ export default function IncidentGroups() {
                               setDetailsError(null);
                               setShowConfirmResolve(true);
                             }}
-                            className="w-full bg-primary hover:bg-primary/95 text-on-primary font-bold py-2 px-4 rounded-lg text-xs shadow-sm transition flex items-center justify-center gap-1.5"
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-xs shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer"
                           >
                             <span className="material-symbols-outlined text-[16px]">task_alt</span>
                             <span>Resolve Whole Group</span>
@@ -562,7 +562,7 @@ export default function IncidentGroups() {
                       ) : (
                         <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl text-xs space-y-3">
                           <div className="flex items-center gap-1.5 font-bold">
-                            <span className="material-symbols-outlined">warning</span>
+                            <span className="material-symbols-outlined text-amber-600">warning</span>
                             <span>Confirm Bulk Operation</span>
                           </div>
                           <p>
@@ -573,14 +573,14 @@ export default function IncidentGroups() {
                               type="button"
                               onClick={handleResolveGroupSubmit}
                               disabled={actionSubmitting}
-                              className="bg-primary hover:bg-primary/95 text-on-primary font-bold px-3 py-1.5 rounded transition shrink-0"
+                              className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded transition shrink-0 cursor-pointer"
                             >
                               {actionSubmitting ? 'Resolving...' : 'Yes, Resolve Group'}
                             </button>
                             <button
                               type="button"
                               onClick={() => setShowConfirmResolve(false)}
-                              className="bg-surface border border-outline-variant text-on-surface font-semibold px-3 py-1.5 rounded hover:bg-surface-container transition shrink-0"
+                              className="bg-white border border-slate-200 text-slate-700 font-semibold px-3 py-1.5 rounded hover:bg-slate-50 transition shrink-0 cursor-pointer"
                             >
                               Cancel
                             </button>
@@ -590,17 +590,17 @@ export default function IncidentGroups() {
                     </div>
                   ) : (
                     // Resolved display notes
-                    <div className="bg-slate-50 border border-outline-variant/60 rounded-xl p-3 text-xs space-y-2">
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs space-y-2">
                       <div className="font-bold text-emerald-700 flex items-center gap-1">
                         <span className="material-symbols-outlined text-[16px]">check_circle</span>
                         <span>Resolved Case File</span>
                       </div>
                       <div>
-                        <span className="text-on-surface-variant font-semibold">Resolved Date:</span> <span className="font-medium">{selectedGroup.resolvedAt ? new Date(selectedGroup.resolvedAt).toLocaleString() : 'N/A'}</span>
+                        <span className="text-slate-500 font-semibold">Resolved Date:</span> <span className="font-medium text-slate-900">{selectedGroup.resolvedAt ? new Date(selectedGroup.resolvedAt).toLocaleString() : 'N/A'}</span>
                       </div>
                       <div>
-                        <span className="text-on-surface-variant font-semibold">Resolution Note:</span>
-                        <p className="mt-1 p-2 bg-surface border border-outline-variant/40 rounded italic text-on-surface font-medium">
+                        <span className="text-slate-500 font-semibold">Resolution Note:</span>
+                        <p className="mt-1 p-2 bg-white border border-slate-200 rounded italic text-slate-800 font-medium">
                           {selectedGroup.resolutionNote || 'No resolution details logged.'}
                         </p>
                       </div>

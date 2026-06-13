@@ -44,8 +44,8 @@ export default function Login() {
 
         {/* Error Notification */}
         {error && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2.5 text-xs text-red-800">
-            <ShieldAlert className="w-4.5 h-4.5 text-red-600 shrink-0 mt-0.5" />
+          <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-2.5 text-xs text-red-400">
+            <ShieldAlert className="w-4.5 h-4.5 text-red-500 shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
@@ -103,7 +103,7 @@ export default function Login() {
             </Link>
           </div>
           <div>
-            <Link to="/" className="text-slate-500 hover:text-slate-800 transition-colors inline-block">
+            <Link to="/" className="text-slate-500 hover:text-white transition-colors inline-block">
               ← Return to landing page
             </Link>
           </div>

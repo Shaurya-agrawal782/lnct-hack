@@ -12,6 +12,7 @@ import {
   SafeAreaView
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
+import { theme } from '../../theme';
 
 export default function RegisterScreen({ navigation }) {
   const { register } = useContext(AuthContext);
@@ -23,6 +24,12 @@ export default function RegisterScreen({ navigation }) {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Focus states for visual feedback
+  const [nameFocused, setNameFocused] = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
+  const [phoneFocused, setPhoneFocused] = useState(false);
+
   const handleRegister = async () => {
     if (!name.trim() || !email.trim() || !password.trim()) {
       setError('Name, email, and password are required.');
@@ -33,8 +40,6 @@ export default function RegisterScreen({ navigation }) {
     setLoading(true);
 
     try {
-      // For public registers on mobile, the backend blocks Admin/Responder creation.
-      // We pass role: 'citizen' to match normal registration behavior.
       const payload = {
         name: name.trim(),
         email: email.trim(),
@@ -45,13 +50,11 @@ export default function RegisterScreen({ navigation }) {
 
       await register(payload);
       setSuccess('Account created successfully! Redirecting to login...');
-      // Clear inputs
       setName('');
       setEmail('');
       setPassword('');
       setPhone('');
       
-      // Auto redirect to Login after 2 seconds
       setTimeout(() => {
         navigation.navigate('Login');
       }, 2000);
@@ -94,59 +97,67 @@ export default function RegisterScreen({ navigation }) {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Full Name</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, nameFocused && styles.inputFocused]}
                 placeholder="Enter full name"
-                placeholderTextColor="#94A3B8"
+                placeholderTextColor={theme.colors.textPlaceholder}
                 value={name}
                 onChangeText={setName}
                 autoCapitalize="words"
+                onFocus={() => setNameFocused(true)}
+                onBlur={() => setNameFocused(false)}
               />
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Email Address</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, emailFocused && styles.inputFocused]}
                 placeholder="Enter email"
-                placeholderTextColor="#94A3B8"
+                placeholderTextColor={theme.colors.textPlaceholder}
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
                 keyboardType="email-address"
                 autoComplete="email"
+                onFocus={() => setEmailFocused(true)}
+                onBlur={() => setEmailFocused(false)}
               />
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Password</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, passwordFocused && styles.inputFocused]}
                 placeholder="Create password"
-                placeholderTextColor="#94A3B8"
+                placeholderTextColor={theme.colors.textPlaceholder}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
                 autoCapitalize="none"
                 autoComplete="password"
+                onFocus={() => setPasswordFocused(true)}
+                onBlur={() => setPasswordFocused(false)}
               />
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Phone Number (Optional)</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, phoneFocused && styles.inputFocused]}
                 placeholder="Enter phone number"
-                placeholderTextColor="#94A3B8"
+                placeholderTextColor={theme.colors.textPlaceholder}
                 value={phone}
                 onChangeText={setPhone}
                 keyboardType="phone-pad"
                 autoComplete="tel"
+                onFocus={() => setPhoneFocused(true)}
+                onBlur={() => setPhoneFocused(false)}
               />
             </View>
 
             <View style={styles.noteBox}>
               <Text style={styles.noteText}>
-                ⚠️ Note: Public accounts are created as Citizen users.
+                ℹ️ Note: Mobile registration creates Citizen accounts only.
               </Text>
             </View>
 
@@ -154,9 +165,10 @@ export default function RegisterScreen({ navigation }) {
               style={styles.button}
               onPress={handleRegister}
               disabled={loading || !!success}
+              activeOpacity={0.8}
             >
               {loading ? (
-                <ActivityIndicator color="#FFFFFF" />
+                <ActivityIndicator color={theme.colors.textPrimary} />
               ) : (
                 <Text style={styles.buttonText}>Register</Text>
               )}
@@ -178,7 +190,7 @@ export default function RegisterScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0F172A',
+    backgroundColor: theme.colors.background,
   },
   container: {
     flex: 1,
@@ -193,107 +205,107 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   logoTitle: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: '#FFFFFF',
+    fontSize: theme.typography.sizes.xxl,
+    fontWeight: theme.typography.weights.heavy,
+    color: theme.colors.textPrimary,
     letterSpacing: 0.5,
   },
   logoSubtitle: {
-    fontSize: 14,
-    color: '#94A3B8',
+    fontSize: theme.typography.sizes.sm,
+    color: theme.colors.textSecondary,
     marginTop: 8,
-    fontWeight: '500',
+    fontWeight: theme.typography.weights.medium,
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   formCard: {
-    backgroundColor: '#1E293B',
-    borderRadius: 16,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
     padding: 24,
     borderWidth: 1,
-    borderColor: '#334155',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
+    borderColor: theme.colors.border,
+    ...theme.shadows.card,
   },
   formTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontSize: theme.typography.sizes.xl,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.textPrimary,
     marginBottom: 20,
   },
   errorBox: {
-    backgroundColor: '#7F1D1D',
+    backgroundColor: theme.colors.emergencyMuted,
     borderLeftWidth: 4,
-    borderLeftColor: '#F87171',
+    borderLeftColor: theme.colors.emergency,
     padding: 12,
-    borderRadius: 6,
+    borderRadius: theme.borderRadius.sm,
     marginBottom: 16,
   },
   errorText: {
     color: '#FCA5A5',
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.medium,
   },
   successBox: {
-    backgroundColor: '#064E3B',
+    backgroundColor: theme.colors.successGlow,
     borderLeftWidth: 4,
-    borderLeftColor: '#34D399',
+    borderLeftColor: theme.colors.success,
     padding: 12,
-    borderRadius: 6,
+    borderRadius: theme.borderRadius.sm,
     marginBottom: 16,
   },
   successText: {
     color: '#A7F3D0',
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.medium,
   },
   inputGroup: {
     marginBottom: 16,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#E2E8F0',
+    fontSize: theme.typography.sizes.sm,
+    fontWeight: theme.typography.weights.semibold,
+    color: theme.colors.textSecondary,
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#0F172A',
-    borderColor: '#334155',
+    backgroundColor: theme.colors.inputBackground,
+    borderColor: theme.colors.border,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.md,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    fontSize: 16,
-    color: '#FFFFFF',
+    fontSize: theme.typography.sizes.md,
+    color: theme.colors.textPrimary,
+  },
+  inputFocused: {
+    borderColor: theme.colors.borderFocus,
   },
   noteBox: {
-    backgroundColor: '#334155',
+    backgroundColor: 'rgba(30, 41, 59, 0.5)',
     padding: 12,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.md,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#475569',
+    borderColor: theme.colors.border,
   },
   noteText: {
-    color: '#F8FAFC',
-    fontSize: 13,
-    fontWeight: '500',
+    color: theme.colors.textSecondary,
+    fontSize: theme.typography.sizes.sm,
+    fontWeight: theme.typography.weights.medium,
   },
   button: {
-    backgroundColor: '#2563EB',
-    borderRadius: 8,
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.md,
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
+    ...theme.shadows.button,
   },
   buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
+    color: theme.colors.textPrimary,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.bold,
   },
   footer: {
     flexDirection: 'row',
@@ -302,12 +314,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   footerText: {
-    color: '#94A3B8',
-    fontSize: 14,
+    color: theme.colors.textSecondary,
+    fontSize: theme.typography.sizes.md,
   },
   linkText: {
-    color: '#60A5FA',
-    fontSize: 14,
-    fontWeight: '600',
+    color: theme.colors.primary,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.semibold,
   },
 });

@@ -19,34 +19,34 @@ export const formatDateTime = (dateString) => {
 export const getStatusColor = (status) => {
   switch (status?.toLowerCase()) {
     case 'reported':
-      return { bg: '#EFF6FF', text: '#2563EB', border: '#BFDBFE' }; // Blue
+      return { bg: 'rgba(59, 130, 246, 0.12)', text: '#3B82F6', border: '#2563EB' }; // Blue
     case 'verified':
-      return { bg: '#F5F3FF', text: '#7C3AED', border: '#DDD6FE' }; // Purple
+      return { bg: 'rgba(139, 92, 246, 0.12)', text: '#C084FC', border: '#8B5CF6' }; // Purple
     case 'assigned':
-      return { bg: '#FFFBEB', text: '#D97706', border: '#FDE68A' }; // Amber
+      return { bg: 'rgba(245, 158, 11, 0.12)', text: '#F59E0B', border: '#D97706' }; // Amber
     case 'in-progress':
-      return { bg: '#FEF3C7', text: '#B45309', border: '#FDE68A' }; // Orange-ish Amber
+      return { bg: 'rgba(59, 130, 246, 0.12)', text: '#3B82F6', border: '#2563EB' }; // Blue (Command Action)
     case 'resolved':
-      return { bg: '#D1FAE5', text: '#059669', border: '#A7F3D0' }; // Emerald Green
+      return { bg: 'rgba(16, 185, 129, 0.12)', text: '#10B981', border: '#059669' }; // Success Green
     case 'closed':
-      return { bg: '#F1F5F9', text: '#475569', border: '#E2E8F0' }; // Gray
+      return { bg: 'rgba(148, 163, 184, 0.12)', text: '#94A3B8', border: '#475569' }; // Muted Gray
     default:
-      return { bg: '#F1F5F9', text: '#475569', border: '#E2E8F0' };
+      return { bg: 'rgba(148, 163, 184, 0.12)', text: '#94A3B8', border: '#475569' };
   }
 };
 
 export const getSeverityColor = (severity) => {
   switch (severity?.toLowerCase()) {
     case 'low':
-      return { bg: '#D1FAE5', text: '#059669', border: '#A7F3D0' }; // Green
+      return { bg: 'rgba(16, 185, 129, 0.12)', text: '#10B981', border: '#059669' }; // Green
     case 'medium':
-      return { bg: '#FFFBEB', text: '#D97706', border: '#FDE68A' }; // Amber
+      return { bg: 'rgba(245, 158, 11, 0.12)', text: '#F59E0B', border: '#D97706' }; // Amber
     case 'high':
-      return { bg: '#FFEDD5', text: '#EA580C', border: '#FED7AA' }; // Orange
+      return { bg: 'rgba(249, 115, 22, 0.12)', text: '#F97316', border: '#EA580C' }; // Orange
     case 'critical':
-      return { bg: '#FEE2E2', text: '#DC2626', border: '#FCA5A5' }; // Red
+      return { bg: 'rgba(239, 68, 68, 0.15)', text: '#EF4444', border: '#DC2626' }; // Red
     default:
-      return { bg: '#F1F5F9', text: '#475569', border: '#E2E8F0' };
+      return { bg: 'rgba(148, 163, 184, 0.12)', text: '#94A3B8', border: '#475569' };
   }
 };
 

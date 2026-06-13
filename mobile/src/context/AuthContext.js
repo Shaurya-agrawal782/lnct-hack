@@ -9,35 +9,33 @@ const TOKEN_KEY = 'disasterconnect_token';
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Default to false so we don't block the UI on startup
 
-  // Restore session
+  // Restore session in the background
   const restoreSession = useCallback(async () => {
-    setLoading(true);
+    console.log('[AuthContext] Starting background restoreSession...');
     try {
       const storedToken = await AsyncStorage.getItem(TOKEN_KEY);
+      console.log('[AuthContext] Stored token found:', storedToken ? 'Yes' : 'No');
       if (storedToken) {
         setToken(storedToken);
+        console.log('[AuthContext] Verifying token in background...');
         const res = await authApi.me();
         if (res && res.data && res.data.user) {
+          console.log('[AuthContext] Token verified. Setting user:', res.data.user.email);
           setUser(res.data.user);
         } else {
-          // Token is invalid or expired
+          console.log('[AuthContext] Token verification failed. Clearing storage.');
           await AsyncStorage.removeItem(TOKEN_KEY);
           setToken(null);
           setUser(null);
         }
-      } else {
-        setToken(null);
-        setUser(null);
       }
     } catch (error) {
-      console.warn('Error restoring session:', error);
+      console.warn('[AuthContext] Error during background session restore:', error);
       await AsyncStorage.removeItem(TOKEN_KEY);
       setToken(null);
       setUser(null);
-    } finally {
-      setLoading(false);
     }
   }, []);
 

@@ -55,15 +55,15 @@ export default function Sidebar({ isOpen, onClose }) {
       )}
 
       <aside
-        className={`flex flex-col bg-inverse-surface text-inverse-on-surface h-full w-[280px] fixed left-0 top-0 pt-6 pb-8 border-r border-on-surface-variant z-50 transition-transform duration-300 ${
+        className={`flex flex-col bg-slate-950 text-inverse-on-surface h-full w-[280px] fixed left-0 top-0 pt-6 pb-8 border-r border-slate-900 z-50 transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0`}
       >
         {/* Header */}
         <div className="px-6 mb-8 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0">
-              <span className="material-symbols-outlined text-on-primary">shield</span>
+            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-white">shield</span>
             </div>
             <div>
               <h2 className="font-headline-sm text-headline-sm font-bold text-white">Command Center</h2>
@@ -86,7 +86,7 @@ export default function Sidebar({ isOpen, onClose }) {
             <Link
               to="/dashboard/incidents/new"
               onClick={onClose}
-              className="w-full bg-error hover:opacity-90 text-on-error py-2.5 px-4 rounded-lg font-label-md text-label-md transition flex items-center justify-center space-x-2 shadow-sm"
+              className="w-full bg-red-600 hover:bg-red-500 text-white py-2.5 px-4 rounded-lg font-label-md text-label-md transition flex items-center justify-center space-x-2 shadow-sm"
             >
               <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>report</span>
               <span>Report Incident</span>
@@ -96,7 +96,7 @@ export default function Sidebar({ isOpen, onClose }) {
             <Link
               to="/dashboard/incidents"
               onClick={onClose}
-              className="w-full bg-primary hover:opacity-90 text-on-primary py-2.5 px-4 rounded-lg font-label-md text-label-md transition flex items-center justify-center space-x-2 shadow-sm"
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 px-4 rounded-lg font-label-md text-label-md transition flex items-center justify-center space-x-2 shadow-sm"
             >
               <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>flight_takeoff</span>
               <span>Dispatch Resources</span>
@@ -116,7 +116,7 @@ export default function Sidebar({ isOpen, onClose }) {
                 onClick={onClose}
                 className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-150 ${
                   isActive
-                    ? 'text-white font-bold border-l-4 border-primary bg-white/10'
+                    ? 'text-white font-semibold bg-blue-600/25 border border-blue-500/30'
                     : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
               >
@@ -128,7 +128,7 @@ export default function Sidebar({ isOpen, onClose }) {
         </div>
 
         {/* Footer Tabs */}
-        <div className="px-4 pt-4 border-t border-slate-800 mt-auto space-y-1">
+        <div className="px-4 pt-4 border-t border-slate-900 mt-auto space-y-1">
           <button
             onClick={() => {
               onClose?.();

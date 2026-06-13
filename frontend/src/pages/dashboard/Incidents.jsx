@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getIncidents } from '../../api/incidentApi';
 import useAuth from '../../hooks/useAuth';
+import Badge from '../../components/ui/Badge';
 
 export default function Incidents() {
   const { user } = useAuth();
@@ -70,15 +71,15 @@ export default function Incidents() {
   const getSeverityBadge = (sev) => {
     switch (sev) {
       case 'low':
-        return <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-sm bg-primary-container/10 text-primary font-label-sm text-label-sm uppercase font-bold">Low</span>;
+        return <Badge variant="success">Low</Badge>;
       case 'medium':
-        return <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-sm bg-secondary-container text-on-secondary-container font-label-sm text-label-sm uppercase font-bold">Medium</span>;
+        return <Badge variant="primary">Medium</Badge>;
       case 'high':
-        return <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-sm bg-amber-100 text-amber-800 font-label-sm text-label-sm uppercase font-bold">High</span>;
+        return <Badge variant="warning">High</Badge>;
       case 'critical':
-        return <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-sm bg-error-container text-on-error-container font-label-sm text-label-sm uppercase font-bold animate-pulse">Critical</span>;
+        return <Badge variant="error" pulse={true}>Critical</Badge>;
       default:
-        return <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-sm bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm uppercase font-bold">{sev}</span>;
+        return <Badge variant="default">{sev}</Badge>;
     }
   };
 
@@ -312,15 +313,15 @@ export default function Incidents() {
                         <div className="font-semibold text-on-surface truncate text-sm max-w-xs">{incident.title}</div>
                         <div className="text-xs text-on-surface-variant truncate max-w-xs mt-0.5 font-normal">{incident.description}</div>
                         {incident.incidentGroup && (
-                          <div className="text-[10px] text-indigo-700 bg-indigo-50 border border-indigo-100 px-1.5 py-0.5 mt-1 rounded font-bold inline-flex items-center gap-0.5 max-w-max">
+                          <div className="text-[10px] text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 mt-1.5 rounded font-bold inline-flex items-center gap-1 max-w-max">
                             <span className="material-symbols-outlined text-[12px] font-bold">folder_zip</span>
-                            <span>Group: {incident.incidentGroup.groupNumber}</span>
+                            <span>Linked Case Group: {incident.incidentGroup.groupNumber}</span>
                           </div>
                         )}
                       </td>
                       <td className="px-4 py-2">
                         {incident.ticketNumber ? (
-                          <span className="font-mono text-[11px] font-bold text-primary bg-primary/8 border border-primary/20 px-1.5 py-0.5 rounded select-all">
+                          <span className="font-mono text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded select-all">
                             {incident.ticketNumber}
                           </span>
                         ) : (

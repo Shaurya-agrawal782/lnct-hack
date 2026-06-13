@@ -72,8 +72,8 @@ export default function AuthShell({ children }) {
       {/* Right Column: Form (Desktop & Mobile Viewports) */}
       <div className="col-span-12 lg:col-span-7 xl:col-span-6 flex items-center justify-center p-6 md:p-12 bg-slate-50 min-h-screen relative">
         <div className="absolute top-6 left-6 lg:hidden">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-slate-950 font-bold text-sm">
-            <Shield className="w-4 h-4 text-blue-600" />
+          <Link to="/" className="inline-flex items-center gap-1.5 text-white font-bold text-sm">
+            <Shield className="w-4 h-4 text-blue-500" />
             <span>DisasterConnect</span>
           </Link>
         </div>

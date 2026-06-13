@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, ScrollView, SafeAreaView } fr
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../../context/AuthContext';
 import { getMyAlerts } from '../../api/alertApi';
+import { theme } from '../../theme';
 
 export default function CitizenHomeScreen({ navigation }) {
   const { user, logout } = useContext(AuthContext);
@@ -27,7 +28,7 @@ export default function CitizenHomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         {/* User Card */}
         <View style={styles.profileCard}>
           <View style={styles.profileHeader}>
@@ -35,14 +36,14 @@ export default function CitizenHomeScreen({ navigation }) {
             <Text style={styles.userName}>{user?.name || 'Citizen'}</Text>
           </View>
           <View style={styles.roleTag}>
-            <Text style={styles.roleText}>CITIZEN ACCOUNT</Text>
+            <Text style={styles.roleText}>CITIZEN</Text>
           </View>
         </View>
 
         {/* Short info note */}
         <View style={styles.infoBanner}>
           <Text style={styles.infoText}>
-            Submit reports and track updates from the response team.
+            Report local emergencies and track active responders in real-time.
           </Text>
         </View>
 
@@ -50,6 +51,7 @@ export default function CitizenHomeScreen({ navigation }) {
         <TouchableOpacity
           style={styles.emergencyBtn}
           onPress={() => navigation.navigate('ReportIncident')}
+          activeOpacity={0.9}
         >
           <Text style={styles.emergencyBtnTitle}>🚨 REPORT INCIDENT</Text>
           <Text style={styles.emergencyBtnSubtitle}>File a new emergency report</Text>
@@ -60,6 +62,7 @@ export default function CitizenHomeScreen({ navigation }) {
           <TouchableOpacity
             style={styles.card}
             onPress={() => navigation.navigate('MyReports')}
+            activeOpacity={0.8}
           >
             <View style={styles.cardHeaderRow}>
               <Text style={styles.cardIcon}>📁</Text>
@@ -71,6 +74,7 @@ export default function CitizenHomeScreen({ navigation }) {
           <TouchableOpacity
             style={styles.card}
             onPress={() => navigation.navigate('Alerts')}
+            activeOpacity={0.8}
           >
             <View style={styles.cardHeaderRow}>
               <Text style={styles.cardIcon}>🔔</Text>
@@ -81,19 +85,21 @@ export default function CitizenHomeScreen({ navigation }) {
               )}
             </View>
             <Text style={styles.cardTitle}>Alerts Feed</Text>
-            <Text style={styles.cardDesc}>Safety warnings & alert          </TouchableOpacity>
+            <Text style={styles.cardDesc}>Safety warnings & local alerts</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Track a Ticket Button */}
         <TouchableOpacity
           style={styles.trackTicketBtn}
           onPress={() => navigation.navigate('TrackReport')}
+          activeOpacity={0.8}
         >
           <Text style={styles.trackTicketBtnText}>🔍 Track a Ticket by Number</Text>
         </TouchableOpacity>
  
         {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
+        <TouchableOpacity style={styles.logoutBtn} onPress={logout} activeOpacity={0.8}>
           <Text style={styles.logoutBtnText}>Sign Out</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -104,91 +110,85 @@ export default function CitizenHomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F8FAFC', // light gray background
+    backgroundColor: theme.colors.background,
   },
   container: {
     padding: 20,
   },
   profileCard: {
-    backgroundColor: '#0F172A', // Navy
-    borderRadius: 16,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
     padding: 20,
     marginBottom: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    ...theme.shadows.card,
   },
   profileHeader: {
     flex: 1,
   },
   welcomeText: {
-    color: '#94A3B8',
-    fontSize: 14,
-    fontWeight: '500',
+    color: theme.colors.textSecondary,
+    fontSize: theme.typography.sizes.xs,
+    fontWeight: theme.typography.weights.medium,
   },
   userName: {
-    color: '#FFFFFF',
-    fontSize: 22,
-    fontWeight: '700',
+    color: theme.colors.textPrimary,
+    fontSize: theme.typography.sizes.xl,
+    fontWeight: theme.typography.weights.bold,
     marginTop: 2,
   },
   roleTag: {
-    backgroundColor: '#1E293B',
-    borderColor: '#334155',
+    backgroundColor: 'rgba(56, 189, 248, 0.1)',
+    borderColor: 'rgba(56, 189, 248, 0.2)',
     borderWidth: 1,
     paddingVertical: 6,
     paddingHorizontal: 12,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.sm,
   },
   roleText: {
-    color: '#38BDF8', // Cyan role color
-    fontSize: 11,
-    fontWeight: '700',
+    color: theme.colors.cyan,
+    fontSize: 10,
+    fontWeight: theme.typography.weights.bold,
     letterSpacing: 0.5,
   },
   infoBanner: {
-    backgroundColor: '#F1F5F9',
-    borderRadius: 8,
-    padding: 12,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.md,
+    padding: 14,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: theme.colors.border,
   },
   infoText: {
-    color: '#475569',
-    fontSize: 14,
+    color: theme.colors.textSecondary,
+    fontSize: theme.typography.sizes.md,
     lineHeight: 20,
     textAlign: 'center',
   },
   emergencyBtn: {
-    backgroundColor: '#DC2626', // Red Emergency CTA
-    borderRadius: 16,
+    backgroundColor: theme.colors.emergency,
+    borderRadius: theme.borderRadius.lg,
     paddingVertical: 20,
     paddingHorizontal: 24,
     alignItems: 'center',
     marginBottom: 24,
-    shadowColor: '#EF4444',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    ...theme.shadows.emergency,
   },
   emergencyBtnTitle: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '800',
+    color: theme.colors.textPrimary,
+    fontSize: theme.typography.sizes.lg,
+    fontWeight: theme.typography.weights.heavy,
     letterSpacing: 0.5,
   },
   emergencyBtnSubtitle: {
-    color: '#FCA5A5',
-    fontSize: 12,
+    color: '#FFCDCD',
+    fontSize: theme.typography.sizes.xs,
     marginTop: 4,
-    fontWeight: '500',
+    fontWeight: theme.typography.weights.medium,
   },
   grid: {
     flexDirection: 'row',
@@ -197,17 +197,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
     padding: 20,
     flex: 1,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderColor: theme.colors.border,
+    ...theme.shadows.card,
   },
   cardHeaderRow: {
     flexDirection: 'row',
@@ -220,7 +216,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   badgeOverlay: {
-    backgroundColor: '#DC2626',
+    backgroundColor: theme.colors.emergency,
     borderRadius: 12,
     paddingHorizontal: 6,
     paddingVertical: 2,
@@ -229,50 +225,46 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   badgeOverlayText: {
-    color: '#FFFFFF',
+    color: theme.colors.textPrimary,
     fontSize: 10,
-    fontWeight: '800',
+    fontWeight: theme.typography.weights.bold,
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#0F172A',
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.textPrimary,
     marginBottom: 6,
   },
   cardDesc: {
     fontSize: 12,
-    color: '#64748B',
+    color: theme.colors.textSecondary,
     lineHeight: 16,
   },
   trackTicketBtn: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E2E8F0',
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.md,
     paddingVertical: 14,
     alignItems: 'center',
     marginBottom: 20,
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    ...theme.shadows.card,
   },
   trackTicketBtnText: {
-    color: '#0F172A',
-    fontSize: 15,
-    fontWeight: '700',
+    color: theme.colors.textPrimary,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.bold,
   },
   logoutBtn: {
-    borderColor: '#64748B',
+    borderColor: theme.colors.textMuted,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.md,
     paddingVertical: 12,
     alignItems: 'center',
   },
   logoutBtnText: {
-    color: '#64748B',
-    fontSize: 14,
-    fontWeight: '600',
+    color: theme.colors.textSecondary,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.semibold,
   },
 });

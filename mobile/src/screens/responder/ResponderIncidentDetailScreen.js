@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { theme } from '../../theme';
 import {
   StyleSheet,
   View,
@@ -154,30 +155,40 @@ export default function ResponderIncidentDetailScreen({ route, navigation }) {
           
           {/* Header Dashboard */}
           <View style={styles.headerCard}>
+            <Text style={styles.ticketLabel}>Emergency Dossier File</Text>
+            <Text style={styles.ticketNumberText} selectable>{incident.ticketNumber || 'NO TICKET'}</Text>
+            
             <Text style={styles.title}>{incident.title}</Text>
             
-            <View style={styles.badgeRow}>
-              <View style={[styles.badge, { backgroundColor: severityStyle.bg, borderColor: severityStyle.border }]}>
-                <Text style={[styles.badgeText, { color: severityStyle.text }]}>
-                  {incident.severity?.toUpperCase()} SEVERITY
-                </Text>
+            <View style={styles.dossierGrid}>
+              <View style={styles.dossierGridItem}>
+                <Text style={styles.dossierLabel}>Severity</Text>
+                <View style={[styles.dossierBadge, { backgroundColor: severityStyle.bg, borderColor: severityStyle.border }]}>
+                  <Text style={[styles.dossierBadgeText, { color: severityStyle.text }]}>
+                    {incident.severity?.toUpperCase()}
+                  </Text>
+                </View>
               </View>
 
-              <View style={[styles.badge, { backgroundColor: statusStyle.bg, borderColor: statusStyle.border }]}>
-                <Text style={[styles.badgeText, { color: statusStyle.text }]}>
-                  STATUS: {incident.status?.toUpperCase()}
-                </Text>
+              <View style={styles.dossierGridItem}>
+                <Text style={styles.dossierLabel}>Status</Text>
+                <View style={[styles.dossierBadge, { backgroundColor: statusStyle.bg, borderColor: statusStyle.border }]}>
+                  <Text style={[styles.dossierBadgeText, { color: statusStyle.text }]}>
+                    {incident.status?.toUpperCase()}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.dossierGridItem}>
+                <Text style={styles.dossierLabel}>Incident Type</Text>
+                <Text style={styles.dossierValueText}>{getIncidentTypeLabel(incident.type)}</Text>
+              </View>
+
+              <View style={styles.dossierGridItem}>
+                <Text style={styles.dossierLabel}>Last Update</Text>
+                <Text style={styles.dossierValueText}>{formatDateTime(incident.updatedAt)}</Text>
               </View>
             </View>
-
-            {incident.ticketNumber && (
-              <Text style={styles.ticketText} selectable>
-                🎫 Ticket: {incident.ticketNumber}
-              </Text>
-            )}
-
-            <Text style={styles.typeText}>Type: {getIncidentTypeLabel(incident.type)}</Text>
-            <Text style={styles.dateText}>Last Update: {formatDateTime(incident.updatedAt)}</Text>
           </View>
 
           {/* Group Info Section */}
@@ -215,7 +226,7 @@ export default function ResponderIncidentDetailScreen({ route, navigation }) {
                     Location Summary: <Text style={{ fontWeight: 'bold' }}>{incident.incidentGroup.locationSummary}</Text>
                   </Text>
                 ) : null}
-                <Text style={[styles.groupStatusText, { fontStyle: 'italic', color: '#B45309', marginTop: 4 }]}>
+                <Text style={[styles.groupStatusText, { fontStyle: 'italic', color: '#F59E0B', marginTop: 4 }]}>
                   ⚠️ Note: Multiple reports may refer to the same issue. Follow command instructions before resolving.
                 </Text>
               </View>
@@ -436,7 +447,7 @@ export default function ResponderIncidentDetailScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: theme.colors.background,
   },
   flex: {
     flex: 1,
@@ -453,145 +464,171 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 12,
-    color: '#64748B',
-    fontSize: 14,
-    fontWeight: '500',
+    color: theme.colors.textSecondary,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.medium,
   },
   errorText: {
-    color: '#DC2626',
+    color: theme.colors.emergency,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: theme.typography.weights.semibold,
     textAlign: 'center',
     marginBottom: 16,
   },
   retryBtn: {
-    backgroundColor: '#2563EB',
-    borderRadius: 8,
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.md,
     paddingVertical: 10,
     paddingHorizontal: 20,
+    ...theme.shadows.button,
   },
   retryBtnText: {
     color: '#FFFFFF',
-    fontWeight: '600',
+    fontWeight: theme.typography.weights.semibold,
     fontSize: 14,
   },
   headerCard: {
-    backgroundColor: '#0F172A', // Dark Navy theme header
-    borderRadius: 16,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    ...theme.shadows.card,
+  },
+  ticketLabel: {
+    fontSize: 10,
+    fontWeight: theme.typography.weights.bold,
+    color: '#3B82F6',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  ticketNumberText: {
+    fontSize: 20,
+    fontWeight: theme.typography.weights.heavy,
+    color: '#FFFFFF',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+    letterSpacing: 0.5,
+    marginBottom: 12,
   },
   title: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#FFFFFF',
+    fontSize: theme.typography.sizes.lg,
+    fontWeight: theme.typography.weights.heavy,
+    color: theme.colors.textPrimary,
     marginBottom: 12,
     lineHeight: 28,
   },
-  badgeRow: {
+  dossierGrid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 8,
     gap: 12,
-    marginBottom: 14,
+    borderTopWidth: 1,
+    borderTopColor: '#1E293B',
+    paddingTop: 12,
   },
-  badge: {
+  dossierGridItem: {
+    width: '47%',
+    marginBottom: 8,
+  },
+  dossierLabel: {
+    fontSize: 9,
+    fontWeight: theme.typography.weights.semibold,
+    color: '#94A3B8',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  dossierBadge: {
+    alignSelf: 'flex-start',
     borderWidth: 1,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 6,
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    borderRadius: theme.borderRadius.sm,
   },
-  badgeText: {
-    fontSize: 10,
-    fontWeight: '800',
+  dossierBadgeText: {
+    fontSize: 9,
+    fontWeight: theme.typography.weights.heavy,
+  },
+  dossierValueText: {
+    fontSize: 13,
+    fontWeight: theme.typography.weights.bold,
+    color: '#FFFFFF',
   },
   typeText: {
     fontSize: 14,
-    color: '#94A3B8',
-    fontWeight: '600',
+    color: theme.colors.textSecondary,
+    fontWeight: theme.typography.weights.semibold,
     marginBottom: 4,
   },
   dateText: {
     fontSize: 12,
-    color: '#64748B',
-  },
-  ticketText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#60A5FA',
-    fontFamily: 'monospace',
-    marginBottom: 8,
-    letterSpacing: 0.3,
+    color: theme.colors.textMuted,
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 3,
-    elevation: 1.5,
+    borderColor: theme.colors.border,
+    ...theme.shadows.card,
   },
   updateConsole: {
-    backgroundColor: '#F8FAFC',
-    borderColor: '#2563EB',
+    backgroundColor: theme.colors.surface,
+    borderColor: '#3B82F6',
     borderWidth: 1.5,
   },
   infoConsole: {
-    backgroundColor: '#F1F5F9',
-    borderColor: '#CBD5E1',
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
+    borderWidth: 1,
   },
   infoConsoleText: {
     fontSize: 14,
-    color: '#475569',
+    color: theme.colors.textSecondary,
     fontStyle: 'italic',
   },
   cardTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#0F172A',
+    fontSize: 13,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.textPrimary,
     marginBottom: 12,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   descText: {
     fontSize: 14,
-    color: '#334155',
+    color: theme.colors.textPrimary,
     lineHeight: 22,
   },
   addressText: {
     fontSize: 14,
-    color: '#334155',
+    color: theme.colors.textSecondary,
     lineHeight: 20,
     marginBottom: 12,
   },
   coordinatesContainer: {
     flexDirection: 'row',
-    backgroundColor: '#F8FAFC',
-    borderRadius: 8,
+    backgroundColor: theme.colors.inputBackground,
+    borderRadius: theme.borderRadius.md,
     padding: 12,
     gap: 24,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: theme.colors.border,
   },
   coordinateText: {
     fontSize: 13,
-    color: '#64748B',
+    color: theme.colors.textSecondary,
   },
   coordVal: {
-    color: '#0F172A',
-    fontWeight: '600',
+    color: theme.colors.textPrimary,
+    fontWeight: theme.typography.weights.semibold,
   },
   placeholderText: {
     fontSize: 14,
-    color: '#94A3B8',
+    color: theme.colors.textMuted,
     fontStyle: 'italic',
     lineHeight: 20,
   },
@@ -599,128 +636,126 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   resourceItem: {
-    backgroundColor: '#F8FAFC',
-    borderColor: '#E2E8F0',
+    backgroundColor: theme.colors.inputBackground,
+    borderColor: theme.colors.border,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.md,
     padding: 12,
   },
   resourceName: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#0F172A',
+    fontWeight: theme.typography.weights.semibold,
+    color: theme.colors.textPrimary,
     marginBottom: 4,
   },
   resourceMeta: {
     fontSize: 12,
-    color: '#64748B',
+    color: theme.colors.textSecondary,
   },
   consoleErrorBox: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: theme.colors.emergencyMuted,
     borderWidth: 1,
-    borderColor: '#EF4444',
+    borderColor: theme.colors.emergency,
     padding: 12,
-    borderRadius: 6,
+    borderRadius: theme.borderRadius.sm,
     marginBottom: 16,
   },
   consoleErrorText: {
-    color: '#991B1B',
+    color: '#FCA5A5',
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: theme.typography.weights.medium,
   },
   consoleSuccessBox: {
-    backgroundColor: '#D1FAE5',
+    backgroundColor: theme.colors.successGlow,
     borderWidth: 1,
-    borderColor: '#10B981',
+    borderColor: theme.colors.success,
     padding: 12,
-    borderRadius: 6,
+    borderRadius: theme.borderRadius.sm,
     marginBottom: 16,
   },
   consoleSuccessText: {
-    color: '#065F46',
+    color: theme.colors.success,
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: theme.typography.weights.semibold,
   },
   inputGroup: {
     marginBottom: 16,
   },
   label: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#475569',
+    fontWeight: theme.typography.weights.semibold,
+    color: theme.colors.textSecondary,
     marginBottom: 8,
   },
   dropdownToggle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderColor: '#CBD5E1',
+    backgroundColor: theme.colors.inputBackground,
+    borderColor: theme.colors.border,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.md,
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
   dropdownValue: {
     fontSize: 15,
-    color: '#0F172A',
+    color: theme.colors.textPrimary,
   },
   dropdownArrow: {
     fontSize: 10,
-    color: '#64748B',
+    color: theme.colors.textSecondary,
   },
   dropdownMenu: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E2E8F0',
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.md,
     marginTop: 4,
     overflow: 'hidden',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
+    ...theme.shadows.card,
   },
   dropdownItem: {
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    borderBottomColor: theme.colors.border,
   },
   activeItem: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
   },
   dropdownItemText: {
     fontSize: 14,
-    color: '#475569',
+    color: theme.colors.textSecondary,
+    borderColor: '#3B82F6',
   },
   activeItemText: {
-    color: '#2563EB',
-    fontWeight: '600',
+    color: theme.colors.primary,
+    fontWeight: theme.typography.weights.semibold,
   },
   consoleInput: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#CBD5E1',
+    backgroundColor: theme.colors.inputBackground,
+    borderColor: theme.colors.border,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.md,
     paddingHorizontal: 16,
     paddingVertical: 10,
     fontSize: 15,
-    color: '#0F172A',
+    color: theme.colors.textPrimary,
   },
   updateBtn: {
-    backgroundColor: '#2563EB', // Command Blue
-    borderRadius: 8,
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.md,
     paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
+    ...theme.shadows.button,
   },
   updateBtnText: {
     color: '#FFFFFF',
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: theme.typography.weights.bold,
   },
   timeline: {
     marginTop: 8,
@@ -737,18 +772,18 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: '#CBD5E1',
+    backgroundColor: theme.colors.border,
     zIndex: 2,
     marginTop: 4,
   },
   latestNode: {
-    backgroundColor: '#2563EB',
+    backgroundColor: theme.colors.primary,
     transform: [{ scale: 1.2 }],
   },
   timelineLine: {
     width: 2,
     flex: 1,
-    backgroundColor: '#E2E8F0',
+    backgroundColor: theme.colors.border,
     marginVertical: 4,
     zIndex: 1,
   },
@@ -767,27 +802,28 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingVertical: 1,
     paddingHorizontal: 6,
-    borderRadius: 4,
+    borderRadius: theme.borderRadius.sm,
   },
   miniBadgeText: {
     fontSize: 8,
-    fontWeight: '800',
+    fontWeight: theme.typography.weights.heavy,
   },
   timelineTime: {
     fontSize: 11,
-    color: '#94A3B8',
-    fontWeight: '500',
+    color: theme.colors.textMuted,
+    fontWeight: theme.typography.weights.medium,
   },
   timelineNote: {
     fontSize: 13,
-    color: '#475569',
+    color: theme.colors.textSecondary,
     fontStyle: 'italic',
     lineHeight: 18,
   },
   aiCard: {
-    borderColor: '#3B82F6',
+    borderColor: '#2E3E59',
     borderLeftWidth: 4,
-    backgroundColor: '#EFF6FF',
+    backgroundColor: '#0B1220',
+    borderWidth: 1,
   },
   aiHeader: {
     flexDirection: 'row',
@@ -796,8 +832,8 @@ const styles = StyleSheet.create({
   },
   aiHeaderTitle: {
     fontSize: 14,
-    fontWeight: '700',
-    color: '#1E40AF',
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.primary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -806,58 +842,59 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#DBEAFE',
+    borderBottomColor: theme.colors.border,
     marginBottom: 10,
   },
   aiLabel: {
     fontSize: 12,
-    fontWeight: '600',
-    color: '#475569',
+    fontWeight: theme.typography.weights.semibold,
+    color: theme.colors.textSecondary,
   },
   aiPriorityVal: {
-    color: '#1E40AF',
-    fontWeight: '700',
+    color: theme.colors.primary,
+    fontWeight: theme.typography.weights.bold,
   },
   aiRiskVal: {
-    color: '#EF4444',
-    fontWeight: '700',
+    color: theme.colors.emergency,
+    fontWeight: theme.typography.weights.bold,
   },
   aiSection: {
     marginBottom: 12,
   },
   aiSectionTitle: {
     fontSize: 12,
-    fontWeight: '700',
-    color: '#1E40AF',
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.primary,
     marginBottom: 4,
     textTransform: 'uppercase',
   },
   aiSectionText: {
     fontSize: 13,
-    color: '#1E3A8A',
+    color: theme.colors.textPrimary,
     lineHeight: 18,
   },
   aiListItem: {
     fontSize: 12,
-    color: '#1E3A8A',
+    color: theme.colors.textPrimary,
     lineHeight: 18,
     marginBottom: 2,
     paddingLeft: 4,
   },
   aiDisclaimerText: {
     fontSize: 11,
-    color: '#475569',
+    color: theme.colors.textMuted,
     fontStyle: 'italic',
     lineHeight: 16,
     borderTopWidth: 1,
-    borderTopColor: '#DBEAFE',
+    borderTopColor: theme.colors.border,
     paddingTop: 8,
     marginTop: 4,
   },
   groupCard: {
-    borderColor: '#0284C7',
+    borderColor: '#2E3E59',
     borderLeftWidth: 4,
-    backgroundColor: '#F0F9FF',
+    backgroundColor: '#0B1220',
+    borderWidth: 1,
   },
   groupCardHeader: {
     flexDirection: 'row',
@@ -867,20 +904,20 @@ const styles = StyleSheet.create({
   },
   groupCardHeaderTitle: {
     fontSize: 13,
-    fontWeight: '700',
-    color: '#0369A1',
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.cyan,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   groupCardText: {
     fontSize: 13,
-    color: '#075985',
+    color: theme.colors.textPrimary,
     lineHeight: 18,
     marginBottom: 6,
   },
   groupStatusText: {
     fontSize: 11,
-    color: '#0284C7',
+    color: theme.colors.cyan,
     marginTop: 4,
   },
 });

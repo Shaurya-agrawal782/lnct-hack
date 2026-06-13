@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { theme } from '../../theme';
 import {
   StyleSheet,
   View,
@@ -8,7 +9,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
-  SafeAreaView
+  SafeAreaView,
+  Platform
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { getIncidents } from '../../api/incidentApi';
@@ -84,8 +86,8 @@ export default function MyReportsScreen({ navigation }) {
           <Text style={styles.typeText}>{getIncidentTypeLabel(item.type)}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             {item.incidentGroup ? (
-              <View style={[styles.statusBadge, { backgroundColor: '#EFF6FF', borderColor: '#3B82F6' }]}>
-                <Text style={[styles.statusBadgeText, { color: '#1E40AF' }]}>
+              <View style={[styles.statusBadge, { backgroundColor: 'rgba(6, 182, 212, 0.12)', borderColor: '#06B6D4' }]}>
+                <Text style={[styles.statusBadgeText, { color: '#06B6D4' }]}>
                   📁 GROUPED
                 </Text>
               </View>
@@ -191,7 +193,7 @@ export default function MyReportsScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: theme.colors.background,
   },
   listContainer: {
     padding: 16,
@@ -206,36 +208,32 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 12,
-    color: '#64748B',
-    fontSize: 14,
-    fontWeight: '500',
+    color: theme.colors.textSecondary,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.medium,
   },
   errorBox: {
-    backgroundColor: '#FEE2E2',
-    borderColor: '#EF4444',
+    backgroundColor: theme.colors.emergencyMuted,
+    borderColor: theme.colors.emergency,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.md,
     padding: 12,
     marginBottom: 16,
   },
   errorText: {
-    color: '#991B1B',
-    fontSize: 14,
-    fontWeight: '500',
+    color: '#FCA5A5',
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.medium,
     textAlign: 'center',
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
+    borderColor: theme.colors.border,
+    ...theme.shadows.card,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -244,9 +242,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#0F172A',
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.textPrimary,
     flex: 1,
     marginRight: 12,
   },
@@ -254,11 +252,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingVertical: 2,
     paddingHorizontal: 8,
-    borderRadius: 4,
+    borderRadius: theme.borderRadius.sm,
   },
   badgeText: {
     fontSize: 9,
-    fontWeight: '700',
+    fontWeight: theme.typography.weights.bold,
   },
   cardMetaRow: {
     flexDirection: 'row',
@@ -268,22 +266,22 @@ const styles = StyleSheet.create({
   },
   typeText: {
     fontSize: 13,
-    color: '#64748B',
-    fontWeight: '600',
+    color: theme.colors.cyan,
+    fontWeight: theme.typography.weights.semibold,
   },
   statusBadge: {
     borderWidth: 1,
     paddingVertical: 2,
     paddingHorizontal: 8,
-    borderRadius: 4,
+    borderRadius: theme.borderRadius.sm,
   },
   statusBadgeText: {
     fontSize: 9,
-    fontWeight: '700',
+    fontWeight: theme.typography.weights.bold,
   },
   descText: {
-    fontSize: 14,
-    color: '#475569',
+    fontSize: theme.typography.sizes.md,
+    color: theme.colors.textSecondary,
     lineHeight: 20,
     marginBottom: 16,
   },
@@ -292,33 +290,33 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
+    borderTopColor: theme.colors.border,
     paddingTop: 12,
   },
   addressText: {
     fontSize: 12,
-    color: '#64748B',
+    color: theme.colors.textSecondary,
     flex: 1,
     marginRight: 16,
   },
   dateText: {
     fontSize: 11,
-    color: '#94A3B8',
-    fontWeight: '500',
+    color: theme.colors.textMuted,
+    fontWeight: theme.typography.weights.medium,
   },
   ticketText: {
     fontSize: 12,
-    fontWeight: '700',
-    color: '#2563EB',
-    fontFamily: 'monospace',
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.primary,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     marginBottom: 8,
     letterSpacing: 0.3,
   },
   searchContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.md,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: theme.colors.border,
     marginBottom: 12,
     paddingHorizontal: 12,
     flexDirection: 'row',
@@ -328,7 +326,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 44,
     fontSize: 14,
-    color: '#0F172A',
+    color: theme.colors.textPrimary,
   },
   emptyContainer: {
     flex: 1,
@@ -342,27 +340,28 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   emptyTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#0F172A',
+    fontSize: theme.typography.sizes.lg,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.textPrimary,
     marginBottom: 8,
   },
   emptyDesc: {
     fontSize: 14,
-    color: '#64748B',
+    color: theme.colors.textSecondary,
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 24,
   },
   emptyBtn: {
-    backgroundColor: '#2563EB',
-    borderRadius: 8,
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.md,
     paddingVertical: 12,
     paddingHorizontal: 24,
+    ...theme.shadows.button,
   },
   emptyBtnText: {
-    color: '#FFFFFF',
+    color: theme.colors.textPrimary,
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: theme.typography.weights.semibold,
   },
 });

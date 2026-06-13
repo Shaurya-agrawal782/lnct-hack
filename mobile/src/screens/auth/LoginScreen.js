@@ -12,6 +12,7 @@ import {
   SafeAreaView
 } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
+import { theme } from '../../theme';
 
 export default function LoginScreen({ navigation }) {
   const { login } = useContext(AuthContext);
@@ -19,6 +20,10 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // Interactive active states for form inputs
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -47,7 +52,7 @@ export default function LoginScreen({ navigation }) {
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
           <View style={styles.headerContainer}>
             <Text style={styles.logoTitle}>DisasterConnect</Text>
-            <Text style={styles.logoSubtitle}>Emergency coordination mobile</Text>
+            <Text style={styles.logoSubtitle}>Emergency Coordination & Response</Text>
           </View>
 
           <View style={styles.formCard}>
@@ -62,28 +67,32 @@ export default function LoginScreen({ navigation }) {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Email Address</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, emailFocused && styles.inputFocused]}
                 placeholder="Enter your email"
-                placeholderTextColor="#94A3B8"
+                placeholderTextColor={theme.colors.textPlaceholder}
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
                 keyboardType="email-address"
                 autoComplete="email"
+                onFocus={() => setEmailFocused(true)}
+                onBlur={() => setEmailFocused(false)}
               />
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Password</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, passwordFocused && styles.inputFocused]}
                 placeholder="Enter your password"
-                placeholderTextColor="#94A3B8"
+                placeholderTextColor={theme.colors.textPlaceholder}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
                 autoCapitalize="none"
                 autoComplete="password"
+                onFocus={() => setPasswordFocused(true)}
+                onBlur={() => setPasswordFocused(false)}
               />
             </View>
 
@@ -91,9 +100,10 @@ export default function LoginScreen({ navigation }) {
               style={styles.button}
               onPress={handleLogin}
               disabled={loading}
+              activeOpacity={0.8}
             >
               {loading ? (
-                <ActivityIndicator color="#FFFFFF" />
+                <ActivityIndicator color={theme.colors.textPrimary} />
               ) : (
                 <Text style={styles.buttonText}>Log In</Text>
               )}
@@ -121,7 +131,7 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0F172A', // Navy theme background
+    backgroundColor: theme.colors.background,
   },
   container: {
     flex: 1,
@@ -136,81 +146,81 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   logoTitle: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: '#FFFFFF',
+    fontSize: theme.typography.sizes.xxl,
+    fontWeight: theme.typography.weights.heavy,
+    color: theme.colors.textPrimary,
     letterSpacing: 0.5,
   },
   logoSubtitle: {
-    fontSize: 14,
-    color: '#94A3B8',
+    fontSize: theme.typography.sizes.sm,
+    color: theme.colors.textSecondary,
     marginTop: 8,
-    fontWeight: '500',
+    fontWeight: theme.typography.weights.medium,
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   formCard: {
-    backgroundColor: '#1E293B',
-    borderRadius: 16,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
     padding: 24,
     borderWidth: 1,
-    borderColor: '#334155',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
+    borderColor: theme.colors.border,
+    ...theme.shadows.card,
   },
   formTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontSize: theme.typography.sizes.xl,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.textPrimary,
     marginBottom: 20,
   },
   errorBox: {
-    backgroundColor: '#7F1D1D',
+    backgroundColor: theme.colors.emergencyMuted,
     borderLeftWidth: 4,
-    borderLeftColor: '#F87171',
+    borderLeftColor: theme.colors.emergency,
     padding: 12,
-    borderRadius: 6,
+    borderRadius: theme.borderRadius.sm,
     marginBottom: 16,
   },
   errorText: {
     color: '#FCA5A5',
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.medium,
   },
   inputGroup: {
-    marginBottom: 16,
+    marginBottom: 18,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#E2E8F0',
+    fontSize: theme.typography.sizes.sm,
+    fontWeight: theme.typography.weights.semibold,
+    color: theme.colors.textSecondary,
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#0F172A',
-    borderColor: '#334155',
+    backgroundColor: theme.colors.inputBackground,
+    borderColor: theme.colors.border,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.md,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    fontSize: 16,
-    color: '#FFFFFF',
+    fontSize: theme.typography.sizes.md,
+    color: theme.colors.textPrimary,
+  },
+  inputFocused: {
+    borderColor: theme.colors.borderFocus,
   },
   button: {
-    backgroundColor: '#2563EB', // Command Blue
-    borderRadius: 8,
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.md,
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
+    ...theme.shadows.button,
   },
   buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
+    color: theme.colors.textPrimary,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.bold,
   },
   footer: {
     flexDirection: 'row',
@@ -219,18 +229,18 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   footerText: {
-    color: '#94A3B8',
-    fontSize: 14,
+    color: theme.colors.textSecondary,
+    fontSize: theme.typography.sizes.md,
   },
   linkText: {
-    color: '#60A5FA',
-    fontSize: 14,
-    fontWeight: '600',
+    color: theme.colors.primary,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.semibold,
   },
   trackLinkText: {
-    color: '#38BDF8',
-    fontSize: 14,
-    fontWeight: '600',
+    color: theme.colors.cyan,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.semibold,
     textDecorationLine: 'underline',
   },
 });

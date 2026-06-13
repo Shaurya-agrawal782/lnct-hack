@@ -63,6 +63,7 @@
 - **Step 64 completed**: Responder safety profiles added: admin-managed responder ID, department, specialization, service zone, verification status, and emergency contact details.
 - **Step 65 completed**: Smart Incident Grouping added: nearby same-type reports within a 3-hour window are grouped for admin review, and resolving a group updates and notifies all linked citizen reports.
 - **Step 66 completed**: Mobile Feature Parity Pass: Integrated AI Report Assistant, public ticket tracking, smart grouping status indicators, read-only responder profile console, and enhanced safety alerts formatting.
+- **Step 67 completed**: Emergency UI Rescue Pass—web dashboard switched back to clean white/light dashboard surfaces with a dark navy command sidebar/header, utilizing standard emergency color mappings (Red for critical/emergency, Amber for warning, Blue for command actions, Green for success/resolved). Mobile screens polished with Obsidian theme styling, native status badge color mappings, and resolved Platform imports.
 
 ## Next Steps
 - Run backfill for existing incidents without groups: `cd backend && npm run backfill:groups`.

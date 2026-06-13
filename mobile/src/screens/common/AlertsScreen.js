@@ -1,4 +1,5 @@
 import React, { useState, useContext, useCallback } from 'react';
+import { theme } from '../../theme';
 import {
   StyleSheet,
   View,
@@ -225,7 +226,7 @@ export default function AlertsScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: theme.colors.background,
   },
   listContainer: {
     padding: 16,
@@ -240,9 +241,9 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 12,
-    color: '#64748B',
-    fontSize: 14,
-    fontWeight: '500',
+    color: theme.colors.textSecondary,
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.medium,
   },
   headerContainer: {
     marginBottom: 20,
@@ -258,62 +259,58 @@ const styles = StyleSheet.create({
   },
   screenTitle: {
     fontSize: 22,
-    fontWeight: '800',
-    color: '#0F172A',
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.textPrimary,
     marginBottom: 4,
   },
   screenSubtitle: {
     fontSize: 13,
-    color: '#64748B',
+    color: theme.colors.textSecondary,
     lineHeight: 18,
   },
   markAllBtn: {
-    backgroundColor: '#EFF6FF',
-    borderColor: '#BFDBFE',
+    backgroundColor: theme.colors.primaryGlow,
+    borderColor: 'rgba(59, 130, 246, 0.3)',
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.sm,
     paddingVertical: 8,
     paddingHorizontal: 12,
   },
   markAllBtnText: {
-    color: '#2563EB',
+    color: theme.colors.primary,
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: theme.typography.weights.semibold,
   },
   errorBox: {
-    backgroundColor: '#FEE2E2',
-    borderColor: '#EF4444',
+    backgroundColor: theme.colors.emergencyMuted,
+    borderColor: theme.colors.emergency,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: theme.borderRadius.md,
     padding: 12,
     marginTop: 16,
   },
   errorText: {
-    color: '#991B1B',
-    fontSize: 14,
-    fontWeight: '500',
+    color: '#FCA5A5',
+    fontSize: theme.typography.sizes.md,
+    fontWeight: theme.typography.weights.medium,
     textAlign: 'center',
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
     position: 'relative',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 3,
-    elevation: 1.5,
+    ...theme.shadows.card,
   },
   unreadCard: {
-    borderColor: '#BFDBFE', // Soft Blue border for unread alerts
+    borderColor: 'rgba(59, 130, 246, 0.3)',
     borderLeftWidth: 4,
-    borderLeftColor: '#2563EB',
+    borderLeftColor: theme.colors.primary,
   },
   readCard: {
-    borderColor: '#E2E8F0',
+    borderColor: theme.colors.border,
     opacity: 0.8,
   },
   unreadDot: {
@@ -323,14 +320,14 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#2563EB',
+    backgroundColor: theme.colors.primary,
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 8,
-    paddingRight: 12, // Leave room for unread dot
+    paddingRight: 12,
   },
   cardTitle: {
     fontSize: 15,
@@ -338,22 +335,22 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   unreadText: {
-    fontWeight: '700',
-    color: '#0F172A',
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.textPrimary,
   },
   readText: {
-    fontWeight: '600',
-    color: '#475569',
+    fontWeight: theme.typography.weights.semibold,
+    color: theme.colors.textSecondary,
   },
   priorityBadge: {
     borderWidth: 1,
     paddingVertical: 2,
     paddingHorizontal: 8,
-    borderRadius: 4,
+    borderRadius: theme.borderRadius.sm,
   },
   priorityBadgeText: {
     fontSize: 8,
-    fontWeight: '700',
+    fontWeight: theme.typography.weights.bold,
   },
   messageText: {
     fontSize: 14,
@@ -361,35 +358,35 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   unreadMutedText: {
-    color: '#334155',
+    color: theme.colors.textPrimary,
   },
   readMutedText: {
-    color: '#64748B',
+    color: theme.colors.textSecondary,
   },
   cardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
+    borderTopColor: theme.colors.border,
     paddingTop: 12,
   },
   dateText: {
     fontSize: 11,
-    color: '#94A3B8',
-    fontWeight: '500',
+    color: theme.colors.textMuted,
+    fontWeight: theme.typography.weights.medium,
   },
   markReadBtn: {
-    borderColor: '#CBD5E1',
+    borderColor: theme.colors.border,
     borderWidth: 1,
-    borderRadius: 6,
+    borderRadius: theme.borderRadius.sm,
     paddingVertical: 4,
     paddingHorizontal: 10,
   },
   markReadBtnText: {
-    color: '#475569',
+    color: theme.colors.textSecondary,
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: theme.typography.weights.semibold,
   },
   emptyContainer: {
     flex: 1,
@@ -403,14 +400,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   emptyTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#0F172A',
+    fontSize: theme.typography.sizes.lg,
+    fontWeight: theme.typography.weights.bold,
+    color: theme.colors.textPrimary,
     marginBottom: 8,
   },
   emptyDesc: {
     fontSize: 14,
-    color: '#64748B',
+    color: theme.colors.textSecondary,
     textAlign: 'center',
     lineHeight: 20,
   },

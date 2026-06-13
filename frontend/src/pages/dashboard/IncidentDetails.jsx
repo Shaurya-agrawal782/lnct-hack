@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import Badge from '../../components/ui/Badge';
 import { 
   getIncidentById, 
   updateIncidentStatus, 
@@ -231,34 +232,34 @@ export default function IncidentDetails() {
   const getSeverityBadge = (sev) => {
     switch (sev) {
       case 'low':
-        return <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-surface-container-high text-on-secondary-container border border-outline-variant capitalize">Low</span>;
+        return <Badge variant="success">Low</Badge>;
       case 'medium':
-        return <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-secondary-container text-on-secondary-container border border-outline-variant capitalize">Medium</span>;
+        return <Badge variant="primary">Medium</Badge>;
       case 'high':
-        return <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-tertiary-fixed text-on-tertiary-fixed border border-outline-variant capitalize">High</span>;
+        return <Badge variant="warning">High</Badge>;
       case 'critical':
-        return <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-error-container text-on-error-container border border-error/20 font-bold capitalize animate-pulse">Critical</span>;
+        return <Badge variant="error" pulse={true}>Critical</Badge>;
       default:
-        return <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-surface-container-low text-on-surface-variant border border-outline-variant capitalize">{sev}</span>;
+        return <Badge variant="default">{sev}</Badge>;
     }
   };
 
   const getStatusBadge = (stat) => {
     switch (stat) {
       case 'reported':
-        return <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-surface-container text-on-surface-variant border border-outline-variant capitalize">Reported</span>;
+        return <Badge variant="default">Reported</Badge>;
       case 'verified':
-        return <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-primary-fixed text-on-primary-fixed border border-outline-variant capitalize">Verified</span>;
+        return <Badge variant="primary">Verified</Badge>;
       case 'assigned':
-        return <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-secondary-fixed text-on-secondary-fixed border border-outline-variant capitalize">Assigned</span>;
+        return <Badge variant="secondary">Assigned</Badge>;
       case 'in-progress':
-        return <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-tertiary-fixed text-on-tertiary-fixed border border-outline-variant capitalize">In Progress</span>;
+        return <Badge variant="warning" pulse={true}>Active</Badge>;
       case 'resolved':
-        return <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 capitalize">Resolved</span>;
+        return <Badge variant="success">Resolved</Badge>;
       case 'closed':
-        return <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-surface-dim text-on-surface-variant border border-outline-variant capitalize">Closed</span>;
+        return <Badge variant="default">Closed</Badge>;
       default:
-        return <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-surface-container-low text-on-surface-variant border border-outline-variant capitalize">{stat}</span>;
+        return <Badge variant="default">{stat}</Badge>;
     }
   };
 
@@ -307,34 +308,61 @@ export default function IncidentDetails() {
   );
   const canUpdateStatus = isUserAdmin || isUserAssignedResponder;
 
+  const getIncidentTypeLabel = (t) => {
+    switch (t) {
+      case 'fire': return '🔥 Fire Emergency';
+      case 'flood': return '🌊 Flood / Water Hazard';
+      case 'medical': return '🚑 Medical Emergency';
+      case 'accident': return '🚗 Traffic Accident';
+      case 'crowd': return '👥 Crowd Control';
+      case 'rescue': return '🛟 Search & Rescue';
+      default: return '⚠️ Emergency Incident';
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       {/* Back button and title header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-outline-variant">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 pb-5 border-b border-outline-variant">
+        <div className="flex items-start gap-4">
           <Link
             to="/dashboard/incidents"
-            className="p-2 rounded-full text-on-surface-variant hover:bg-surface-container transition-colors flex items-center justify-center"
+            className="p-2 rounded-full text-on-surface-variant hover:bg-surface-container transition-colors flex items-center justify-center border border-outline-variant shrink-0 mt-1"
           >
-            <span className="material-symbols-outlined">arrow_back</span>
+            <span className="material-symbols-outlined text-[20px]">arrow_back</span>
           </Link>
-          <div>
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">{incident.title}</h1>
-              {getSeverityBadge(incident.severity)}
-              {getStatusBadge(incident.status)}
-            </div>
-            <div className="flex flex-wrap items-center gap-4 mt-1.5">
-              {incident.ticketNumber && (
-                <span
-                  className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-primary bg-primary/8 border border-primary/20 px-2.5 py-1 rounded select-all cursor-copy"
-                  title="Copy ticket number"
-                >
-                  <span className="material-symbols-outlined text-[14px]">confirmation_number</span>
+          <div className="space-y-3">
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-mono text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded select-all cursor-copy">
                   {incident.ticketNumber}
                 </span>
-              )}
-              <p className="font-label-sm text-label-sm text-on-surface-variant">ID: {incident._id}</p>
+                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Incident Dossier</span>
+              </div>
+              <h1 className="font-headline-lg text-headline-lg font-bold text-slate-900 tracking-tight mt-1.5">{incident.title}</h1>
+            </div>
+            
+            {/* Metadata Badges & Information Row */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 font-body-sm text-body-sm text-slate-600">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] uppercase font-bold text-slate-400 font-semibold">Status:</span>
+                {getStatusBadge(incident.status)}
+              </div>
+              <div className="h-4 w-px bg-outline-variant hidden sm:block"></div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] uppercase font-bold text-slate-400 font-semibold">Severity:</span>
+                {getSeverityBadge(incident.severity)}
+              </div>
+              <div className="h-4 w-px bg-outline-variant hidden sm:block"></div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] uppercase font-bold text-slate-400 font-semibold">Type:</span>
+                <span className="font-semibold text-slate-900">{getIncidentTypeLabel(incident.type)}</span>
+              </div>
+              <div className="h-4 w-px bg-outline-variant hidden sm:block"></div>
+              <div className="flex items-center gap-1.5 max-w-xs truncate">
+                <span className="text-[10px] uppercase font-bold text-slate-400 shrink-0 font-semibold">Location:</span>
+                <span className="font-medium text-slate-900 truncate" title={incident.location?.address}>📍 {incident.location?.address || 'GPS Tagged Location'}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -344,7 +372,7 @@ export default function IncidentDetails() {
           <button
             onClick={handleDelete}
             disabled={deleteSubmitting}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 font-label-md text-label-md font-bold text-on-error bg-error hover:bg-opacity-90 disabled:opacity-50 rounded-lg shadow-sm transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 font-label-md text-label-md font-bold text-white bg-red-600 hover:bg-red-500 disabled:opacity-50 rounded-lg shadow-sm transition-colors shrink-0"
           >
             <span className="material-symbols-outlined text-[18px]">delete</span>
             <span>Delete Incident</span>
@@ -383,9 +411,9 @@ export default function IncidentDetails() {
 
           {/* Card: AI Triage Advisory */}
           {incident.aiTriage ? (
-            <div className="bg-surface rounded-xl border border-primary/20 p-6 space-y-6 shadow-[0_4px_20px_-4px_rgba(37,99,235,0.1)] relative overflow-hidden">
-              {/* Subtle top indicator bar */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600"></div>
+            <div className="bg-surface rounded-xl border border-outline-variant p-6 space-y-6 shadow-sm relative overflow-hidden">
+              {/* Serious blue status header bar */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-blue-600"></div>
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-outline-variant">
                 <div className="flex items-center gap-2">

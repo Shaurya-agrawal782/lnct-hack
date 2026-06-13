@@ -18,16 +18,18 @@ import ResponderIncidentDetailScreen from '../screens/responder/ResponderInciden
 import ResponderProfileScreen from '../screens/responder/ResponderProfileScreen';
 import AdminMobileNoticeScreen from '../screens/admin/AdminMobileNoticeScreen';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();import { theme } from '../theme';
 
 const defaultHeaderOptions = {
   headerStyle: {
-    backgroundColor: '#0F172A', // Dark Navy
+    backgroundColor: theme.colors.background,
   },
-  headerTintColor: '#FFFFFF', // White text
+  headerTintColor: theme.colors.textPrimary,
   headerTitleStyle: {
-    fontWeight: '700',
+    fontWeight: theme.typography.weights.bold,
+    fontSize: theme.typography.sizes.lg,
   },
+  headerShadowVisible: false,
 };
 
 export default function AppNavigator() {
