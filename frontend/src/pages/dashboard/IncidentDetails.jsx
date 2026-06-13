@@ -6,7 +6,8 @@ import {
   assignResponder, 
   deleteIncident,
   assignResourceToIncident,
-  releaseResourceFromIncident
+  releaseResourceFromIncident,
+  regenerateAiTriage
 } from '../../api/incidentApi';
 import { getResponders } from '../../api/userApi';
 import { getResources } from '../../api/resourceApi';
@@ -41,6 +42,10 @@ export default function IncidentDetails() {
   const [selectedResource, setSelectedResource] = useState('');
   const [resourceSubmitting, setResourceSubmitting] = useState(false);
   const [resourceError, setResourceError] = useState(null);
+
+  // AI Triage states
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
 
   const fetchDetails = async () => {
     setLoading(true);
@@ -204,6 +209,24 @@ export default function IncidentDetails() {
     }
   };
 
+  const handleRegenerateAi = async () => {
+    setAiLoading(true);
+    setAiError(null);
+    try {
+      const res = await regenerateAiTriage(id);
+      if (res.success) {
+        setIncident(res.data.incident);
+      } else {
+        setAiError(res.message || 'Failed to regenerate AI triage.');
+      }
+    } catch (err) {
+      console.error(err);
+      setAiError(err.response?.data?.message || 'Error regenerating AI triage.');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   // Helper styles for badges
   const getSeverityBadge = (sev) => {
     switch (sev) {
@@ -346,6 +369,197 @@ export default function IncidentDetails() {
               </div>
             </div>
           </div>
+
+          {/* Card: AI Triage Advisory */}
+          {incident.aiTriage ? (
+            <div className="bg-surface rounded-xl border border-primary/20 p-6 space-y-6 shadow-[0_4px_20px_-4px_rgba(37,99,235,0.1)] relative overflow-hidden">
+              {/* Subtle top indicator bar */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600"></div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-outline-variant">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary text-[24px]">smart_toy</span>
+                  <div>
+                    <h2 className="font-label-md text-label-md font-semibold text-on-surface uppercase tracking-wider">
+                      Gemini AI Triage Advisory
+                    </h2>
+                    <p className="text-[10px] text-on-surface-variant/60 font-semibold uppercase tracking-wider">
+                      Decision Support • Provider: {incident.aiTriage.provider || 'Gemini'}
+                    </p>
+                  </div>
+                </div>
+
+                {isUserAdmin && (
+                  <button
+                    onClick={handleRegenerateAi}
+                    disabled={aiLoading}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-primary bg-primary/10 hover:bg-primary/20 disabled:opacity-50 rounded-lg transition"
+                  >
+                    {aiLoading ? (
+                      <span className="w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
+                    ) : (
+                      <span className="material-symbols-outlined text-[14px]">autorenew</span>
+                    )}
+                    <span>Regenerate Analysis</span>
+                  </button>
+                )}
+              </div>
+
+              {aiError && (
+                <div className="text-xs text-error bg-error-container p-3 rounded-xl border border-error/20">
+                  {aiError}
+                </div>
+              )}
+
+              {/* Grid: Risk Score and Priority */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-surface-container-low border border-outline-variant rounded-xl">
+                {/* Risk Score */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-on-surface-variant/70 font-semibold font-label-sm text-label-sm uppercase tracking-wider">Advisory Risk Score</span>
+                    <span className="text-headline-sm text-headline-sm font-bold font-mono text-primary">{incident.aiTriage.riskScore}%</span>
+                  </div>
+                  <div className="w-full bg-outline-variant/20 rounded-full h-2.5 overflow-hidden">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        incident.aiTriage.riskScore > 75 
+                          ? 'bg-error' 
+                          : incident.aiTriage.riskScore > 40 
+                            ? 'bg-amber-500' 
+                            : 'bg-emerald-500'
+                      }`}
+                      style={{ width: `${incident.aiTriage.riskScore}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Recommended Priority */}
+                <div className="flex flex-col justify-between space-y-1">
+                  <span className="text-on-surface-variant/70 font-semibold font-label-sm text-label-sm uppercase tracking-wider">Recommended Priority</span>
+                  <div>
+                    {incident.aiTriage.recommendedPriority === 'critical' && (
+                      <span className="px-3 py-1 text-xs font-bold rounded-full bg-error-container text-on-error-container border border-error/20 uppercase animate-pulse">Critical</span>
+                    )}
+                    {incident.aiTriage.recommendedPriority === 'high' && (
+                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-tertiary-fixed text-on-tertiary-fixed border border-outline-variant uppercase">High</span>
+                    )}
+                    {incident.aiTriage.recommendedPriority === 'medium' && (
+                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-secondary-container text-on-secondary-container border border-outline-variant uppercase">Medium</span>
+                    )}
+                    {incident.aiTriage.recommendedPriority === 'low' && (
+                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-surface-container-high text-on-secondary-container border border-outline-variant uppercase">Low</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Summary */}
+              <div className="space-y-2">
+                <span className="text-on-surface-variant/60 font-semibold font-label-sm text-label-sm uppercase tracking-wider">Situation Analysis</span>
+                <p className="text-on-surface font-body-md text-body-md leading-relaxed">
+                  {incident.aiTriage.shortSummary}
+                </p>
+              </div>
+
+              {/* Grid: Likely Risks and Immediate Actions */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                {/* Likely Risks */}
+                <div className="space-y-3">
+                  <span className="text-on-surface-variant/60 font-semibold font-label-sm text-label-sm uppercase tracking-wider flex items-center gap-1">
+                    <span className="material-symbols-outlined text-amber-500 text-[16px]">warning</span>
+                    <span>Secondary Hazards</span>
+                  </span>
+                  <ul className="space-y-2">
+                    {incident.aiTriage.likelyRisks?.map((risk, index) => (
+                      <li key={index} className="flex items-start gap-2 text-xs text-on-surface-variant leading-normal">
+                        <span className="text-amber-500 mt-0.5">•</span>
+                        <span>{risk}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Immediate Actions */}
+                <div className="space-y-3">
+                  <span className="text-on-surface-variant/60 font-semibold font-label-sm text-label-sm uppercase tracking-wider flex items-center gap-1">
+                    <span className="material-symbols-outlined text-primary text-[16px]">flash_on</span>
+                    <span>Dispatcher Checklist</span>
+                  </span>
+                  <ul className="space-y-2">
+                    {incident.aiTriage.immediateActions?.map((action, index) => (
+                      <li key={index} className="flex items-start gap-2 text-xs text-on-surface-variant leading-normal">
+                        <span className="text-primary mt-0.5">•</span>
+                        <span>{action}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Responder Checklist */}
+              {incident.aiTriage.responderChecklist && incident.aiTriage.responderChecklist.length > 0 && (
+                <div className="space-y-3 pt-4 border-t border-outline-variant">
+                  <span className="text-on-surface-variant/60 font-semibold font-label-sm text-label-sm uppercase tracking-wider flex items-center gap-1">
+                    <span className="material-symbols-outlined text-primary text-[16px]">assignment_turned_in</span>
+                    <span>First Responder Checklist</span>
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {incident.aiTriage.responderChecklist.map((task, index) => (
+                      <div key={index} className="flex items-start gap-2.5 p-2 bg-surface-container-low border border-outline-variant/60 rounded-lg">
+                        <span className="material-symbols-outlined text-primary text-[16px] mt-0.5">check_box_outline_blank</span>
+                        <span className="text-xs text-on-surface font-medium leading-normal">{task}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Citizen Safety Note */}
+              {incident.aiTriage.citizenSafetyNote && (
+                <div className="p-4 bg-blue-500/5 border-l-4 border-blue-500 rounded-r-xl space-y-1">
+                  <span className="text-blue-500 font-semibold font-label-xs text-label-xs uppercase tracking-wider block">Citizen Safety Guidance</span>
+                  <p className="text-on-surface font-body-sm text-body-sm leading-relaxed">
+                    {incident.aiTriage.citizenSafetyNote}
+                  </p>
+                </div>
+              )}
+
+              {/* Disclaimer */}
+              <div className="flex items-start gap-1.5 pt-4 border-t border-outline-variant text-[10px] text-on-surface-variant/50 leading-relaxed font-semibold italic">
+                <span className="material-symbols-outlined text-[14px] mt-0.5">info</span>
+                <span>{incident.aiTriage.disclaimer}</span>
+              </div>
+            </div>
+          ) : (
+            isUserAdmin && (
+              <div className="bg-surface rounded-xl border border-outline-variant p-6 flex flex-col items-center justify-center text-center space-y-4">
+                <span className="material-symbols-outlined text-on-surface-variant/40 text-[40px]">smart_toy</span>
+                <div>
+                  <h3 className="font-semibold text-on-surface text-sm">AI Incident Triage Available</h3>
+                  <p className="text-xs text-on-surface-variant/60 mt-1 max-w-sm">
+                    Generate an instant AI triage analysis using Gemini to evaluate risks, assign priority, and suggest checklists.
+                  </p>
+                </div>
+                {aiError && (
+                  <div className="text-xs text-error bg-error-container p-2.5 rounded-lg border border-error/15">
+                    {aiError}
+                  </div>
+                )}
+                <button
+                  onClick={handleRegenerateAi}
+                  disabled={aiLoading}
+                  className="inline-flex items-center gap-2 px-4 py-2 font-label-md text-label-md font-bold text-on-primary bg-primary hover:bg-primary/95 disabled:opacity-50 rounded-lg shadow-sm transition"
+                >
+                  {aiLoading ? (
+                    <span className="w-4 h-4 border-2 border-on-primary border-t-transparent rounded-full animate-spin"></span>
+                  ) : (
+                    <span className="material-symbols-outlined text-[18px]">psychology</span>
+                  )}
+                  <span>Generate AI Triage</span>
+                </button>
+              </div>
+            )
+          )}
 
           {/* Card: Geolocation info */}
           <div className="bg-surface rounded-xl border border-outline-variant p-6 space-y-4">

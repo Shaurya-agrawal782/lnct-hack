@@ -55,8 +55,7 @@
 - **Mobile Phase 4 completed: Responder assigned incident list, detail view, and field status update workflow added.**
 - **Mobile Phase 5 completed: Safety alerts feed with role-based adaptive titles, mark-as-read controls, mark-all-read action, and Home screen unread count badges.**
 - **Mobile Final QA Pass completed: Expo mobile app validated across citizen, responder, admin, GPS reporting, report tracking, status updates, and alerts.**
+- **Step 59 completed: Gemini AI Triage Assistant added as backend-only advisory decision-support for incident reports.**
 
 ## Next Steps
 - Seed demo data on production MongoDB Atlas (`npm run seed:users && npm run seed:demo`).
-
-

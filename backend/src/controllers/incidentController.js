@@ -5,6 +5,8 @@ const AppError = require('../utils/AppError');
 const ApiResponse = require('../utils/apiResponse');
 const asyncHandler = require('../utils/asyncHandler');
 const createAlertAndEmit = require('../utils/createAlert');
+const env = require('../config/env');
+const geminiTriageService = require('../services/geminiTriageService');
 
 // Helper to validate status transitions
 const isValidTransition = (current, target) => {
@@ -73,6 +75,19 @@ const createIncident = asyncHandler(async (req, res, next) => {
     });
   } catch (alertErr) {
     console.error('Failed to create/emit alert for incident creation:', alertErr.message);
+  }
+
+  // Generate AI Triage if enabled
+  if (env.AI_TRIAGE_ENABLED) {
+    try {
+      const triage = await geminiTriageService.generateIncidentTriage(incident);
+      if (triage) {
+        incident.aiTriage = triage;
+        await incident.save();
+      }
+    } catch (aiErr) {
+      console.error('[AI Triage Error] Failed to generate triage during creation:', aiErr.message);
+    }
   }
 
   res.status(201).json(
@@ -580,6 +595,36 @@ const releaseResourceFromIncident = asyncHandler(async (req, res, next) => {
   );
 });
 
+// @desc    Regenerate AI triage for an existing incident
+// @route   POST /api/incidents/:id/ai-triage
+// @access  Private (Admin only)
+const regenerateAiTriage = asyncHandler(async (req, res, next) => {
+  let incident = await Incident.findById(req.params.id);
+
+  if (!incident) {
+    return next(new AppError(404, 'Incident not found.'));
+  }
+
+  // Generate new triage
+  const triage = await geminiTriageService.generateIncidentTriage(incident);
+
+  if (!triage) {
+    return next(new AppError(500, 'Failed to generate AI triage. Please check configuration or try again later.'));
+  }
+
+  incident.aiTriage = triage;
+  await incident.save();
+
+  incident = await Incident.findById(incident._id)
+    .populate('reportedBy', 'name email')
+    .populate('assignedResponder', 'name email')
+    .populate('assignedResources', 'name type status capacity currentLocation.address');
+
+  res.status(200).json(
+    new ApiResponse(200, { incident }, 'AI Triage regenerated successfully')
+  );
+});
+
 module.exports = {
   createIncident,
   getIncidents,
@@ -590,5 +635,6 @@ module.exports = {
   deleteIncident,
   assignResourceToIncident,
   releaseResourceFromIncident,
-  releaseAllResourcesForIncident
+  releaseAllResourcesForIncident,
+  regenerateAiTriage
 };

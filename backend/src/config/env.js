@@ -11,7 +11,9 @@ const env = {
   MONGODB_URI: process.env.MONGODB_URI || 'mongodb://localhost:27017/disasterconnect',
   JWT_SECRET: process.env.JWT_SECRET || 'replace_with_strong_secret',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1h',
-  ALLOW_PUBLIC_ROLE_REGISTRATION: process.env.ALLOW_PUBLIC_ROLE_REGISTRATION === 'true'
+  ALLOW_PUBLIC_ROLE_REGISTRATION: process.env.ALLOW_PUBLIC_ROLE_REGISTRATION === 'true',
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
+  AI_TRIAGE_ENABLED: !!process.env.GEMINI_API_KEY && (process.env.AI_TRIAGE_ENABLED !== 'false')
 };
 
 // Parse comma-separated CLIENT_URL origins for CORS config

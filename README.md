@@ -42,6 +42,7 @@ In critical event crowds, crowd density transitions to crowd hazard in seconds. 
 - **Real-Time WebSockets:** Instantly stream safety alerts and incident status updates using Socket.io.
 - **Analytics Dashboard:** Chart responder efficiency, incident severity trends, and resource dispatch percentages.
 - **Resource Assignment Workflow:** Bind supplies directly to incidents, with auto-release triggers on resolution.
+- **Gemini AI Triage Assistant:** Advisory decision-support parsing incident context to generate risk scores, priority recommendations, and safety checklists.
 
 ---
 
@@ -128,6 +129,8 @@ NODE_ENV=development
 MONGODB_URI=mongodb://localhost:27017/disasterconnect
 JWT_SECRET=your_jwt_secret_key_here
 CLIENT_URL=http://localhost:5173
+GEMINI_API_KEY=your_gemini_api_key
+AI_TRIAGE_ENABLED=true
 ```
 
 ### Frontend Configuration (`frontend/.env`)

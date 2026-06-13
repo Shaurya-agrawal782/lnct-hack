@@ -99,6 +99,17 @@ export default function IncidentDetailScreen({ route, navigation }) {
           <Text style={styles.descText}>{incident.description}</Text>
         </View>
 
+        {/* AI Safety Guidance Section */}
+        {incident.aiTriage && incident.aiTriage.citizenSafetyNote ? (
+          <View style={[styles.card, styles.aiCard]}>
+            <View style={styles.aiHeader}>
+              <Text style={styles.aiHeaderTitle}>🤖 Gemini AI Safety Note</Text>
+            </View>
+            <Text style={styles.aiSafetyText}>{incident.aiTriage.citizenSafetyNote}</Text>
+            <Text style={styles.aiDisclaimerText}>⚠️ {incident.aiTriage.disclaimer}</Text>
+          </View>
+        ) : null}
+
         {/* Location Section */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Location Geotag</Text>
@@ -431,5 +442,34 @@ const styles = StyleSheet.create({
     color: '#475569',
     fontStyle: 'italic',
     lineHeight: 18,
+  },
+  aiCard: {
+    borderColor: '#3B82F6',
+    borderLeftWidth: 4,
+    backgroundColor: '#EFF6FF',
+  },
+  aiHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  aiHeaderTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#1E40AF',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  aiSafetyText: {
+    fontSize: 14,
+    color: '#1E3A8A',
+    lineHeight: 20,
+    marginBottom: 10,
+  },
+  aiDisclaimerText: {
+    fontSize: 11,
+    color: '#475569',
+    fontStyle: 'italic',
+    lineHeight: 16,
   },
 });

@@ -44,3 +44,8 @@ export const releaseResourceFromIncident = async (id, resourceId) => {
   const response = await client.patch(`/incidents/${id}/resources/${resourceId}/release`);
   return response.data;
 };
+
+export const regenerateAiTriage = async (id) => {
+  const response = await client.post(`/incidents/${id}/ai-triage`);
+  return response.data;
+};

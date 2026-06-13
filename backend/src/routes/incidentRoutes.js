@@ -8,7 +8,8 @@ const {
   assignResponder,
   deleteIncident,
   assignResourceToIncident,
-  releaseResourceFromIncident
+  releaseResourceFromIncident,
+  regenerateAiTriage
 } = require('../controllers/incidentController');
 const { protect } = require('../middleware/authMiddleware');
 const { authorizeRoles } = require('../middleware/roleMiddleware');
@@ -26,6 +27,7 @@ router.delete('/:id', protect, authorizeRoles('admin'), deleteIncident);
 router.patch('/:id/assign', protect, authorizeRoles('admin'), assignResponder);
 router.patch('/:id/resources/assign', protect, authorizeRoles('admin'), assignResourceToIncident);
 router.patch('/:id/resources/:resourceId/release', protect, authorizeRoles('admin'), releaseResourceFromIncident);
+router.post('/:id/ai-triage', protect, authorizeRoles('admin'), regenerateAiTriage);
 
 // Status updates (both admin and responder have path controls in the controller)
 router.patch('/:id/status', protect, authorizeRoles('admin', 'responder'), updateIncidentStatus);

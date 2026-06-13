@@ -77,7 +77,32 @@ const incidentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Resource'
     }],
-    statusHistory: [statusHistorySchema]
+    statusHistory: [statusHistorySchema],
+    aiTriage: {
+      shortSummary: String,
+      riskScore: Number,
+      recommendedPriority: {
+        type: String,
+        enum: ['low', 'medium', 'high', 'critical']
+      },
+      likelyRisks: [String],
+      immediateActions: [String],
+      responderChecklist: [String],
+      citizenSafetyNote: String,
+      confidence: {
+        type: String,
+        enum: ['low', 'medium', 'high']
+      },
+      disclaimer: String,
+      generatedAt: {
+        type: Date,
+        default: Date.now
+      },
+      provider: {
+        type: String,
+        default: 'Gemini'
+      }
+    }
   },
   {
     timestamps: true,

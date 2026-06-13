@@ -180,6 +180,45 @@ export default function ResponderIncidentDetailScreen({ route, navigation }) {
             <Text style={styles.descText}>{incident.description}</Text>
           </View>
 
+          {/* AI Triage Card */}
+          {incident.aiTriage ? (
+            <View style={[styles.card, styles.aiCard]}>
+              <View style={styles.aiHeader}>
+                <Text style={styles.aiHeaderTitle}>🤖 Gemini AI Triage Advisory</Text>
+              </View>
+              
+              <View style={styles.aiMetricsRow}>
+                <Text style={styles.aiLabel}>Advisory Priority: <Text style={styles.aiPriorityVal}>{incident.aiTriage.recommendedPriority?.toUpperCase()}</Text></Text>
+                <Text style={styles.aiLabel}>Risk Score: <Text style={styles.aiRiskVal}>{incident.aiTriage.riskScore}%</Text></Text>
+              </View>
+
+              <View style={styles.aiSection}>
+                <Text style={styles.aiSectionTitle}>Situation Analysis</Text>
+                <Text style={styles.aiSectionText}>{incident.aiTriage.shortSummary}</Text>
+              </View>
+
+              {incident.aiTriage.immediateActions && incident.aiTriage.immediateActions.length > 0 && (
+                <View style={styles.aiSection}>
+                  <Text style={styles.aiSectionTitle}>Immediate Dispatch Actions</Text>
+                  {incident.aiTriage.immediateActions.map((action, idx) => (
+                    <Text key={idx} style={styles.aiListItem}>⚡ {action}</Text>
+                  ))}
+                </View>
+              )}
+
+              {incident.aiTriage.responderChecklist && incident.aiTriage.responderChecklist.length > 0 && (
+                <View style={styles.aiSection}>
+                  <Text style={styles.aiSectionTitle}>Field Responder Checklist</Text>
+                  {incident.aiTriage.responderChecklist.map((task, idx) => (
+                    <Text key={idx} style={styles.aiListItem}>☐ {task}</Text>
+                  ))}
+                </View>
+              )}
+
+              <Text style={styles.aiDisclaimerText}>⚠️ {incident.aiTriage.disclaimer}</Text>
+            </View>
+          ) : null}
+
           {/* Geolocation Info */}
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Field Coordinates</Text>
@@ -688,5 +727,75 @@ const styles = StyleSheet.create({
     color: '#475569',
     fontStyle: 'italic',
     lineHeight: 18,
+  },
+  aiCard: {
+    borderColor: '#3B82F6',
+    borderLeftWidth: 4,
+    backgroundColor: '#EFF6FF',
+  },
+  aiHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  aiHeaderTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#1E40AF',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  aiMetricsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#DBEAFE',
+    marginBottom: 10,
+  },
+  aiLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#475569',
+  },
+  aiPriorityVal: {
+    color: '#1E40AF',
+    fontWeight: '700',
+  },
+  aiRiskVal: {
+    color: '#EF4444',
+    fontWeight: '700',
+  },
+  aiSection: {
+    marginBottom: 12,
+  },
+  aiSectionTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#1E40AF',
+    marginBottom: 4,
+    textTransform: 'uppercase',
+  },
+  aiSectionText: {
+    fontSize: 13,
+    color: '#1E3A8A',
+    lineHeight: 18,
+  },
+  aiListItem: {
+    fontSize: 12,
+    color: '#1E3A8A',
+    lineHeight: 18,
+    marginBottom: 2,
+    paddingLeft: 4,
+  },
+  aiDisclaimerText: {
+    fontSize: 11,
+    color: '#475569',
+    fontStyle: 'italic',
+    lineHeight: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#DBEAFE',
+    paddingTop: 8,
+    marginTop: 4,
   },
 });
