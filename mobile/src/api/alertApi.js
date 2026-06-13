@@ -5,6 +5,8 @@ export const getMyAlerts = async (params) => {
   return response.data;
 };
 
+export const getAlerts = getMyAlerts;
+
 export const markAlertRead = async (id) => {
   const response = await client.patch(`/alerts/${id}/read`);
   return response.data;
