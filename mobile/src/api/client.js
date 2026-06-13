@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const client = axios.create({
   baseURL: 'https://disasterconnect-87so.onrender.com/api',
+  timeout: 8000, // 8 seconds timeout to prevent indefinite loading hangs
   headers: {
     'Content-Type': 'application/json',
   },

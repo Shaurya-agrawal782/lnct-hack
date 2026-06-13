@@ -86,14 +86,32 @@ Do not include any medical diagnosis or panic language. Keep suggestions practic
       ]
     };
 
-    const response = await aiClient.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: responseSchema
+    let response;
+    let attempts = 0;
+    const maxAttempts = 3;
+    let delay = 1000;
+
+    while (attempts < maxAttempts) {
+      try {
+        attempts++;
+        response = await aiClient.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: prompt,
+          config: {
+            responseMimeType: 'application/json',
+            responseSchema: responseSchema
+          }
+        });
+        break;
+      } catch (err) {
+        console.warn(`[AI Triage] Attempt ${attempts} failed: ${err.message}`);
+        if (attempts >= maxAttempts) {
+          throw err;
+        }
+        await new Promise(resolve => setTimeout(resolve, delay));
+        delay *= 2;
       }
-    });
+    }
 
     const responseText = response.text;
     if (!responseText) {
