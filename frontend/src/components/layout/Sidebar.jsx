@@ -43,6 +43,9 @@ export default function Sidebar({ isOpen, onClose }) {
   };
 
   const navItems = getNavItems();
+  const primaryPaths = ['/dashboard', '/dashboard/incidents', '/dashboard/incidents/new', '/dashboard/map', '/dashboard/alerts', '/dashboard/groups'];
+  const primaryItems = navItems.filter(item => primaryPaths.includes(item.path));
+  const operationsItems = navItems.filter(item => !primaryPaths.includes(item.path));
 
   return (
     <>
@@ -55,21 +58,17 @@ export default function Sidebar({ isOpen, onClose }) {
       )}
 
       <aside
-        className={`flex flex-col bg-slate-950 text-inverse-on-surface h-full w-[280px] fixed left-0 top-0 pt-6 pb-8 border-r border-slate-900 z-50 transition-transform duration-300 ${
+        className={`flex flex-col bg-[#07111F] text-inverse-on-surface h-full w-[260px] fixed left-0 top-0 pt-5 pb-6 border-r border-[rgba(255,255,255,0.08)] z-50 transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0`}
       >
         {/* Header */}
-        <div className="px-6 mb-8 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
-              <span className="material-symbols-outlined text-white">shield</span>
-            </div>
-            <div>
-              <h2 className="font-headline-sm text-headline-sm font-bold text-white">Command Center</h2>
-              <p className="font-label-sm text-label-sm text-slate-400 uppercase tracking-wider">
-                {user.role === 'admin' ? 'Command Admin' : user.role === 'responder' ? 'Field Responder' : 'Citizen Reporter'}
-              </p>
+        <div className="px-5 mb-5 flex items-center justify-between">
+          <div className="flex items-center space-x-2.5">
+            <span className="material-symbols-outlined text-[#2563EB] text-[22px] shrink-0">shield</span>
+            <div className="flex flex-col">
+              <span className="text-white font-bold text-base leading-none tracking-tight">DisasterConnect</span>
+              <span className="text-[10px] text-[#94A3B8] font-semibold tracking-wider uppercase mt-0.5">Command Center</span>
             </div>
           </div>
           <button
@@ -81,14 +80,14 @@ export default function Sidebar({ isOpen, onClose }) {
         </div>
 
         {/* CTA Section */}
-        <div className="px-6 mb-6">
+        <div className="px-4 mb-4">
           {user.role === 'citizen' && (
             <Link
               to="/dashboard/incidents/new"
               onClick={onClose}
-              className="w-full bg-red-600 hover:bg-red-500 text-white py-2.5 px-4 rounded-lg font-label-md text-label-md transition flex items-center justify-center space-x-2 shadow-sm"
+              className="w-full bg-[#EF4444] hover:bg-[#DC2626] text-white h-[44px] rounded-[10px] transition flex items-center justify-center space-x-2 shadow-sm font-semibold text-[14px]"
             >
-              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>report</span>
+              <span className="material-symbols-outlined text-[18px]">report</span>
               <span>Report Incident</span>
             </Link>
           )}
@@ -96,48 +95,84 @@ export default function Sidebar({ isOpen, onClose }) {
             <Link
               to="/dashboard/incidents"
               onClick={onClose}
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 px-4 rounded-lg font-label-md text-label-md transition flex items-center justify-center space-x-2 shadow-sm"
+              className="w-full bg-[#2563EB] hover:bg-[#1d4ed8] text-white h-[44px] rounded-[10px] transition flex items-center justify-center space-x-2 shadow-sm font-semibold text-[14px]"
             >
-              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>flight_takeoff</span>
-              <span>Dispatch Resources</span>
+              <span className="material-symbols-outlined text-[18px]">flight_takeoff</span>
+              <span>Dispatch</span>
             </Link>
           )}
         </div>
 
         {/* Main Tabs */}
-        <div className="flex-1 overflow-y-auto px-4 space-y-1">
-          {navItems.map((item, index) => {
-            const isActive = location.pathname === item.path;
+        <div className="flex-1 overflow-y-auto px-4 space-y-4 sidebar-scroll">
+          {/* Primary Section */}
+          {primaryItems.length > 0 && (
+            <div className="space-y-1">
+              <div className="px-3 py-1 text-[10px] font-semibold text-[#94A3B8]/40 uppercase tracking-wider">
+                Primary
+              </div>
+              {primaryItems.map((item, index) => {
+                const isActive = location.pathname === item.path;
 
-            return (
-              <Link
-                key={index}
-                to={item.path}
-                onClick={onClose}
-                className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-150 ${
-                  isActive
-                    ? 'text-white font-semibold bg-blue-600/25 border border-blue-500/30'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
-                }`}
-              >
-                <span className="material-symbols-outlined">{item.icon}</span>
-                <span className="font-label-lg text-label-lg">{item.name}</span>
-              </Link>
-            );
-          })}
+                return (
+                  <Link
+                    key={index}
+                    to={item.path}
+                    onClick={onClose}
+                    className={`flex items-center space-x-3 px-3.5 h-[44px] rounded-[10px] transition-all duration-150 border ${
+                      isActive
+                        ? 'bg-[#102A56] text-[#FFFFFF] border-[#2563EB]/30 border-l-[3px] border-l-[#2563EB] font-semibold'
+                        : 'text-[#94A3B8] border-transparent hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[20px] shrink-0">{item.icon}</span>
+                    <span className="text-[14px] leading-none">{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Operations Section */}
+          {operationsItems.length > 0 && (
+            <div className="space-y-1">
+              <div className="px-3 py-1 text-[10px] font-semibold text-[#94A3B8]/40 uppercase tracking-wider">
+                Operations
+              </div>
+              {operationsItems.map((item, index) => {
+                const isActive = location.pathname === item.path;
+
+                return (
+                  <Link
+                    key={index}
+                    to={item.path}
+                    onClick={onClose}
+                    className={`flex items-center space-x-3 px-3.5 h-[44px] rounded-[10px] transition-all duration-150 border ${
+                      isActive
+                        ? 'bg-[#102A56] text-[#FFFFFF] border-[#2563EB]/30 border-l-[3px] border-l-[#2563EB] font-semibold'
+                        : 'text-[#94A3B8] border-transparent hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[20px] shrink-0">{item.icon}</span>
+                    <span className="text-[14px] leading-none">{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Footer Tabs */}
-        <div className="px-4 pt-4 border-t border-slate-900 mt-auto space-y-1">
+        <div className="px-4 pt-3 border-t border-[rgba(255,255,255,0.08)] mt-auto">
           <button
             onClick={() => {
               onClose?.();
               logout();
             }}
-            className="w-full flex items-center space-x-3 px-4 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-150 text-left"
+            className="w-full flex items-center space-x-3 px-3.5 h-[44px] rounded-[10px] text-[#94A3B8] hover:text-white hover:bg-white/5 border border-transparent transition-all duration-150 text-left"
           >
-            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>logout</span>
-            <span className="font-label-md text-label-md">Log Out</span>
+            <span className="material-symbols-outlined text-[20px] shrink-0">logout</span>
+            <span className="text-[14px] font-medium leading-none">Log Out</span>
           </button>
         </div>
       </aside>

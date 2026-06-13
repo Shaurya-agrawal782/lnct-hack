@@ -1,73 +1,94 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import useSocket from '../../hooks/useSocket';
-import Badge from '../ui/Badge';
 
 export default function Topbar({ onMenuClick }) {
   const { user } = useAuth();
   const { connected, liveAlerts } = useSocket();
+  const location = useLocation();
 
   if (!user) return null;
 
+  const getPageTitle = () => {
+    const path = location.pathname;
+    if (path === '/dashboard') return 'Emergency Operations Command';
+    if (path === '/dashboard/incidents/new') return 'Report Incident';
+    if (path === '/dashboard/incidents') return 'Incident Management';
+    if (path.startsWith('/dashboard/incidents/')) return 'Incident Details';
+    if (path.startsWith('/dashboard/resources')) return 'Resource Inventory';
+    if (path.startsWith('/dashboard/map')) return 'Live Incident Map';
+    if (path.startsWith('/dashboard/alerts')) return 'Broadcast Alerts';
+    if (path.startsWith('/dashboard/reports')) return 'Operational Reports';
+    if (path.startsWith('/dashboard/responders')) return 'Field Responders';
+    if (path.startsWith('/dashboard/groups')) return 'Incident Groups';
+    return 'DisasterConnect';
+  };
+
   return (
-    <header className="bg-surface border-b border-outline-variant fixed top-0 w-full md:w-[calc(100%-280px)] z-50 flex justify-between items-center px-6 md:px-margin-desktop h-16">
+    <header className="bg-[#FFFFFF] border-b border-[#DDE3EA] fixed top-0 w-full md:w-[calc(100%-260px)] z-50 flex justify-between items-center px-6 md:px-margin-desktop h-16">
       <div className="flex items-center space-x-3">
         {/* Hamburger menu button for mobile */}
         <button
           onClick={onMenuClick}
-          className="md:hidden p-1.5 text-on-surface hover:bg-surface-container rounded-lg transition-colors flex items-center justify-center border border-outline-variant"
+          className="md:hidden p-1.5 text-slate-800 hover:bg-slate-100 rounded-lg transition-colors flex items-center justify-center border border-slate-200"
           title="Open Menu"
         >
           <span className="material-symbols-outlined text-[20px]">menu</span>
         </button>
-        <h1 className="font-headline-md text-headline-md font-bold text-primary">DisasterConnect</h1>
+        <h1 className="text-lg font-bold text-slate-800 tracking-tight">{getPageTitle()}</h1>
       </div>
 
       <div className="flex items-center space-x-2">
         {/* Sync Status Badge */}
-        <div className="hidden sm:flex items-center space-x-2 px-3 py-1.5 bg-surface-container-low rounded border border-outline-variant">
-          <span className={`w-2 h-2 rounded-full ${connected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`}></span>
-          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
-            {connected ? 'Real-time Linked' : 'Off-line Sync'}
+        <div className="hidden sm:flex items-center space-x-2 px-2.5 py-1 bg-slate-50 rounded-md border border-[#DDE3EA]">
+          <span className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`}></span>
+          <span className="text-[11px] font-semibold text-slate-600 uppercase tracking-wider">
+            {connected ? 'CONNECTED' : 'OFFLINE'}
           </span>
         </div>
 
-        <div className="h-6 w-px bg-outline-variant mx-2 hidden sm:block"></div>
+        <div className="h-5 w-px bg-[#DDE3EA] mx-2 hidden sm:block"></div>
 
         {/* Trailing Icon Actions */}
         <Link
           to="/dashboard/alerts"
-          className="p-2 text-on-surface-variant hover:bg-surface-container-high rounded transition-colors relative"
+          className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-lg transition-colors relative flex items-center justify-center"
           title="Notification Center"
         >
-          <span className="material-symbols-outlined">notifications</span>
+          <span className="material-symbols-outlined text-[20px]">notifications</span>
           {liveAlerts.length > 0 && (
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+            <span className="absolute top-1 right-1 w-2 h-2 bg-red-600 rounded-full"></span>
           )}
         </Link>
 
         {/* User Badge / Role Profile */}
         <div className="flex items-center space-x-3 ml-2">
-          <div className="hidden sm:flex flex-col text-right">
-            <span className="block text-sm font-semibold text-on-surface leading-none mb-1">
+          <div className="hidden sm:flex flex-col text-right leading-none">
+            <span className="text-sm font-semibold text-slate-800 mb-0.5">
               {user.name}
             </span>
-            <span className="block text-xs text-on-surface-variant leading-none">
+            <span className="text-xs text-slate-500">
               {user.email}
             </span>
           </div>
-          <Badge variant={user.role === 'admin' ? 'error' : user.role === 'responder' ? 'primary' : 'success'} className="tracking-wider uppercase text-[10px]">
+          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+            user.role === 'admin' 
+              ? 'bg-red-50 text-red-700 border-red-200' 
+              : user.role === 'responder' 
+                ? 'bg-blue-50 text-blue-700 border-blue-200' 
+                : 'bg-green-50 text-green-700 border-green-200'
+          }`}>
             {user.role === 'admin' ? 'Command Admin' : user.role === 'responder' ? 'Field Responder' : 'Citizen Reporter'}
-          </Badge>
+          </span>
         </div>
 
         {user.role === 'citizen' && (
           <Link
             to="/dashboard/incidents/new"
-            className="hidden sm:flex items-center space-x-1 bg-error hover:opacity-90 text-on-error py-1.5 px-4 rounded-lg font-label-md text-label-md transition-all ml-3 border border-transparent shrink-0"
+            className="hidden sm:flex items-center space-x-1.5 bg-[#EF4444] hover:bg-[#DC2626] text-white py-1.5 px-3 rounded-lg font-semibold text-[13px] transition-all ml-3 shrink-0"
           >
-            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>report</span>
+            <span className="material-symbols-outlined text-[16px]">report</span>
             <span>Report Incident</span>
           </Link>
         )}
