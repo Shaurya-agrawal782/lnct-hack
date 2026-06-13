@@ -43,6 +43,7 @@ In critical event crowds, crowd density transitions to crowd hazard in seconds. 
 - **Analytics Dashboard:** Chart responder efficiency, incident severity trends, and resource dispatch percentages.
 - **Resource Assignment Workflow:** Bind supplies directly to incidents, with auto-release triggers on resolution.
 - **Gemini AI Triage Assistant:** Advisory decision-support parsing incident context to generate risk scores, priority recommendations, and safety checklists.
+- **AI Report Assistant:** Pre-submit natural language incident draft helper classifying incident type/severity and suggesting safety tips. Built backend-only to preserve Gemini key security.
 
 ---
 

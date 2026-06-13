@@ -47,7 +47,12 @@ Use the following pre-configured credentials:
 2. **Dashboard**: The dashboard card for **Alerts Feed** will show a red badge indicator overlay if there are unread safety alerts.
 3. **Report Incident**:
    * Tap **🚨 REPORT INCIDENT**.
-   * Fill out the title and description details.
+   * **AI Report Assistant (Pre-submit Helper)**:
+     * In the **AI Report Assistant** box near the top, type a rough description of the incident in your own words (e.g., in Hindi/Hinglish: `"main gate ke pass bahut bheed hai log dhakka de rahe hain"`).
+     * Tap **✨ Analyze with AI**.
+     * Review the suggested title, category, severity, improved description, missing questions, safety tips, and disclaimer.
+     * Tap **Apply Suggestions** to automatically populate the form fields.
+   * Review, edit, or keep the suggested Title, Description, Type, and Severity manually.
    * Tap **📍 Use Current Location**. If prompted, grant location access permissions. The coordinates will capture automatically, and Nominatim reverse geocoding will populate the address field.
    * If location is disabled or coordinates fail, manually enter the Latitude/Longitude and Address.
    * Tap **Submit Report**. You will be redirected to the **My Reports** history list.

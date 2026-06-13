@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import * as Location from 'expo-location';
 import { createIncident } from '../../api/incidentApi';
+import { analyzeReportDraft } from '../../api/aiApi';
 
 const INCIDENT_TYPES = [
   { label: 'Fire', value: 'fire' },
@@ -40,9 +41,66 @@ export default function ReportIncidentScreen({ navigation }) {
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
 
+  // AI assistant states
+  const [aiDraft, setAiDraft] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState('');
+  const [aiSuggestions, setAiSuggestions] = useState(null);
+  const [aiUnavailableMessage, setAiUnavailableMessage] = useState('');
+
   // Dropdown UI expand/collapse states
   const [showTypeDropdown, setShowTypeDropdown] = useState(false);
   const [showSeverityDropdown, setShowSeverityDropdown] = useState(false);
+
+  const handleAnalyzeDraft = async () => {
+    if (!aiDraft.trim()) {
+      setAiError('Please enter some description or rough draft of what happened.');
+      return;
+    }
+    if (aiDraft.trim().length < 10) {
+      setAiError('Please describe the situation in at least 10 characters.');
+      return;
+    }
+
+    setAiLoading(true);
+    setAiError('');
+    setAiUnavailableMessage('');
+    setAiSuggestions(null);
+
+    try {
+      const payload = {
+        text: aiDraft.trim(),
+        location: address || undefined,
+        coordinates: (latitude && longitude) ? {
+          latitude: parseFloat(latitude),
+          longitude: parseFloat(longitude)
+        } : undefined
+      };
+
+      const res = await analyzeReportDraft(payload);
+      if (res.success) {
+        setAiSuggestions(res.data);
+      } else {
+        setAiUnavailableMessage(res.message || 'AI Report Assistant is currently unavailable.');
+      }
+    } catch (err) {
+      console.warn('AI analysis error:', err);
+      const msg = err.response?.data?.message || err.message || 'Failed to analyze draft.';
+      setAiError(msg);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleApplySuggestions = () => {
+    if (!aiSuggestions) return;
+    setTitle(aiSuggestions.suggestedTitle || '');
+    setDescription(aiSuggestions.improvedDescription || '');
+    setType(aiSuggestions.suggestedType || 'other');
+    setSeverity(aiSuggestions.suggestedSeverity || 'medium');
+    setAiSuggestions(null);
+    setAiDraft('');
+  };
 
   // Loading / Messages
   const [locationLoading, setLocationLoading] = useState(false);
@@ -198,6 +256,114 @@ export default function ReportIncidentScreen({ navigation }) {
                 <Text style={styles.successText}>{success}</Text>
               </View>
             ) : null}
+
+            {/* AI Assistant Section */}
+            <View style={styles.aiContainer}>
+              <View style={styles.aiHeaderRow}>
+                <Text style={styles.aiHeaderTitle}>🧠 AI Report Assistant</Text>
+              </View>
+              <Text style={styles.aiSubText}>
+                Describe what happened in your own words (Hindi, Hinglish, or English) and let AI suggest structured report fields.
+              </Text>
+              
+              <TextInput
+                style={[styles.input, styles.aiTextArea]}
+                placeholder="e.g. main gate ke pass bahut bheed hai log dhakka de rahe hain"
+                placeholderTextColor="#94A3B8"
+                value={aiDraft}
+                onChangeText={setAiDraft}
+                multiline
+                numberOfLines={2}
+                textAlignVertical="top"
+              />
+
+              <View style={styles.aiActionRow}>
+                <TouchableOpacity
+                  style={[styles.aiBtn, aiLoading && styles.disabledBtn]}
+                  onPress={handleAnalyzeDraft}
+                  disabled={aiLoading}
+                >
+                  {aiLoading ? (
+                    <ActivityIndicator color="#2563EB" size="small" />
+                  ) : (
+                    <Text style={styles.aiBtnText}>✨ Analyze with AI</Text>
+                  )}
+                </TouchableOpacity>
+
+                {aiSuggestions && (
+                  <TouchableOpacity onPress={() => { setAiSuggestions(null); setAiDraft(''); }}>
+                    <Text style={styles.aiClearText}>Clear</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {aiError ? (
+                <View style={styles.aiErrorBox}>
+                  <Text style={styles.aiErrorText}>⚠️ {aiError}</Text>
+                </View>
+              ) : null}
+
+              {aiUnavailableMessage ? (
+                <View style={styles.aiInfoBox}>
+                  <Text style={styles.aiInfoText}>ℹ️ {aiUnavailableMessage}</Text>
+                </View>
+              ) : null}
+
+              {aiSuggestions ? (
+                <View style={styles.aiSuggestionsCard}>
+                  <Text style={styles.aiSuggestionsTitle}>AI Suggestions Preview</Text>
+                  
+                  <View style={styles.aiGrid}>
+                    <View style={styles.aiGridItem}>
+                      <Text style={styles.aiGridLabel}>Suggested Title:</Text>
+                      <Text style={styles.aiGridValue}>{aiSuggestions.suggestedTitle}</Text>
+                    </View>
+                    <View style={styles.aiGridItem}>
+                      <Text style={styles.aiGridLabel}>Type / Severity:</Text>
+                      <Text style={styles.aiGridValue}>
+                        {aiSuggestions.suggestedType.toUpperCase()} / {aiSuggestions.suggestedSeverity.toUpperCase()}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.aiDetailSection}>
+                    <Text style={styles.aiGridLabel}>Improved Description:</Text>
+                    <Text style={styles.aiImprovedText}>{aiSuggestions.improvedDescription}</Text>
+                  </View>
+
+                  {aiSuggestions.missingQuestions && aiSuggestions.missingQuestions.length > 0 ? (
+                    <View style={styles.aiDetailSection}>
+                      <Text style={styles.aiGridLabel}>Clarify these details if possible:</Text>
+                      {aiSuggestions.missingQuestions.map((q, idx) => (
+                        <Text key={idx} style={styles.aiListItem}>• {q}</Text>
+                      ))}
+                    </View>
+                  ) : null}
+
+                  {aiSuggestions.citizenSafetyTips && aiSuggestions.citizenSafetyTips.length > 0 ? (
+                    <View style={styles.aiSafetyTipsContainer}>
+                      <Text style={styles.aiSafetyTipsTitle}>🛡️ Safety Guidance:</Text>
+                      {aiSuggestions.citizenSafetyTips.map((tip, idx) => (
+                        <Text key={idx} style={styles.aiSafetyTipItem}>• {tip}</Text>
+                      ))}
+                    </View>
+                  ) : null}
+
+                  <Text style={styles.aiDisclaimer}>{aiSuggestions.disclaimer}</Text>
+
+                  <View style={styles.aiButtonRow}>
+                    <TouchableOpacity style={styles.aiApplyBtn} onPress={handleApplySuggestions}>
+                      <Text style={styles.aiApplyBtnText}>Apply Suggestions</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.aiKeepManualBtn} onPress={() => setAiSuggestions(null)}>
+                      <Text style={styles.aiKeepManualBtnText}>Ignore</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ) : null}
+            </View>
+
+            <View style={styles.divider} />
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Incident Title *</Text>
@@ -638,5 +804,197 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '700',
+  },
+  aiContainer: {
+    backgroundColor: '#F1F5F9',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  aiHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  aiHeaderTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1E293B',
+  },
+  aiSubText: {
+    fontSize: 12,
+    color: '#64748B',
+    marginBottom: 10,
+    lineHeight: 16,
+  },
+  aiTextArea: {
+    height: 60,
+    backgroundColor: '#FFFFFF',
+    fontSize: 14,
+    paddingVertical: 6,
+  },
+  aiActionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  aiBtn: {
+    backgroundColor: '#EFF6FF',
+    borderColor: '#BFDBFE',
+    borderWidth: 1,
+    borderRadius: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+  },
+  aiBtnText: {
+    color: '#2563EB',
+    fontWeight: '600',
+    fontSize: 13,
+  },
+  aiClearText: {
+    color: '#64748B',
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  aiErrorBox: {
+    backgroundColor: '#FEE2E2',
+    padding: 8,
+    borderRadius: 6,
+    marginTop: 10,
+  },
+  aiErrorText: {
+    color: '#991B1B',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  aiInfoBox: {
+    backgroundColor: '#F8FAFC',
+    borderColor: '#E2E8F0',
+    borderWidth: 1,
+    padding: 8,
+    borderRadius: 6,
+    marginTop: 10,
+  },
+  aiInfoText: {
+    color: '#475569',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  aiSuggestionsCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+    padding: 12,
+    marginTop: 12,
+  },
+  aiSuggestionsTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#2563EB',
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#EFF6FF',
+    paddingBottom: 4,
+  },
+  aiGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+    gap: 8,
+  },
+  aiGridItem: {
+    flex: 1,
+  },
+  aiGridLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#64748B',
+    marginBottom: 2,
+  },
+  aiGridValue: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#1E293B',
+  },
+  aiDetailSection: {
+    marginTop: 8,
+  },
+  aiImprovedText: {
+    fontSize: 13,
+    color: '#334155',
+    backgroundColor: '#F8FAFC',
+    padding: 8,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    lineHeight: 18,
+  },
+  aiListItem: {
+    fontSize: 12,
+    color: '#475569',
+    lineHeight: 16,
+  },
+  aiSafetyTipsContainer: {
+    backgroundColor: '#ECFDF5',
+    borderRadius: 6,
+    padding: 10,
+    marginTop: 10,
+  },
+  aiSafetyTipsTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#065F46',
+    marginBottom: 4,
+  },
+  aiSafetyTipItem: {
+    fontSize: 12,
+    color: '#065F46',
+    lineHeight: 16,
+  },
+  aiDisclaimer: {
+    fontSize: 10,
+    color: '#64748B',
+    fontStyle: 'italic',
+    marginTop: 10,
+    lineHeight: 14,
+  },
+  aiButtonRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+    paddingTop: 10,
+  },
+  aiApplyBtn: {
+    flex: 1,
+    backgroundColor: '#2563EB',
+    borderRadius: 6,
+    paddingVertical: 8,
+    alignItems: 'center',
+  },
+  aiApplyBtnText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  aiKeepManualBtn: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#CBD5E1',
+    borderWidth: 1,
+    borderRadius: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+  },
+  aiKeepManualBtnText: {
+    color: '#475569',
+    fontSize: 13,
+    fontWeight: '600',
   },
 });

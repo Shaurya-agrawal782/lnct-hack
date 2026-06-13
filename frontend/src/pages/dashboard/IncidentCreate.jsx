@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createIncident } from '../../api/incidentApi';
+import { analyzeReportDraft } from '../../api/aiApi';
 import IncidentLocationPicker from '../../components/map/IncidentLocationPicker';
 
 export default function IncidentCreate() {
@@ -14,6 +15,63 @@ export default function IncidentCreate() {
   const [address, setAddress] = useState('');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
+
+  // AI assistant states
+  const [aiDraft, setAiDraft] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
+  const [aiSuggestions, setAiSuggestions] = useState(null);
+  const [aiUnavailableMessage, setAiUnavailableMessage] = useState(null);
+
+  const handleAnalyze = async () => {
+    if (!aiDraft.trim()) {
+      setAiError('Please enter some description or rough draft of what happened.');
+      return;
+    }
+    if (aiDraft.trim().length < 10) {
+      setAiError('Please describe the situation in at least 10 characters.');
+      return;
+    }
+
+    setAiLoading(true);
+    setAiError(null);
+    setAiUnavailableMessage(null);
+    setAiSuggestions(null);
+
+    try {
+      const payload = {
+        text: aiDraft.trim(),
+        location: address || undefined,
+        coordinates: (latitude && longitude) ? {
+          latitude: parseFloat(latitude),
+          longitude: parseFloat(longitude)
+        } : undefined
+      };
+
+      const res = await analyzeReportDraft(payload);
+      if (res.success) {
+        setAiSuggestions(res.data);
+      } else {
+        setAiUnavailableMessage(res.message || 'AI Report Assistant is currently unavailable.');
+      }
+    } catch (err) {
+      console.error(err);
+      const errMsg = err.response?.data?.message || 'Failed to analyze the report draft.';
+      setAiError(errMsg);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleApplySuggestions = () => {
+    if (!aiSuggestions) return;
+    setTitle(aiSuggestions.suggestedTitle || '');
+    setDescription(aiSuggestions.improvedDescription || '');
+    setType(aiSuggestions.suggestedType || 'other');
+    setSeverity(aiSuggestions.suggestedSeverity || 'medium');
+    setAiSuggestions(null);
+    setAiDraft('');
+  };
 
   // Location/Geotagging states
   const [locationLoading, setLocationLoading] = useState(false);
@@ -205,6 +263,153 @@ export default function IncidentCreate() {
               onChange={(e) => setDescription(e.target.value)}
               className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2.5 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
             />
+          </div>
+
+          {/* AI Report Assistant Helper Card */}
+          <div className="bg-surface-container border border-outline-variant/60 rounded-xl p-5 space-y-4 text-left">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary">psychology</span>
+              <h3 className="font-title-medium text-on-surface font-bold">AI Report Assistant</h3>
+            </div>
+            <p className="text-body-sm text-on-surface-variant">
+              Type what happened in your own words (e.g. Hindi, English, Hinglish). AI will suggest title, category, severity, and safety tips.
+            </p>
+
+            <div className="space-y-2">
+              <textarea
+                rows={2}
+                placeholder="e.g. main gate ke pass bahut bheed hai log dhakka de rahe hain kuch log gir gaye hain"
+                value={aiDraft}
+                onChange={(e) => setAiDraft(e.target.value)}
+                className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-2.5 text-body-md text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+              />
+            </div>
+
+            <div className="flex justify-between items-center">
+              <button
+                type="button"
+                onClick={handleAnalyze}
+                disabled={aiLoading}
+                className="px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-label-md text-label-md font-bold transition flex items-center gap-2 disabled:opacity-50"
+              >
+                {aiLoading ? (
+                  <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
+                )}
+                <span>Analyze with AI</span>
+              </button>
+              
+              {aiSuggestions && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAiSuggestions(null);
+                    setAiDraft('');
+                  }}
+                  className="text-body-sm text-primary hover:underline font-semibold"
+                >
+                  Clear suggestions
+                </button>
+              )}
+            </div>
+
+            {/* AI Error message */}
+            {aiError && (
+              <div className="text-xs text-error font-medium bg-error-container/40 border border-error/20 p-2.5 rounded-lg flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px]">error</span>
+                <span>{aiError}</span>
+              </div>
+            )}
+
+            {/* AI Unavailable message */}
+            {aiUnavailableMessage && (
+              <div className="text-xs text-on-surface-variant font-medium bg-surface-container-high border border-outline-variant/60 p-2.5 rounded-lg flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px] text-primary">info</span>
+                <span>{aiUnavailableMessage}</span>
+              </div>
+            )}
+
+            {/* AI Suggestions Preview */}
+            {aiSuggestions && (
+              <div className="bg-surface border border-primary/20 rounded-lg p-4 space-y-4 shadow-sm animate-fade-in">
+                <div className="border-b border-outline-variant/60 pb-2 flex justify-between items-center">
+                  <span className="text-xs font-bold text-primary flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[14px]">auto_awesome</span> AI Suggestion ({aiSuggestions.confidence} confidence)
+                  </span>
+                  <span className="text-[10px] text-on-surface-variant italic">Advisory suggestions</span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                  <div>
+                    <span className="font-semibold text-on-surface-variant block mb-0.5">Suggested Title:</span>
+                    <span className="text-on-surface font-bold text-body-sm">{aiSuggestions.suggestedTitle}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-on-surface-variant block mb-0.5">Suggested Type:</span>
+                    <span className="text-on-surface font-bold text-body-sm capitalize">{aiSuggestions.suggestedType}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-on-surface-variant block mb-0.5">Suggested Severity:</span>
+                    <span className="text-on-surface font-bold text-body-sm capitalize">{aiSuggestions.suggestedSeverity}</span>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="font-semibold text-on-surface-variant text-xs block">Improved Description:</span>
+                  <p className="text-body-sm text-on-surface bg-surface-container-low p-2.5 rounded border border-outline-variant/40 leading-relaxed">
+                    {aiSuggestions.improvedDescription}
+                  </p>
+                </div>
+
+                {aiSuggestions.missingQuestions && aiSuggestions.missingQuestions.length > 0 && (
+                  <div className="space-y-1">
+                    <span className="font-semibold text-on-surface-variant text-xs block">Please provide detail on:</span>
+                    <ul className="list-disc list-inside text-body-sm text-on-surface space-y-0.5 ml-1">
+                      {aiSuggestions.missingQuestions.map((q, idx) => (
+                        <li key={idx} className="leading-normal">{q}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {aiSuggestions.citizenSafetyTips && aiSuggestions.citizenSafetyTips.length > 0 && (
+                  <div className="bg-primary/5 border border-primary/10 p-3 rounded-lg space-y-1">
+                    <span className="font-semibold text-primary text-xs flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[14px]">security</span> Citizen Safety Tips:
+                    </span>
+                    <ul className="list-disc list-inside text-body-sm text-on-surface-variant space-y-0.5 ml-1">
+                      {aiSuggestions.citizenSafetyTips.map((tip, idx) => (
+                        <li key={idx} className="leading-normal">{tip}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="text-[10px] text-on-surface-variant/80 italic flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[12px]">info</span>
+                  <span>{aiSuggestions.disclaimer}</span>
+                </div>
+
+                <div className="flex gap-2 pt-2 border-t border-outline-variant/60">
+                  <button
+                    type="button"
+                    onClick={handleApplySuggestions}
+                    className="px-4 py-2 bg-primary text-on-primary rounded font-label-md text-label-md font-bold hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-1.5"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">check</span>
+                    Apply Suggestions
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAiSuggestions(null)}
+                    className="px-4 py-2 border border-outline-variant rounded font-label-md text-label-md text-on-surface font-semibold hover:bg-surface-container transition-colors"
+                  >
+                    Keep Manual Entry
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Type & Severity Dropdowns */}
